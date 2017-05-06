@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sv:node sv:name="hippo:initialize" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+    <sv:property sv:multiple="false" sv:name="jcr:primaryType" sv:type="String">
+        <sv:value>hippo:initializefolder</sv:value>
+    </sv:property>
+    <sv:node sv:name="my-updater-prefix-updater">
+        <sv:property sv:multiple="false" sv:name="hippo:contentresource" sv:type="String">
+            <sv:value>updater.xml</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:contentroot" sv:type="String">
+            <sv:value>/hippo:configuration/hippo:update/hippo:queue</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:sequence" sv:type="Double">
+            <sv:value>99999.0</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:reloadonstartup" sv:type="Boolean">
+            <sv:value>true</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="my-updater-prefix-updater3">
+        <sv:property sv:multiple="false" sv:name="hippo:contentresource" sv:type="String">
+            <sv:value>updater3.xml</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:contentroot" sv:type="String">
+            <sv:value>/hippo:configuration/hippo:update/hippo:queue</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:sequence" sv:type="Double">
+            <sv:value>99999.0</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="my-updater-prefix-sub-updater2">
+        <sv:property sv:multiple="false" sv:name="hippo:contentresource" sv:type="String">
+            <sv:value>sub/updater2.xml</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:contentroot" sv:type="String">
+            <sv:value>/hippo:configuration/hippo:update/hippo:queue</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:sequence" sv:type="Double">
+            <sv:value>99999.0</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="my-updater-prefix-sub-updater3">
+        <sv:property sv:multiple="false" sv:name="hippo:contentresource" sv:type="String">
+            <sv:value>sub/updater3.xml</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:contentroot" sv:type="String">
+            <sv:value>/hippo:configuration/hippo:update/hippo:queue</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:sequence" sv:type="Double">
+            <sv:value>99999.0</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="my-updater-prefix-updater2">
+        <sv:property sv:multiple="false" sv:name="hippo:contentresource" sv:type="String">
+            <sv:value>updater2.xml</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:contentroot" sv:type="String">
+            <sv:value>/hippo:configuration/hippo:update/hippo:registry</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:sequence" sv:type="Double">
+            <sv:value>99999.1</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:reloadonstartup" sv:type="Boolean">
+            <sv:value>true</sv:value>
+        </sv:property>
+        <sv:property sv:multiple="false" sv:name="hippo:version" sv:type="String">
+            <sv:value>2</sv:value>
+        </sv:property>
+    </sv:node>
+</sv:node>
