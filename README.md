@@ -25,7 +25,7 @@ Bootstrap definition is optional
 ```
 ## Use of the maven plugin
 In the build section define (minimal) usage of the plugin
-```XML
+```xml
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
@@ -42,7 +42,7 @@ In the build section define (minimal) usage of the plugin
   </plugin>
 ```
 Or define (full) usage of the plugin
-```XML
+```xml
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
@@ -62,6 +62,19 @@ Or define (full) usage of the plugin
       </execution>
     </executions>
   </plugin>
+```
+## Commonly used dependencies for writing the groovy scripts
+```xml
+    <dependency>
+      <groupId>org.onehippo.cms7</groupId>
+      <artifactId>hippo-repository-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <scope>provided</scope>
+    </dependency>
 ```
 Notes:
 * The sample app only provides an example for the use of the maven plugin.
