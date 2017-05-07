@@ -24,7 +24,7 @@ import static nl.openweb.hippo.groovy.model.Constants.Files.ECM_EXTENSIONS_NAME;
 @Mojo(name = "generate")
 public class GroovyToUpdaterXML extends AbstractMojo {
 
-    @Parameter(defaultValue = "${project.build.resources.resource.directory}/resources", property = "sourceDir")
+    @Parameter(defaultValue = "${project.build.scriptSourceDirectory}", property = "sourceDir")
     private File sourceDir;
     @Parameter(defaultValue = "${project.build.outputDirectory}", property = "targetDir")
     private File targetDir;
