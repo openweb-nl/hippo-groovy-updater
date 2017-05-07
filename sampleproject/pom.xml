@@ -57,7 +57,7 @@
         <executions>
           <execution>
             <id>default-resources</id>
-            <phase>process-resources</phase>
+            <phase>compile</phase>
             <goals>
               <goal>generate</goal>
             </goals>

@@ -14,6 +14,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static java.util.stream.Collectors.toList;
+import static nl.openweb.hippo.groovy.XmlGenerator.addClassPath;
 import static nl.openweb.hippo.groovy.XmlGenerator.getEcmExtensionNode;
 import static nl.openweb.hippo.groovy.XmlGenerator.getGroovyFiles;
 import static nl.openweb.hippo.groovy.XmlGenerator.getUpdateScriptNode;
@@ -34,6 +35,8 @@ public class GroovyToUpdaterXML extends AbstractMojo {
         Log log = getLog();
         log.info("sources: " + sourceDir.getAbsolutePath());
         log.info("target: " + targetDir.getAbsolutePath());
+        log.info("Add outputDirectory to classpath for project files: " + targetDir.getPath());
+        addClassPath(targetDir.getPath());
 
         List<File> groovyFiles = getGroovyFiles(sourceDir);
         List<File> parsedGroovyFiles = processUpdateScripts(groovyFiles);

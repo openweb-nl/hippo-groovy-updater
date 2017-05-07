@@ -1,5 +1,6 @@
 import nl.openweb.hippo.groovy.annotations.Bootstrap
 import nl.openweb.hippo.groovy.annotations.Updater
+import nl.openweb.tools.Tools
 import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
@@ -8,6 +9,7 @@ import javax.jcr.Node
 @Bootstrap(reload = true)
 class TestUpdater extends BaseNodeUpdateVisitor {
     boolean doUpdate(Node node) {
+        log.info(Tools.getEnvironmentInfo())
         log.info "manipulate node < > & an %^&* /> {}", node.path
         return true
     }

@@ -21,13 +21,8 @@ import nl.openweb.hippo.groovy.model.jaxb.Node;
 import nl.openweb.hippo.groovy.model.jaxb.Property;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.Files.XML_EXTENSION;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTRESOURCE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTROOT;
-import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEFOLDER;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_RELOADONSTARTUP;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_SEQUENCE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_VERSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
+import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEFOLDER;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DRYRUN;
@@ -36,6 +31,11 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTRESOURCE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTROOT;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_RELOADONSTARTUP;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_SEQUENCE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_VERSION;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 
 public class XmlGenerator {
@@ -70,6 +70,9 @@ public class XmlGenerator {
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, wrap(content));
         properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), "Long"));
         return rootnode;
+    }
+    public static void addClassPath(String path){
+        gcl.addClasspath(path);
     }
 
     private static void addStringPropertyIfNotEmpty(List<Object> properties, String name, String value){
