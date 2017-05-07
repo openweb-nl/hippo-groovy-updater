@@ -3,13 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>hippo-groovy-updater</artifactId>
+    <artifactId>groovy-updater</artifactId>
     <groupId>nl.openweb.hippo.updater</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>sampleproject</artifactId>
+  <artifactId>groovy-updater-sample-project</artifactId>
+  <name>Sample project for the Maven plugin</name>
 
   <dependencies>
     <dependency>
@@ -37,9 +38,16 @@
   </dependencies>
   <build>
     <plugins>
+      <!-- We don't need the sample project in the repositories -->
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>nl.openweb.hippo.updater</groupId>
-        <artifactId>hippo-groovy-updater-maven-plugin</artifactId>
+        <artifactId>groovy-updater-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
           <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
