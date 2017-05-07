@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -43,8 +44,8 @@ public class TestUpdaterTransforming {
 
     @Test
     public void generateHippoEcmExtensions() throws URISyntaxException, IOException {
-        String resourcePath = getClass().getResource("").getPath();
-        File root = new File(resourcePath);
+        URI resourceURI = getClass().getResource("").toURI();
+        File root = new File(resourceURI);
         List<File> groovyFiles = XmlGenerator.getGroovyFiles(root);
         Node node = XmlGenerator.getEcmExtensionNode(root, groovyFiles, "my-updater-prefix-");
 
