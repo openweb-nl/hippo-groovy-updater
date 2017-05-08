@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>Groovy updater</name>
   <groupId>nl.openweb.hippo.updater</groupId>
   <artifactId>groovy-updater</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
   <modules>
     <module>annotations</module>
@@ -20,6 +19,7 @@
     <connection>scm:git:ssh://git@stash.open-web.nl:7999/hp/hippo-groovy-updater.git</connection>
     <developerConnection>scm:git:ssh://git@stash.open-web.nl:7999/hp/hippo-groovy-updater.git</developerConnection>
     <url>https://stash.open-web.nl/projects/HP/repos/hippo-groovy-updater/browse</url>
+    <tag>groovy-updater-1.0</tag>
   </scm>
 
   <distributionManagement>
