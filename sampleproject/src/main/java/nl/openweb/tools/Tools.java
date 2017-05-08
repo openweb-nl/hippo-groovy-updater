@@ -1,6 +1,8 @@
 package nl.openweb.tools;
 
-public class Tools {
+public final class Tools {
+    private Tools(){}
+
     public static String getEnvironmentInfo() {
         final StringBuilder output = new StringBuilder();
         System.getenv().forEach((key, value) -> output.append(

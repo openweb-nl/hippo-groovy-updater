@@ -41,7 +41,7 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_T
 /**
  * Generator to parse a groovy file to the bootstrap xmls
  */
-public class XmlGenerator {
+public final class XmlGenerator {
 
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
 
@@ -174,7 +174,7 @@ public class XmlGenerator {
     public static String getUpdateScriptXmlFilename(File basePath, File file) {
         String fileName = file.getAbsolutePath().replaceFirst(basePath.getAbsolutePath(), "");
         if(File.pathSeparatorChar != '/'){
-            fileName.replaceAll(File.separator, "/");
+            fileName = fileName.replaceAll(File.separator, "/");
         }
         fileName = fileName.substring(1);
         return fileName.endsWith(GROOVY_EXTENSION) ?
