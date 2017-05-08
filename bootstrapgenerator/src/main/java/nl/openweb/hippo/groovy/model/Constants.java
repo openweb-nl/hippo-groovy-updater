@@ -1,5 +1,8 @@
 package nl.openweb.hippo.groovy.model;
 
+/**
+ * Constants for generating bootstrap xml
+ */
 public interface Constants {
 
     interface Files {

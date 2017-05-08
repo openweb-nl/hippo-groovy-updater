@@ -38,6 +38,9 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_SEQUENC
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_VERSION;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 
+/**
+ * Generator to parse a groovy file to the bootstrap xmls
+ */
 public class XmlGenerator {
 
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
@@ -45,6 +48,12 @@ public class XmlGenerator {
     private XmlGenerator() {
     }
 
+    /**
+     * Parse file to updater node
+     *
+     * @param file the groovy file to use for source
+     * @return Node object representing the groovy updater to marshall to xml
+     */
     public static Node getUpdateScriptNode(File file) {
         String content;
         final Updater updater;
@@ -71,6 +80,11 @@ public class XmlGenerator {
         properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), "Long"));
         return rootnode;
     }
+
+    /**
+     * Add a classpath to the groovy parsing engine, for example if the groovy script uses classes from within the project
+     * @param path path to add to the classpath
+     */
     public static void addClassPath(String path){
         gcl.addClasspath(path);
     }
@@ -81,6 +95,11 @@ public class XmlGenerator {
         }
     }
 
+    /**
+     * Wrap string with empty lines
+     * @param content
+     * @return the content starting and ending with a newline character
+     */
     private static String wrap(final String content) {
         return "\n" + content + "\n";
     }
@@ -94,6 +113,13 @@ public class XmlGenerator {
         return property;
     }
 
+    /**
+     * Generate files to generate a node model for the hippoecm-extension.xml
+     * @param sourcePath sourcepath of groovy files
+     * @param files groovy files, need to be relative to the source path
+     * @param updaterNamePrefix prefix for the initialize items nodes
+     * @return Node object representing the hippoecm-extension to marshall to xml
+     */
     public static Node getEcmExtensionNode(File sourcePath, List<File> files, String updaterNamePrefix) {
         Node rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
         List<Object> properties = rootnode.getNodeOrProperty();
@@ -104,6 +130,13 @@ public class XmlGenerator {
         return rootnode;
     }
 
+    /**
+     * Create initialize item for the given file
+     * @param sourcePath sourcepath of groovy files
+     * @param file groovy files, need to be relative to the source path
+     * @param namePrefix prefix for the initialize items nodes
+     * @return Node object representing the initializeitem node for the hippoecm-extension to marshall to xml
+     */
     private static Node createInitializeItem(File sourcePath, File file, String namePrefix) {
         Bootstrap bootstrap;
         try {
@@ -132,6 +165,12 @@ public class XmlGenerator {
         return initNode;
     }
 
+    /**
+     * Get update script xml filename
+     * @param basePath path to make returning path relative to
+     * @param file File object for the groovy script
+     * @return the path, relative to the basePath, converted \ to /
+     */
     public static String getUpdateScriptXmlFilename(File basePath, File file) {
         String fileName = file.getAbsolutePath().replaceFirst(basePath.getAbsolutePath(), "");
         if(File.pathSeparatorChar != '/'){
@@ -142,6 +181,11 @@ public class XmlGenerator {
                 fileName.substring(0, fileName.length() - GROOVY_EXTENSION.length()) + XML_EXTENSION : fileName;
     }
 
+    /**
+     * Utility method to create a Node with given name
+     * @param name name for the node
+     * @return Node with given name
+     */
     public static Node createNode(final String name) {
         Node node = new Node();
         String initName = name;
@@ -153,6 +197,11 @@ public class XmlGenerator {
         return node;
     }
 
+    /**
+     * Obtain groovy files from given location
+     * @param dir directory to obtain groovy files from
+     * @return List of groovy files
+     */
     public static List<File> getGroovyFiles(File dir) {
         File[] groovyFiles = dir.listFiles((file) -> file.isFile() && file.getName().endsWith(GROOVY_EXTENSION));
         File[] directories = dir.listFiles(File::isDirectory);

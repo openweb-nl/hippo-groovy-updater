@@ -21,6 +21,9 @@ import static nl.openweb.hippo.groovy.XmlGenerator.getUpdateScriptNode;
 import static nl.openweb.hippo.groovy.XmlGenerator.getUpdateScriptXmlFilename;
 import static nl.openweb.hippo.groovy.model.Constants.Files.ECM_EXTENSIONS_NAME;
 
+/**
+ * Groovy Updater Maven Plugin to generate bootstrap from groovy files
+ */
 @Mojo(name = "generate")
 public class GroovyToUpdaterXML extends AbstractMojo {
 
@@ -43,6 +46,11 @@ public class GroovyToUpdaterXML extends AbstractMojo {
         writeEcmExtensions(parsedGroovyFiles);
     }
 
+    /**
+     * Write hippoecm-extension.xml file
+     * @param parsedGroovyFiles list of files to use in the generation
+     * @throws MojoExecutionException
+     */
     private void writeEcmExtensions(final List<File> parsedGroovyFiles) throws MojoExecutionException {
         Node ecmExtensionNode = getEcmExtensionNode(sourceDir, parsedGroovyFiles, initializeNamePrefix);
         if(ecmExtensionNode == null){
@@ -52,11 +60,21 @@ public class GroovyToUpdaterXML extends AbstractMojo {
         JAXB.marshal(ecmExtensionNode, new File(targetDir, ECM_EXTENSIONS_NAME));
     }
 
+    /**
+     * Generate updater xml files from groovy scripts
+     * @param groovyFiles groovy scripts to parse
+     * @return list of valid parsed groovy files
+     */
     private List<File> processUpdateScripts(final List<File> groovyFiles) {
         getLog().info("Converting " + groovyFiles.size() + " groovy scripts to updater xml");
         return groovyFiles.stream().filter(this::processUpdateScript).collect(toList());
     }
 
+    /**
+     * Generate updater xml from groovy file
+     * @param file groovy script to parse
+     * @return parsing successful
+     */
     private boolean processUpdateScript(File file){
         getLog().debug("Converting " + file.getAbsolutePath() + " to updater xml");
         Node updateScriptNode = getUpdateScriptNode(file);
