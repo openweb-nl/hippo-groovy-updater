@@ -2,6 +2,7 @@ package nl.openweb.hippo.groovy;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,9 +17,11 @@ import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.Constants;
+import nl.openweb.hippo.groovy.model.Constants.ValueType;
 import nl.openweb.hippo.groovy.model.DefaultBootstrap;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import nl.openweb.hippo.groovy.model.jaxb.Property;
+import static nl.openweb.hippo.groovy.Marshal.CDATA_START;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.Files.XML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
@@ -44,6 +47,13 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_T
 public final class XmlGenerator {
 
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
+    public static final String CDATA_END = "]]>";
+    public static final String NEWLINE = "\n";
+    private static final String REGEX_WHITESPACE = "\\s*";
+    private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
+    private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
+    private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
+    public static final String SEPARATOR = "/";
 
     private XmlGenerator() {
     }
@@ -69,15 +79,15 @@ public final class XmlGenerator {
         Node rootnode = updater == null ? null : XmlGenerator.createNode(updater.name());
 
         List<Object> properties = rootnode.getNodeOrProperty();
-        properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, "Name"));
-        properties.add(createProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), "Long"));
+        properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, ValueType.NAME));
+        properties.add(createProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), ValueType.LONG));
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_DESCRIPTION, updater.description());
-        properties.add(createProperty(HIPPOSYS_DRYRUN, updater.dryRun(), "Boolean"));
+        properties.add(createProperty(HIPPOSYS_DRYRUN, updater.dryRun(), ValueType.BOOLEAN));
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, updater.parameters());
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_QUERY, updater.xpath());
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, wrap(content));
-        properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), "Long"));
+        addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, processScriptContent(content));
+        properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), ValueType.LONG));
         return rootnode;
     }
 
@@ -91,17 +101,48 @@ public final class XmlGenerator {
 
     private static void addStringPropertyIfNotEmpty(List<Object> properties, String name, String value){
         if(StringUtils.isNotBlank(value)){
-            properties.add(createProperty(name, value, "String"));
+            properties.add(createProperty(name, value, ValueType.STRING));
         }
+    }
+
+    /**
+     * Do some usefull tweaks to make the script pleasant and readable
+     */
+    private static String processScriptContent(String script){
+        String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
+        return wrap(stripAnnotations);
+    }
+
+    private static String stripAnnotations(final String script, final Class<? extends Annotation>... classes){
+        String result = script;
+        for (Class<? extends Annotation> aClass : classes) {
+            if(result.contains(aClass.getPackage().getName()) &&
+                    result.contains(aClass.getSimpleName())) {
+                result = stripAnnotation(result, aClass.getSimpleName());
+                result = stripAnnotation(result, aClass.getName());
+                result = result.replaceAll("\\s*import\\s*" + aClass.getName() + "\\s*[;]?\n", "");
+            }
+        }
+        return result;
+    }
+
+    private static String stripAnnotation(final String script, final String className) {
+        String annotationName = "@" + className;
+        String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
+        String s = script.replaceAll(regex, NEWLINE);
+        s = s.replaceAll("(\n){3,}", "\n\n");
+        return s;
     }
 
     /**
      * Wrap string with empty lines
      * @param content
      * @return the content starting and ending with a newline character
+     *
+     * "<![CDATA[" + v + "]]>"
      */
     private static String wrap(final String content) {
-        return "\n" + content + "\n";
+        return CDATA_START + NEWLINE + content + NEWLINE + CDATA_END;
     }
 
     public static Property createProperty(final String name, final Object value, final String type) {
@@ -123,7 +164,7 @@ public final class XmlGenerator {
     public static Node getEcmExtensionNode(File sourcePath, List<File> files, String updaterNamePrefix) {
         Node rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
         List<Object> properties = rootnode.getNodeOrProperty();
-        properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, "String"));
+        properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
         files.stream().map(file -> createInitializeItem(sourcePath, file, updaterNamePrefix)).filter(Objects::nonNull)
                 .sorted(Comparator.comparingDouble(node -> Double.valueOf(node.getPropertyByName(HIPPO_SEQUENCE).getSingleValue())))
                 .forEach(properties::add);
@@ -156,7 +197,7 @@ public final class XmlGenerator {
             contentroot = bootstrap.contentroot();
         }
         addStringPropertyIfNotEmpty(properties, HIPPO_CONTENTRESOURCE, resource);
-        properties.add(createProperty(HIPPO_CONTENTROOT, "/hippo:configuration/hippo:update/hippo:" + contentroot, "String"));
+        properties.add(createProperty(HIPPO_CONTENTROOT, "/hippo:configuration/hippo:update/hippo:" + contentroot, ValueType.STRING));
         properties.add(createProperty(HIPPO_SEQUENCE, bootstrap.sequence(), "Double"));
         if (bootstrap.reload()) {
             properties.add(createProperty(HIPPO_RELOADONSTARTUP, bootstrap.reload(), "Boolean"));
@@ -174,7 +215,7 @@ public final class XmlGenerator {
     public static String getUpdateScriptXmlFilename(File basePath, File file) {
         String fileName = file.getAbsolutePath().replaceFirst(basePath.getAbsolutePath(), "");
         if(File.pathSeparatorChar != '/'){
-            fileName = fileName.replaceAll(File.separator, "/");
+            fileName = fileName.replaceAll(File.pathSeparator, SEPARATOR);
         }
         fileName = fileName.substring(1);
         return fileName.endsWith(GROOVY_EXTENSION) ?
@@ -192,7 +233,7 @@ public final class XmlGenerator {
         if(initName.endsWith(XML_EXTENSION)){
             initName = initName.substring(0, initName.length() - XML_EXTENSION.length());
         }
-        initName = initName.replaceAll("/", "-");
+        initName = initName.replaceAll(SEPARATOR, "-");
         node.setName(initName);
         return node;
     }

@@ -6,24 +6,26 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBException;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
 import nl.openweb.hippo.groovy.XmlGenerator;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
+import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static org.junit.Assert.assertEquals;
 
 
 public class TestUpdaterTransforming {
     @Test
-    public void testXmlUpdatescriptCreating() throws URISyntaxException, IOException {
+    public void testXmlUpdatescriptCreating() throws URISyntaxException, IOException, JAXBException {
         checkGeneration("updater");
         checkGeneration("updater2");
+        checkGeneration("updater3");
     }
 
-    private void checkGeneration(String name) throws URISyntaxException, IOException {
+    private void checkGeneration(String name) throws URISyntaxException, IOException, JAXBException {
         URL testfileUrl = getClass().getResource(name + ".groovy");
         URL testfileResultUrl = getClass().getResource(name + ".xml");
 
@@ -34,7 +36,7 @@ public class TestUpdaterTransforming {
         Node updateScriptNode = XmlGenerator.getUpdateScriptNode(file);
         StringWriter writer = new StringWriter();
 
-        JAXB.marshal(updateScriptNode, writer);
+        getMarshaller().marshal(updateScriptNode, writer);
         final String xml=writer.toString();
 
         String expectedContent = FileUtils.fileRead(resultFile);
@@ -43,7 +45,7 @@ public class TestUpdaterTransforming {
 
 
     @Test
-    public void generateHippoEcmExtensions() throws URISyntaxException, IOException {
+    public void generateHippoEcmExtensions() throws URISyntaxException, IOException, JAXBException {
         URI resourceURI = getClass().getResource("").toURI();
         File root = new File(resourceURI);
         List<File> groovyFiles = XmlGenerator.getGroovyFiles(root);
@@ -51,7 +53,7 @@ public class TestUpdaterTransforming {
 
         StringWriter writer = new StringWriter();
 
-        JAXB.marshal(node, writer);
+        getMarshaller().marshal(node, writer);
         final String xml=writer.toString();
         URL testfileResultUrl = getClass().getResource("hippoecm-extension.xml");
         File resultFile = new File(testfileResultUrl.toURI());

@@ -5,7 +5,8 @@ import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
 
-@Updater(name = "Test Updater", xpath = "//element(*, hippo:document)")
+@Updater(name = "Test Updater",
+        xpath = "//element(*, hippo:document)")
 @Bootstrap(reload = true)
 class TestUpdater extends BaseNodeUpdateVisitor {
     boolean doUpdate(Node node) {

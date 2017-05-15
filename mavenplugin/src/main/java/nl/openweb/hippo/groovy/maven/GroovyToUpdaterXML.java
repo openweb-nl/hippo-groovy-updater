@@ -3,7 +3,7 @@ package nl.openweb.hippo.groovy.maven;
 import java.io.File;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBException;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -14,6 +14,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static java.util.stream.Collectors.toList;
+import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.XmlGenerator.addClassPath;
 import static nl.openweb.hippo.groovy.XmlGenerator.getEcmExtensionNode;
 import static nl.openweb.hippo.groovy.XmlGenerator.getGroovyFiles;
@@ -57,7 +58,8 @@ public class GroovyToUpdaterXML extends AbstractMojo {
             throw new MojoExecutionException("No input for " + ECM_EXTENSIONS_NAME);
         }
         targetDir.mkdirs();
-        JAXB.marshal(ecmExtensionNode, new File(targetDir, ECM_EXTENSIONS_NAME));
+
+        marshal(ecmExtensionNode, new File(targetDir, ECM_EXTENSIONS_NAME));
     }
 
     /**
@@ -75,7 +77,7 @@ public class GroovyToUpdaterXML extends AbstractMojo {
      * @param file groovy script to parse
      * @return parsing successful
      */
-    private boolean processUpdateScript(File file){
+    private boolean processUpdateScript(File file) {
         getLog().debug("Converting " + file.getAbsolutePath() + " to updater xml");
         Node updateScriptNode = getUpdateScriptNode(file);
         if(updateScriptNode == null){
@@ -85,7 +87,18 @@ public class GroovyToUpdaterXML extends AbstractMojo {
         File targetFile = new File(targetDir, getUpdateScriptXmlFilename(sourceDir, file));
         targetFile.getParentFile().mkdirs();
         getLog().info("Write " + targetFile.getAbsolutePath());
-        JAXB.marshal(updateScriptNode, targetFile);
-        return true;
+        return marshal(updateScriptNode, targetFile);
     }
+
+    private boolean marshal(Node node, File file){
+        try {
+            getMarshaller().marshal(node, file);
+            return true;
+        } catch (JAXBException e) {
+            getLog().error("Failed to make xml: " + file.getAbsolutePath(), e);
+            return false;
+        }
+    }
+
+
 }

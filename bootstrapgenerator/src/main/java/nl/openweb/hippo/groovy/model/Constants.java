@@ -10,6 +10,7 @@ public interface Constants {
         String XML_EXTENSION = ".xml";
         String ECM_EXTENSIONS_NAME = "hippoecm-extension.xml";
     }
+
     interface PropertyName {
         String JCR_PRIMARY_TYPE = "jcr:primaryType";
         String HIPPOSYS_BATCHSIZE = "hipposys:batchsize";
@@ -26,9 +27,17 @@ public interface Constants {
         String HIPPO_RELOADONSTARTUP = "hippo:reloadonstartup";
         String HIPPO_VERSION = "hippo:version";
     }
+
     interface NodeType {
         String HIPPOSYS_UPDATERINFO = "hipposys:updaterinfo";
         String HIPPO_INITIALIZE = "hippo:initialize";
         String HIPPO_INITIALIZEFOLDER = "hippo:initializefolder";
+    }
+
+    interface ValueType {
+        String STRING = "String";
+        String NAME = "Name";
+        String LONG = "Long";
+        String BOOLEAN = "Boolean";
     }
 }

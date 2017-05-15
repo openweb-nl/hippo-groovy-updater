@@ -13,18 +13,14 @@
         <sv:value>//element(*, hippo:document)</sv:value>
     </sv:property>
     <sv:property sv:multiple="false" sv:name="hipposys:script" sv:type="String">
-        <sv:value>
-import nl.openweb.hippo.groovy.annotations.Bootstrap
-import nl.openweb.hippo.groovy.annotations.Updater
+        <sv:value><![CDATA[
 import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
 
-@Updater(name = "Test Updater", xpath = "//element(*, hippo:document)")
-@Bootstrap(reload = true)
 class TestUpdater extends BaseNodeUpdateVisitor {
     boolean doUpdate(Node node) {
-        log.info "manipulate node &lt; &gt; &amp; an %^&amp;* /&gt; {}", node.path
+        log.info "manipulate node < > & an %^&* /> {}", node.path
         return true
     }
 
@@ -32,7 +28,7 @@ class TestUpdater extends BaseNodeUpdateVisitor {
         throw new UnsupportedOperationException('Updater does not implement undoUpdate method')
     }
 }
-</sv:value>
+]]></sv:value>
     </sv:property>
     <sv:property sv:multiple="false" sv:name="hipposys:throttle" sv:type="Long">
         <sv:value>1000</sv:value>
