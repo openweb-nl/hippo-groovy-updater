@@ -1,3 +1,9 @@
+import nl.openweb.hippo.groovy.XmlGenerator;
+import nl.openweb.hippo.groovy.model.jaxb.Node;
+import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
+
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -6,13 +12,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
-
-import nl.openweb.hippo.groovy.XmlGenerator;
-import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static org.junit.Assert.assertEquals;
 
@@ -55,10 +54,29 @@ public class TestUpdaterTransforming {
 
         getMarshaller().marshal(node, writer);
         final String xml=writer.toString();
-        URL testfileResultUrl = getClass().getResource("hippoecm-extension.xml");
+        URL testfileResultUrl = getClass().getResource("resulting-hippoecm-extension.xml");
         File resultFile = new File(testfileResultUrl.toURI());
 
         String expectedContent = FileUtils.fileRead(resultFile);
         assertEquals(expectedContent, xml);
     }
+
+    @Test
+    public void generateNewHippoEcmExtensions() throws URISyntaxException, IOException, JAXBException {
+        URI resourceURI = getClass().getResource("sub").toURI();
+        File root = new File(resourceURI);
+        List<File> groovyFiles = XmlGenerator.getGroovyFiles(root);
+        Node node = XmlGenerator.getEcmExtensionNode(root, groovyFiles, "my-updater-prefix-");
+
+        StringWriter writer = new StringWriter();
+
+        getMarshaller().marshal(node, writer);
+        final String xml=writer.toString();
+        URL testfileResultUrl = getClass().getResource("sub-hippoecm-extension.xml");
+        File resultFile = new File(testfileResultUrl.toURI());
+
+        String expectedContent = FileUtils.fileRead(resultFile);
+        assertEquals(expectedContent, xml);
+    }
+
 }

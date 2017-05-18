@@ -1,18 +1,5 @@
 package nl.openweb.hippo.groovy;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.plexus.util.FileUtils;
-
 import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
@@ -21,25 +8,20 @@ import nl.openweb.hippo.groovy.model.Constants.ValueType;
 import nl.openweb.hippo.groovy.model.DefaultBootstrap;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import nl.openweb.hippo.groovy.model.jaxb.Property;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.plexus.util.FileUtils;
+
+import javax.xml.bind.JAXB;
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.*;
+
 import static nl.openweb.hippo.groovy.Marshal.CDATA_START;
-import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
-import static nl.openweb.hippo.groovy.model.Constants.Files.XML_EXTENSION;
+import static nl.openweb.hippo.groovy.model.Constants.Files.*;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEFOLDER;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DRYRUN;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTRESOURCE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTROOT;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_RELOADONSTARTUP;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_SEQUENCE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_VERSION;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.*;
 
 /**
  * Generator to parse a groovy file to the bootstrap xmls
@@ -162,13 +144,28 @@ public final class XmlGenerator {
      * @return Node object representing the hippoecm-extension to marshall to xml
      */
     public static Node getEcmExtensionNode(File sourcePath, List<File> files, String updaterNamePrefix) {
-        Node rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
-        List<Object> properties = rootnode.getNodeOrProperty();
-        properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
+        List<Object> properties;
+        Node rootnode = getExistingEcmExtensions(sourcePath);
+        if(rootnode==null) {
+            rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
+            properties = rootnode.getNodeOrProperty();
+            properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
+        } else {
+            properties = rootnode.getNodeOrProperty();
+
+        }
         files.stream().map(file -> createInitializeItem(sourcePath, file, updaterNamePrefix)).filter(Objects::nonNull)
                 .sorted(Comparator.comparingDouble(node -> Double.valueOf(node.getPropertyByName(HIPPO_SEQUENCE).getSingleValue())))
                 .forEach(properties::add);
         return rootnode;
+    }
+
+    private static Node getExistingEcmExtensions(File sourcePath) {
+        File extensions = new File(sourcePath, ECM_EXTENSIONS_NAME);
+        if(extensions.exists()){
+            return JAXB.unmarshal(extensions, Node.class);
+        }
+        return null;
     }
 
     /**
