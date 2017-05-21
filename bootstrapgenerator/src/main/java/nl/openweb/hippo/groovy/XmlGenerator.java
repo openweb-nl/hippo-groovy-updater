@@ -52,7 +52,7 @@ public final class XmlGenerator {
         try {
 
             content = FileUtils.fileRead(file);
-            Class scriptClass = gcl.parseClass(file);
+            Class scriptClass = getScriptClass(file);
             updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
         } catch (IOException e) {
             return null;
@@ -71,6 +71,10 @@ public final class XmlGenerator {
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, processScriptContent(content));
         properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), ValueType.LONG));
         return rootnode;
+    }
+
+    public static Class getScriptClass(File file) throws IOException {
+        return gcl.parseClass(file);
     }
 
     /**
@@ -178,7 +182,7 @@ public final class XmlGenerator {
     private static Node createInitializeItem(File sourcePath, File file, String namePrefix) {
         Bootstrap bootstrap;
         try {
-            Class scriptClass = gcl.parseClass(file);
+            Class scriptClass = getScriptClass(file);
             bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
                     scriptClass: DefaultBootstrap.class).getAnnotation(Bootstrap.class);
 

@@ -13,6 +13,7 @@ The groovy scripts are by default located in:
 * Groovy updater bootstrap generator
 * Groovy updater maven plugin
 * Sample project for the maven plugin
+* Synchronisation module for updater scripts
 
 ## Annotation use
 Minimal use for the Updater definition
@@ -29,7 +30,7 @@ In the build section define (minimal) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <executions>
       <execution>
         <id>default-resources</id>
@@ -46,7 +47,7 @@ Or define (full) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <configuration>
       <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
       <targetDir>${project.build.outputDirectory}</targetDir>
@@ -75,6 +76,21 @@ Or define (full) usage of the plugin
       <artifactId>jcr</artifactId>
       <scope>provided</scope>
     </dependency>
+```
+## Updater Script Synchronisation module
+> This module borrows some logic and classes from the webfiles module.
+ 
+The updater scripts add changed groovy scripts to the updaters registry.
+the module is registered at:
+  `/hippo:configuration/hippo:modules/groovyfiles`
+
+Add this dependency to the cms, for local development only.
+```xml
+  <dependency>
+    <groupId>nl.openweb.hippo.updater</groupId>
+    <artifactId>groovy-updater-sync</artifactId>
+    <version>1.1</version>
+  </dependency>
 ```
 Notes:
 * The sample app only provides an example for the use of the maven plugin.
