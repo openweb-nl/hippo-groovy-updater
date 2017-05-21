@@ -92,7 +92,7 @@ public final class XmlGenerator {
     }
 
     /**
-     * Do some usefull tweaks to make the script pleasant and readable
+     * Do some useful tweaks to make the script pleasant and readable
      */
     private static String processScriptContent(String script){
         String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);

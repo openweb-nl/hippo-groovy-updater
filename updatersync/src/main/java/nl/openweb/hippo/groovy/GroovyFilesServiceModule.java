@@ -19,7 +19,6 @@ package nl.openweb.hippo.groovy;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcher;
 import org.onehippo.cms7.services.HippoServiceRegistry;
 import org.onehippo.cms7.services.autoreload.AutoReloadService;
-import org.onehippo.cms7.services.eventbus.HippoEventBus;
 import org.onehippo.cms7.services.webfiles.WebFilesService;
 import org.onehippo.cms7.services.webfiles.watch.GlobFileNameMatcher;
 import org.onehippo.cms7.services.webfiles.watch.WebFilesWatcherConfig;
@@ -68,9 +67,7 @@ public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule
         service = new GroovyFilesServiceImpl();
         HippoServiceRegistry.registerService(service, GroovyFilesService.class);
 
-        final HippoEventBus eventBus = HippoServiceRegistry.getService(HippoEventBus.class);
-        final AutoReloadService autoReload = HippoServiceRegistry.getService(AutoReloadService.class);
-        watcher = new GroovyFilesWatcher(config, service, session, eventBus, autoReload);
+        watcher = new GroovyFilesWatcher(config, service, session);
     }
 
     @Override

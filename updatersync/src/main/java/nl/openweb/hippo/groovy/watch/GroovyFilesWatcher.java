@@ -18,8 +18,6 @@ package nl.openweb.hippo.groovy.watch;
 import nl.openweb.hippo.groovy.GroovyFilesService;
 import nl.openweb.hippo.groovy.util.WatchFilesUtils;
 import org.apache.commons.lang.StringUtils;
-import org.onehippo.cms7.services.autoreload.AutoReloadService;
-import org.onehippo.cms7.services.eventbus.HippoEventBus;
 import org.onehippo.cms7.services.webfiles.WebFileException;
 import org.onehippo.cms7.services.webfiles.watch.*;
 import org.slf4j.Logger;
@@ -47,38 +45,15 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
     private final WebFilesWatcherConfig config;
     private final GroovyFilesService service;
     private final Session session;
-    private final HippoEventBus eventBus;
-    private final AutoReloadService autoReload;
     private final FileSystemObserver fileSystemObserver;
 
     public GroovyFilesWatcher(final WebFilesWatcherConfig config, final GroovyFilesService service,
-                           final Session session, final HippoEventBus eventBus, final AutoReloadService autoReload) {
+                           final Session session) {
         this.config = config;
         this.service = service;
         this.session = session;
-        this.eventBus = eventBus;
-        this.autoReload = autoReload;
-        this.fileSystemObserver = observeFileSystemIfNeeded();
 
-        if (fileSystemObserver == null && autoReload != null) {
-            autoReload.setEnabled(false);
-        } else if (autoReload != null){
-            log.info("Auto reload and Web Files watching enabled. Start with initial (re-)import");
-            for (Path groovyFilesRootDirectory : fileSystemObserver.getObservedRootDirectories()) {
-                try {
-                    log.info("Importing directory '{}'", groovyFilesRootDirectory);
-                    service.importGroovyFiles(session, groovyFilesRootDirectory.toFile());
-                    session.save();
-                } catch (RepositoryException|IOException e) {
-                    if (log.isDebugEnabled()) {
-                        log.warn("Failed to import directory '{}'", groovyFilesRootDirectory, e);
-                    } else {
-                        log.warn("Failed to import directory '{}' : '{}'", groovyFilesRootDirectory, e.toString());
-                    }
-                    resetSilently(session);
-                }
-            }
-        }
+        this.fileSystemObserver = observeFileSystemIfNeeded();
     }
 
     private FileSystemObserver observeFileSystemIfNeeded() {
