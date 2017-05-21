@@ -10,4 +10,11 @@
   <artifactId>groovy-updater-annotations</artifactId>
   <name>Groovy updater annotations</name>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
