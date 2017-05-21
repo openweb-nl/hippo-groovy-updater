@@ -95,14 +95,14 @@ public final class XmlGenerator {
         return wrap(stripAnnotations);
     }
 
-    private static String stripAnnotations(final String script, final Class<? extends Annotation>... classes){
+    public static String stripAnnotations(final String script, final Class<? extends Annotation>... classes){
         String result = script;
         for (Class<? extends Annotation> aClass : classes) {
             if(result.contains(aClass.getPackage().getName()) &&
                     result.contains(aClass.getSimpleName())) {
                 result = stripAnnotation(result, aClass.getSimpleName());
                 result = stripAnnotation(result, aClass.getName());
-                result = result.replaceAll("\\s*import\\s*" + aClass.getName() + "\\s*[;]?\n", "");
+                result = result.replaceAll("import\\s*" + aClass.getName() + "\\s*[;]?\n", "");
             }
         }
         return result;

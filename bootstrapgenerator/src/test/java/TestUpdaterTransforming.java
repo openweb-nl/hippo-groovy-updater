@@ -1,4 +1,6 @@
 import nl.openweb.hippo.groovy.XmlGenerator;
+import nl.openweb.hippo.groovy.annotations.Bootstrap;
+import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
@@ -13,6 +15,7 @@ import java.net.URL;
 import java.util.List;
 
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
+import static nl.openweb.hippo.groovy.XmlGenerator.stripAnnotations;
 import static org.junit.Assert.assertEquals;
 
 
@@ -42,6 +45,21 @@ public class TestUpdaterTransforming {
         assertEquals("failed parsing of " + name, expectedContent, xml);
     }
 
+    @Test
+    public void testStripAnnotations() throws URISyntaxException, IOException {
+        URL testfileUrl = getClass().getResource("updater.groovy");
+        URL testfileResultUrl = getClass().getResource("updater.groovy.stripped");
+
+        File file = new File(testfileUrl.toURI());
+        File resultFile = new File(testfileResultUrl.toURI());
+
+        String content = FileUtils.fileRead(file);
+        String expectedContent = FileUtils.fileRead(resultFile);
+
+        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Bootstrap.class, Updater.class));
+        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Updater.class, Bootstrap.class));
+
+    }
 
     @Test
     public void generateHippoEcmExtensions() throws URISyntaxException, IOException, JAXBException {
