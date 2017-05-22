@@ -15,11 +15,10 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
+import nl.openweb.hippo.groovy.GroovyFileException;
 import nl.openweb.hippo.groovy.GroovyFilesService;
 import nl.openweb.hippo.groovy.util.WatchFilesUtils;
 import org.apache.commons.lang.StringUtils;
-import org.onehippo.cms7.services.webfiles.WebFileException;
-import org.onehippo.cms7.services.webfiles.watch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +41,13 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
 
     public static Logger log = LoggerFactory.getLogger(GroovyFilesWatcher.class);
 
-    private final WebFilesWatcherConfig config;
+    private final GroovyFilesWatcherConfig config;
     private final GroovyFilesService service;
     private final Session session;
     private final FileSystemObserver fileSystemObserver;
 
-    public GroovyFilesWatcher(final WebFilesWatcherConfig config, final GroovyFilesService service,
-                           final Session session) {
+    public GroovyFilesWatcher(final GroovyFilesWatcherConfig config, final GroovyFilesService service,
+                              final Session session) {
         this.config = config;
         this.service = service;
         this.session = session;
@@ -211,7 +210,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
                 }
             }
             session.save();
-        } catch (WebFileException | RepositoryException | IOException e) {
+        } catch (GroovyFileException | RepositoryException | IOException e) {
             log.warn("Failed to reimport web file bundles {}, resetting session", reimportedBundleRoots, e);
             resetSilently(session);
         }

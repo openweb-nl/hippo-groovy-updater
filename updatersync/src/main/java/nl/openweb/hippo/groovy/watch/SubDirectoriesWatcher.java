@@ -15,8 +15,6 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
-import org.onehippo.cms7.services.webfiles.watch.FileSystemListener;
-import org.onehippo.cms7.services.webfiles.watch.FileSystemObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +42,8 @@ class SubDirectoriesWatcher implements FileSystemListener {
     private final Set<Path> deletedPaths;
 
 
-    public static void watch(final Path webFilesDirectory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {
-        new SubDirectoriesWatcher(webFilesDirectory, fsObserver, listener);
+    public static void watch(final Path filesDirectory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {
+        new SubDirectoriesWatcher(filesDirectory, fsObserver, listener);
     }
 
     private SubDirectoriesWatcher(final Path directory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {

@@ -15,7 +15,7 @@
  */
 package nl.openweb.hippo.groovy.util;
 
-import org.onehippo.cms7.services.webfiles.watch.WebFilesWatcherConfig;
+import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,17 +52,17 @@ public class WatchFilesUtils {
     }
 
     public static List<Path> getGroovyFilesDirectories(final Path projectBaseDir,
-                                                       final WebFilesWatcherConfig config) {
+                                                       final GroovyFilesWatcherConfig config) {
 
-        List<Path> webFilesDirectories = new ArrayList<>(config.getWatchedModules().size());
+        List<Path> filesDirectories = new ArrayList<>(config.getWatchedModules().size());
         log.debug("getting groovy file directories");
         for (String watchedModule : config.getWatchedModules()) {
-            final Path webFilesModule = projectBaseDir.resolve(watchedModule);
+            final Path modulePath = projectBaseDir.resolve(watchedModule);
             List<Path> paths = new ArrayList<>();
-            paths.add(webFilesModule.resolve(SCRIPT_FILES_LOCATION_IN_MODULE));
-            paths.add(webFilesModule.resolve(RESOURCE_FILES_LOCATION_IN_MODULE));
+            paths.add(modulePath.resolve(SCRIPT_FILES_LOCATION_IN_MODULE));
+            paths.add(modulePath.resolve(RESOURCE_FILES_LOCATION_IN_MODULE));
             List<Path> pathList = paths.stream().filter(Files::isDirectory).collect(Collectors.toList());
-            webFilesDirectories.addAll(pathList);
+            filesDirectories.addAll(pathList);
             log.debug("Found {} paths to add for watching. {}", pathList.size(), pathList.stream().map(Path::toString)
                     .collect(Collectors.joining(", ")));
             if(pathList.isEmpty()){
@@ -70,6 +70,6 @@ public class WatchFilesUtils {
                         watchedModule, SCRIPT_FILES_LOCATION_IN_MODULE, RESOURCE_FILES_LOCATION_IN_MODULE);
             }
         }
-        return webFilesDirectories;
+        return filesDirectories;
     }
 }

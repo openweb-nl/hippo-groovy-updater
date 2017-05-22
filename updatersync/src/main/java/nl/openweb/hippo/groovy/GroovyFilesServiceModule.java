@@ -16,12 +16,12 @@
 
 package nl.openweb.hippo.groovy;
 
+import nl.openweb.hippo.groovy.watch.GlobFileNameMatcher;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcher;
+import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherConfig;
+import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherJcrConfig;
 import org.onehippo.cms7.services.HippoServiceRegistry;
 import org.onehippo.cms7.services.autoreload.AutoReloadService;
-import org.onehippo.cms7.services.webfiles.watch.GlobFileNameMatcher;
-import org.onehippo.cms7.services.webfiles.watch.WebFilesWatcherConfig;
-import org.onehippo.cms7.services.webfiles.watch.WebFilesWatcherJcrConfig;
 import org.onehippo.repository.modules.AbstractReconfigurableDaemonModule;
 import org.onehippo.repository.modules.RequiresService;
 import org.slf4j.Logger;
@@ -35,14 +35,14 @@ import javax.jcr.Session;
 public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule {
 
     private GroovyFilesServiceImpl service;
-    private WebFilesWatcherConfig config;
+    private GroovyFilesWatcherConfig config;
     private GroovyFilesWatcher watcher;
     private static final Logger LOG = LoggerFactory.getLogger(GroovyFilesServiceModule.class);
 
     @Override
     protected void doConfigure(final Node moduleConfig) throws RepositoryException {
         if (config == null) {
-            config = new WebFilesWatcherJcrConfig(moduleConfig);
+            config = new GroovyFilesWatcherJcrConfig(moduleConfig);
         }
     }
 

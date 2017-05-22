@@ -30,7 +30,7 @@ In the build section define (minimal) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <executions>
       <execution>
         <id>default-resources</id>
@@ -47,7 +47,7 @@ Or define (full) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <configuration>
       <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
       <targetDir>${project.build.outputDirectory}</targetDir>
@@ -78,7 +78,7 @@ Or define (full) usage of the plugin
     </dependency>
 ```
 ## Updater Script Synchronisation module
-> This module borrows some logic and classes from the webfiles module.
+> This module has copied some logic and classes from the well known webfiles module.
  
 The updater scripts add changed groovy scripts to the updaters registry.
 the module is registered at:
@@ -89,7 +89,7 @@ Add this dependency to the cms, for local development only.
   <dependency>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
   </dependency>
 ```
 Notes:
