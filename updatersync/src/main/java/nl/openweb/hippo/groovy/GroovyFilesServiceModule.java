@@ -19,7 +19,6 @@ package nl.openweb.hippo.groovy;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcher;
 import org.onehippo.cms7.services.HippoServiceRegistry;
 import org.onehippo.cms7.services.autoreload.AutoReloadService;
-import org.onehippo.cms7.services.webfiles.WebFilesService;
 import org.onehippo.cms7.services.webfiles.watch.GlobFileNameMatcher;
 import org.onehippo.cms7.services.webfiles.watch.WebFilesWatcherConfig;
 import org.onehippo.cms7.services.webfiles.watch.WebFilesWatcherJcrConfig;
@@ -73,7 +72,7 @@ public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule
     @Override
     protected void doShutdown() {
         if (service != null) {
-            HippoServiceRegistry.unregisterService(service, WebFilesService.class);
+            HippoServiceRegistry.unregisterService(service, GroovyFilesService.class);
         }
         if (watcher != null) {
             try {

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesListener {
 
-    public static Logger log = LoggerFactory.getLogger(WebFilesWatcher.class);
+    public static Logger log = LoggerFactory.getLogger(GroovyFilesWatcher.class);
 
     private final WebFilesWatcherConfig config;
     private final GroovyFilesService service;
