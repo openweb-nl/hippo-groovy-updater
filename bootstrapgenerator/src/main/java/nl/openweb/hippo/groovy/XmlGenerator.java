@@ -50,7 +50,6 @@ public final class XmlGenerator {
         String content;
         final Updater updater;
         try {
-
             content = FileUtils.fileRead(file);
             Class scriptClass = getScriptClass(file);
             updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
@@ -58,8 +57,10 @@ public final class XmlGenerator {
             return null;
         }
 
-        Node rootnode = updater == null ? null : XmlGenerator.createNode(updater.name());
-
+        if(updater == null){
+            return null;
+        }
+        Node rootnode = XmlGenerator.createNode(updater.name());
         List<Object> properties = rootnode.getNodeOrProperty();
         properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, ValueType.NAME));
         properties.add(createProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), ValueType.LONG));
@@ -183,8 +184,12 @@ public final class XmlGenerator {
         Bootstrap bootstrap;
         try {
             Class scriptClass = getScriptClass(file);
-            bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
-                    scriptClass: DefaultBootstrap.class).getAnnotation(Bootstrap.class);
+            if(scriptClass.isAnnotationPresent(Updater.class)) {
+                bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
+                        scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
+            }else{
+                return null;
+            }
 
         } catch (IOException e) {
             return null;
