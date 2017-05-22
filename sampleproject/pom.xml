@@ -15,11 +15,12 @@
       <groupId>nl.openweb.hippo.updater</groupId>
       <artifactId>groovy-updater-annotations</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-api</artifactId>
+      <artifactId>hippo-repository-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
