@@ -1,5 +1,20 @@
 package nl.openweb.hippo.groovy;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
+import javax.xml.bind.JAXB;
+
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.plexus.util.FileUtils;
+
 import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
@@ -8,20 +23,26 @@ import nl.openweb.hippo.groovy.model.Constants.ValueType;
 import nl.openweb.hippo.groovy.model.DefaultBootstrap;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import nl.openweb.hippo.groovy.model.jaxb.Property;
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.plexus.util.FileUtils;
-
-import javax.xml.bind.JAXB;
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.*;
-
 import static nl.openweb.hippo.groovy.Marshal.CDATA_START;
-import static nl.openweb.hippo.groovy.model.Constants.Files.*;
+import static nl.openweb.hippo.groovy.model.Constants.Files.ECM_EXTENSIONS_NAME;
+import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
+import static nl.openweb.hippo.groovy.model.Constants.Files.XML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEFOLDER;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.*;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DRYRUN;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTRESOURCE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTROOT;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_RELOADONSTARTUP;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_SEQUENCE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_VERSION;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 
 /**
  * Generator to parse a groovy file to the bootstrap xmls
@@ -75,6 +96,7 @@ public final class XmlGenerator {
     }
 
     public static Class getScriptClass(File file) throws IOException {
+        gcl.clearCache();
         return gcl.parseClass(file);
     }
 
