@@ -90,6 +90,13 @@ Add this dependency to the cms, for local development only.
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
     <version>1.2</version>
+    <exclusions>
+        <!-- Plugin uses other version numbers in project -->
+        <exclusion>
+          <groupId>org.onehippo.cms7</groupId>
+          <artifactId>hippo-repository-dependencies</artifactId>
+        </exclusion>
+      </exclusions>
   </dependency>
 ```
 Notes:
