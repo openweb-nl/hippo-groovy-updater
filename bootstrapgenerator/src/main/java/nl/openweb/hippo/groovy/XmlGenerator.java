@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import javax.xml.bind.JAXB;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -238,16 +239,11 @@ public final class XmlGenerator {
      * Get update script xml filename
      * @param basePath path to make returning path relative to
      * @param file File object for the groovy script
-     * @return the path, relative to the basePath, converted \ to /
+     * @return the path, relative to the basePath, converted \ to /, with xml extension
      */
     public static String getUpdateScriptXmlFilename(File basePath, File file) {
-        String fileName = file.getAbsolutePath().replaceFirst(basePath.getAbsolutePath(), "");
-        if(File.pathSeparatorChar != '/'){
-            fileName = fileName.replaceAll(File.pathSeparator, SEPARATOR);
-        }
-        fileName = fileName.substring(1);
-        return fileName.endsWith(GROOVY_EXTENSION) ?
-                fileName.substring(0, fileName.length() - GROOVY_EXTENSION.length()) + XML_EXTENSION : fileName;
+        String fileName = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
+        return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)) + XML_EXTENSION;
     }
 
     /**
