@@ -17,16 +17,6 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
-import nl.openweb.hippo.groovy.GroovyFileException;
-import nl.openweb.hippo.groovy.GroovyFilesService;
-import nl.openweb.hippo.groovy.util.WatchFilesUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -34,9 +24,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import nl.openweb.hippo.groovy.GroovyFileException;
+import nl.openweb.hippo.groovy.GroovyFilesService;
+import nl.openweb.hippo.groovy.util.WatchFilesUtils;
+
 /**
- * Watches a directory with web files for changes, and applies the observed changes to the
- * provided web file service. The provided directory should contain a child directories.
+ * Watches a directory with groovy files for changes, and applies the observed changes to the
+ * provided groovyfile service. The provided directory should contain a child directories.
  * Only existing child directories are watched for changes.
  */
 public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesListener {
@@ -65,7 +67,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         if (config.getWatchedModules().size() > 0) {
             return observeFileSystem(projectBaseDir);
         } else {
-            log.info("Watching web files is disabled: no web file modules configured to watch");
+            log.info("Watching groovy files is disabled: no modules configured to watch");
         }
         return null;
     }
@@ -75,7 +77,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         try {
             fsObserver = createFileSystemObserver();
         } catch (Exception e) {
-            log.error("Watching web files is disabled: cannot create file system observer", e);
+            log.error("Watching groovy files is disabled: cannot create file system observer", e);
             return null;
         }
 
@@ -87,7 +89,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
                 log.info("About to listen to directories: " + groovyFilesDirectory.toString());
                 SubDirectoriesWatcher.watch(groovyFilesDirectory, fsObserver, this);
             } catch (Exception e) {
-                log.error("Failed to watch or import web files in module '{}'", groovyFilesDirectory.toString(), e);
+                log.error("Failed to watch or import groovy files in module '{}'", groovyFilesDirectory.toString(), e);
             }
         }
         return fsObserver;
@@ -114,7 +116,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             try {
                 matcher.include(pattern);
             } catch (IllegalArgumentException e) {
-                log.warn("Ignoring OS name '{}': {}. On this OS web files will be watched using file system polling.",
+                log.warn("Ignoring OS name '{}': {}. On this OS files will be watched using file system polling.",
                         pattern, e.getMessage());
             }
         }
@@ -164,17 +166,17 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             }
         } catch (RepositoryException e) {
             if (log.isDebugEnabled()) {
-                log.info("Failed to reload web files from '{}', resetting session and trying to reimport whole bundle(s)",
+                log.info("Failed to reload groovy files from '{}', resetting session and trying to reimport whole bundle(s)",
                         changedPaths, e);
             } else {
-                log.info("Failed to reload web files from '{}' : '{}', resetting session and trying to reimport whole bundle(s)",
+                log.info("Failed to reload groovy files from '{}' : '{}', resetting session and trying to reimport whole bundle(s)",
                         changedPaths, e.toString());
             }
             resetSilently(session);
             tryReimportBundles(watchedRootDir, changedPaths);
         }
         final long endTime = System.currentTimeMillis();
-        log.info("Replacing web files took {} ms", endTime - startTime);
+        log.info("Replacing groovy file took {} ms", endTime - startTime);
     }
 
     @Override
@@ -213,7 +215,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             }
             session.save();
         } catch (GroovyFileException | RepositoryException | IOException e) {
-            log.warn("Failed to reimport web file bundles {}, resetting session", reimportedBundleRoots, e);
+            log.warn("Failed to reimport groovy file bundles {}, resetting session", reimportedBundleRoots, e);
             resetSilently(session);
         }
     }

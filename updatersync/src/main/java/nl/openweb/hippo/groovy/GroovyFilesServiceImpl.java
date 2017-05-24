@@ -19,17 +19,6 @@
 package nl.openweb.hippo.groovy;
 
 
-import nl.openweb.hippo.groovy.annotations.Bootstrap;
-import nl.openweb.hippo.groovy.annotations.Updater;
-import org.codehaus.plexus.util.FileUtils;
-import org.hippoecm.repository.util.JcrUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -37,9 +26,29 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
 
-import static nl.openweb.hippo.groovy.XmlGenerator.*;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.xml.bind.JAXBException;
+
+import org.codehaus.plexus.util.FileUtils;
+import org.hippoecm.repository.util.JcrUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import nl.openweb.hippo.groovy.annotations.Bootstrap;
+import nl.openweb.hippo.groovy.annotations.Updater;
+import static nl.openweb.hippo.groovy.XmlGenerator.getGroovyFiles;
+import static nl.openweb.hippo.groovy.XmlGenerator.getScriptClass;
+import static nl.openweb.hippo.groovy.XmlGenerator.stripAnnotations;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.*;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
 
 public class GroovyFilesServiceImpl implements GroovyFilesService {
 
@@ -70,7 +79,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
     private Node getRegistryNode(Session session) throws RepositoryException {
         final Node scriptRegistry = JcrUtils.getNodeIfExists(SCRIPT_ROOT, session);
         if (scriptRegistry == null) {
-            warnAndThrow("Cannot find web files root at '%s'", SCRIPT_ROOT);
+            warnAndThrow("Cannot find files root at '%s'", SCRIPT_ROOT);
         }
         return scriptRegistry;
     }
