@@ -23,5 +23,6 @@ import nl.openweb.hippo.groovy.annotations.Bootstrap;
  */
 @Bootstrap
 public class DefaultBootstrap {
-    public DefaultBootstrap(){}
+    public DefaultBootstrap() {
+    }
 }

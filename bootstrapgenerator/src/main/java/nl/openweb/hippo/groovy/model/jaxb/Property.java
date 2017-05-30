@@ -31,11 +31,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * <p>
  * Java class for anonymous complex type.
- *
+ * <p>
  * <p>
  * The following schema fragment specifies the expected content contained within
  * this class.
- *
+ * <p>
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -50,11 +50,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "value" })
+@XmlType(name = "", propOrder = {"value"})
 @XmlRootElement(name = "property")
 public class Property {
 
@@ -72,25 +70,23 @@ public class Property {
 
     /**
      * Gets the value of the value property.
-     *
+     * <p>
      * <p>
      * This accessor method returns a reference to the live list, not a
      * snapshot. Therefore any modification you make to the returned list will
      * be present inside the JAXB object. This is why there is not a
      * <CODE>set</CODE> method for the value property.
-     *
+     * <p>
      * <p>
      * For example, to add a new item, do as follows:
-     * 
+     * <p>
      * <pre>
      * getValue().add(newItem);
      * </pre>
-     *
-     *
+     * <p>
+     * <p>
      * <p>
      * Objects of the following type(s) are allowed in the list {@link String }
-     *
-     *
      */
     public List<String> getValue() {
         if (value == null) {
@@ -112,7 +108,6 @@ public class Property {
      * Gets the value of the multiple property.
      *
      * @return possible object is {@link Boolean }
-     *
      */
     public Boolean isMultiple() {
         return multiple;
@@ -121,9 +116,7 @@ public class Property {
     /**
      * Sets the value of the multiple property.
      *
-     * @param value
-     *            allowed object is {@link Boolean }
-     *
+     * @param value allowed object is {@link Boolean }
      */
     public void setMultiple(Boolean value) {
         this.multiple = value;
@@ -133,7 +126,6 @@ public class Property {
      * Gets the value of the name property.
      *
      * @return possible object is {@link String }
-     *
      */
     public String getName() {
         return name;
@@ -142,9 +134,7 @@ public class Property {
     /**
      * Sets the value of the name property.
      *
-     * @param value
-     *            allowed object is {@link String }
-     *
+     * @param value allowed object is {@link String }
      */
     public void setName(String value) {
         this.name = value;
@@ -154,7 +144,6 @@ public class Property {
      * Gets the value of the type property.
      *
      * @return possible object is {@link String }
-     *
      */
     public String getType() {
         return type;
@@ -163,9 +152,7 @@ public class Property {
     /**
      * Sets the value of the type property.
      *
-     * @param value
-     *            allowed object is {@link String }
-     *
+     * @param value allowed object is {@link String }
      */
     public void setType(String value) {
         this.type = value;

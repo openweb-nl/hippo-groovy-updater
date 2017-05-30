@@ -65,12 +65,13 @@ public class GroovyToUpdaterXML extends AbstractMojo {
 
     /**
      * Write hippoecm-extension.xml file
+     *
      * @param parsedGroovyFiles list of files to use in the generation
      * @throws MojoExecutionException
      */
     private void writeEcmExtensions(final List<File> parsedGroovyFiles) throws MojoExecutionException {
         Node ecmExtensionNode = getEcmExtensionNode(sourceDir, parsedGroovyFiles, initializeNamePrefix);
-        if(ecmExtensionNode == null){
+        if (ecmExtensionNode == null) {
             throw new MojoExecutionException("No input for " + ECM_EXTENSIONS_NAME);
         }
         targetDir.mkdirs();
@@ -80,6 +81,7 @@ public class GroovyToUpdaterXML extends AbstractMojo {
 
     /**
      * Generate updater xml files from groovy scripts
+     *
      * @param groovyFiles groovy scripts to parse
      * @return list of valid parsed groovy files
      */
@@ -90,13 +92,14 @@ public class GroovyToUpdaterXML extends AbstractMojo {
 
     /**
      * Generate updater xml from groovy file
+     *
      * @param file groovy script to parse
      * @return parsing successful
      */
     private boolean processUpdateScript(File file) {
         getLog().debug("Converting " + file.getAbsolutePath() + " to updater xml");
         Node updateScriptNode = getUpdateScriptNode(file);
-        if(updateScriptNode == null){
+        if (updateScriptNode == null) {
             getLog().error("Unparsable file: " + file.getAbsolutePath());
             return false;
         }
@@ -106,7 +109,7 @@ public class GroovyToUpdaterXML extends AbstractMojo {
         return marshal(updateScriptNode, targetFile);
     }
 
-    private boolean marshal(Node node, File file){
+    private boolean marshal(Node node, File file) {
         try {
             getMarshaller().marshal(node, file);
             return true;

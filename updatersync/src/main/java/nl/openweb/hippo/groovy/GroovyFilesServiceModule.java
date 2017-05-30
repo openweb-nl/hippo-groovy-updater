@@ -51,13 +51,13 @@ import nl.openweb.hippo.groovy.watch.GroovyFilesWatcher;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherConfig;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherJcrConfig;
 
-@RequiresService(types = AutoReloadService.class, optional = true )
+@RequiresService(types = AutoReloadService.class, optional = true)
 public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GroovyFilesServiceModule.class);
     private GroovyFilesServiceImpl service;
     private GroovyFilesWatcherConfig config;
     private GroovyFilesWatcher watcher;
-    private static final Logger LOG = LoggerFactory.getLogger(GroovyFilesServiceModule.class);
 
     @Override
     protected void doConfigure(final Node moduleConfig) throws RepositoryException {

@@ -17,15 +17,16 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
-import org.hippoecm.repository.util.JcrUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
+import org.hippoecm.repository.util.JcrUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.hippoecm.repository.util.JcrUtils.getMultipleStringProperty;
 

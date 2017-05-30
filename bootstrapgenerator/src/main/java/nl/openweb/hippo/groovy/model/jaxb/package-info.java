@@ -17,7 +17,7 @@
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://www.jcp.org/jcr/sv/1.0",
         elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
         xmlns = {
-            @XmlNs(prefix = "sv", namespaceURI = "http://www.jcp.org/jcr/sv/1.0")
+                @XmlNs(prefix = "sv", namespaceURI = "http://www.jcp.org/jcr/sv/1.0")
         }
 )
 package nl.openweb.hippo.groovy.model.jaxb;

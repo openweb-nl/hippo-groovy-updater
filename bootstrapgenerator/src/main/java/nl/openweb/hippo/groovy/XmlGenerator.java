@@ -66,14 +66,14 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_T
  */
 public final class XmlGenerator {
 
-    private static final GroovyClassLoader gcl = new GroovyClassLoader();
     public static final String CDATA_END = "]]>";
     public static final String NEWLINE = "\n";
+    public static final String SEPARATOR = "/";
+    private static final GroovyClassLoader gcl = new GroovyClassLoader();
     private static final String REGEX_WHITESPACE = "\\s*";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
     private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
-    public static final String SEPARATOR = "/";
 
     private XmlGenerator() {
     }
@@ -95,7 +95,7 @@ public final class XmlGenerator {
             return null;
         }
 
-        if(updater == null){
+        if (updater == null) {
             return null;
         }
         Node rootnode = XmlGenerator.createNode(updater.name());
@@ -118,15 +118,17 @@ public final class XmlGenerator {
     }
 
     /**
-     * Add a classpath to the groovy parsing engine, for example if the groovy script uses classes from within the project
+     * Add a classpath to the groovy parsing engine, for example if the groovy script uses classes from within the
+     * project
+     *
      * @param path path to add to the classpath
      */
-    public static void addClassPath(String path){
+    public static void addClassPath(String path) {
         gcl.addClasspath(path);
     }
 
-    private static void addStringPropertyIfNotEmpty(List<Object> properties, String name, String value){
-        if(StringUtils.isNotBlank(value)){
+    private static void addStringPropertyIfNotEmpty(List<Object> properties, String name, String value) {
+        if (StringUtils.isNotBlank(value)) {
             properties.add(createProperty(name, value, ValueType.STRING));
         }
     }
@@ -134,15 +136,15 @@ public final class XmlGenerator {
     /**
      * Do some useful tweaks to make the script pleasant and readable
      */
-    private static String processScriptContent(String script){
+    private static String processScriptContent(String script) {
         String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
         return wrap(stripAnnotations);
     }
 
-    public static String stripAnnotations(final String script, final Class<? extends Annotation>... classes){
+    public static String stripAnnotations(final String script, final Class<? extends Annotation>... classes) {
         String result = script;
         for (Class<? extends Annotation> aClass : classes) {
-            if(result.contains(aClass.getPackage().getName()) &&
+            if (result.contains(aClass.getPackage().getName()) &&
                     result.contains(aClass.getSimpleName())) {
                 result = stripAnnotation(result, aClass.getSimpleName());
                 result = stripAnnotation(result, aClass.getName());
@@ -162,9 +164,10 @@ public final class XmlGenerator {
 
     /**
      * Wrap string with empty lines
+     *
      * @param content
      * @return the content starting and ending with a newline character
-     *
+     * <p>
      * "<![CDATA[" + v + "]]>"
      */
     private static String wrap(final String content) {
@@ -182,15 +185,16 @@ public final class XmlGenerator {
 
     /**
      * Generate files to generate a node model for the hippoecm-extension.xml
-     * @param sourcePath sourcepath of groovy files
-     * @param files groovy files, need to be relative to the source path
+     *
+     * @param sourcePath        sourcepath of groovy files
+     * @param files             groovy files, need to be relative to the source path
      * @param updaterNamePrefix prefix for the initialize items nodes
      * @return Node object representing the hippoecm-extension to marshall to xml
      */
     public static Node getEcmExtensionNode(File sourcePath, List<File> files, String updaterNamePrefix) {
         List<Object> properties;
         Node rootnode = getExistingEcmExtensions(sourcePath);
-        if(rootnode==null) {
+        if (rootnode == null) {
             rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
             properties = rootnode.getNodeOrProperty();
             properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
@@ -206,7 +210,7 @@ public final class XmlGenerator {
 
     private static Node getExistingEcmExtensions(File sourcePath) {
         File extensions = new File(sourcePath, ECM_EXTENSIONS_NAME);
-        if(extensions.exists()){
+        if (extensions.exists()) {
             return JAXB.unmarshal(extensions, Node.class);
         }
         return null;
@@ -214,8 +218,9 @@ public final class XmlGenerator {
 
     /**
      * Create initialize item for the given file
+     *
      * @param sourcePath sourcepath of groovy files
-     * @param file groovy files, need to be relative to the source path
+     * @param file       groovy files, need to be relative to the source path
      * @param namePrefix prefix for the initialize items nodes
      * @return Node object representing the initializeitem node for the hippoecm-extension to marshall to xml
      */
@@ -223,10 +228,10 @@ public final class XmlGenerator {
         Bootstrap bootstrap;
         try {
             Class scriptClass = getScriptClass(file);
-            if(scriptClass.isAnnotationPresent(Updater.class)) {
+            if (scriptClass.isAnnotationPresent(Updater.class)) {
                 bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
                         scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
-            }else{
+            } else {
                 return null;
             }
 
@@ -253,8 +258,9 @@ public final class XmlGenerator {
 
     /**
      * Get update script xml filename
+     *
      * @param basePath path to make returning path relative to
-     * @param file File object for the groovy script
+     * @param file     File object for the groovy script
      * @return the path, relative to the basePath, converted \ to /, with xml extension
      */
     public static String getUpdateScriptXmlFilename(File basePath, File file) {
@@ -264,13 +270,14 @@ public final class XmlGenerator {
 
     /**
      * Utility method to create a Node with given name
+     *
      * @param name name for the node
      * @return Node with given name
      */
     public static Node createNode(final String name) {
         Node node = new Node();
         String initName = name;
-        if(initName.endsWith(XML_EXTENSION)){
+        if (initName.endsWith(XML_EXTENSION)) {
             initName = initName.substring(0, initName.length() - XML_EXTENSION.length());
         }
         initName = initName.replaceAll(SEPARATOR, "-");
@@ -280,6 +287,7 @@ public final class XmlGenerator {
 
     /**
      * Obtain groovy files from given location
+     *
      * @param dir directory to obtain groovy files from
      * @return List of groovy files
      */

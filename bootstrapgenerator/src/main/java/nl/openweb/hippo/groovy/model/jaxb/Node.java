@@ -36,11 +36,11 @@ import nl.openweb.hippo.groovy.model.Constants;
 /**
  * <p>
  * Java class for anonymous complex type.
- *
+ * <p>
  * <p>
  * The following schema fragment specifies the expected content contained within
  * this class.
- *
+ * <p>
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -54,15 +54,13 @@ import nl.openweb.hippo.groovy.model.Constants;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "nodeOrProperty" })
+@XmlType(name = "", propOrder = {"nodeOrProperty"})
 @XmlRootElement(name = "node")
 public class Node {
 
-    @XmlElements({ @XmlElement(name = "node", type = Node.class), @XmlElement(name = "property", type = Property.class) })
+    @XmlElements({@XmlElement(name = "node", type = Node.class), @XmlElement(name = "property", type = Property.class)})
     protected List<Object> nodeOrProperty;
 
     @XmlTransient
@@ -77,25 +75,24 @@ public class Node {
 
     /**
      * Gets the value of the nodeOrProperty property.
-     *
+     * <p>
      * <p>
      * This accessor method returns a reference to the live list, not a
      * snapshot. Therefore any modification you make to the returned list will
      * be present inside the JAXB object. This is why there is not a
      * <CODE>set</CODE> method for the nodeOrProperty property.
-     *
+     * <p>
      * <p>
      * For example, to add a new item, do as follows:
-     *
+     * <p>
      * <pre>
      * getNodeOrProperty().add(newItem);
      * </pre>
-     *
-     *
+     * <p>
+     * <p>
      * <p>
      * Objects of the following type(s) are allowed in the list {@link Node }
      * {@link Property }
-     *
      *
      * @return List of nodes and properties
      */
@@ -107,10 +104,8 @@ public class Node {
     }
 
     /**
-     * @param nodeName
-     *            Name of a subnode to be fetched.
-     * @return the fist subnode with of the given name and null if there is not
-     *         any node with this name
+     * @param nodeName Name of a subnode to be fetched.
+     * @return the fist subnode with of the given name and null if there is not any node with this name
      */
     public Node getSubnodeByName(String nodeName) {
         Node result = null;
@@ -122,10 +117,8 @@ public class Node {
     }
 
     /**
-     * @param nodeName
-     *            Name of a subnodes to be fetched.
-     * @return returns a list of all subnodes of the given name and an empty
-     *         list if there is not any.
+     * @param nodeName Name of a subnodes to be fetched.
+     * @return returns a list of all subnodes of the given name and an empty list if there is not any.
      */
     public List<Node> getSubnodesByName(String nodeName) {
         List<Node> result = new ArrayList<>();
@@ -192,7 +185,6 @@ public class Node {
      * Gets the value of the name property.
      *
      * @return possible object is {@link String }
-     *
      */
     public String getName() {
         return name;
@@ -201,9 +193,7 @@ public class Node {
     /**
      * Sets the value of the name property.
      *
-     * @param value
-     *            allowed object is {@link String }
-     *
+     * @param value allowed object is {@link String }
      */
     public void setName(String value) {
         this.name = value;

@@ -17,9 +17,6 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.nio.file.FileSystem;
@@ -28,6 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * File filter that includes files and excludes directories whose name matches certain globbing patterns.
@@ -47,6 +47,15 @@ public class GlobFileNameMatcher implements FileFilter {
         excludedDirs = new ArrayList<>();
     }
 
+    private static void addPattern(final String fileNameGlobPattern, final List<PathMatcher> matchers) {
+        if (fileNameGlobPattern.contains("/")) {
+            throw new IllegalArgumentException("cannot contain '/'");
+        }
+        final FileSystem fs = FileSystems.getDefault();
+        final PathMatcher matcher = fs.getPathMatcher(GLOB_SYNTAX + fileNameGlobPattern);
+        matchers.add(matcher);
+    }
+
     public void includeFiles(final List<String> fileNameGlobPatterns) throws IllegalArgumentException {
         for (String pattern : fileNameGlobPatterns) {
             try {
@@ -59,15 +68,6 @@ public class GlobFileNameMatcher implements FileFilter {
 
     public void includeFiles(final String fileNameGlobPattern) throws IllegalArgumentException {
         addPattern(fileNameGlobPattern, includedFiles);
-    }
-
-    private static void addPattern(final String fileNameGlobPattern, final List<PathMatcher> matchers) {
-        if (fileNameGlobPattern.contains("/")) {
-            throw new IllegalArgumentException("cannot contain '/'");
-        }
-        final FileSystem fs = FileSystems.getDefault();
-        final PathMatcher matcher = fs.getPathMatcher(GLOB_SYNTAX + fileNameGlobPattern);
-        matchers.add(matcher);
     }
 
     public void excludeDirectories(final List<String> fileNameGlobPattern) throws IllegalArgumentException {

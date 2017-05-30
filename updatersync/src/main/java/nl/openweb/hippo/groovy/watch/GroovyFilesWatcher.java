@@ -204,7 +204,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
     private void tryReimportBundles(final Path watchedRootDir, final Set<Path> changedPaths) {
         final Set<Path> reimportedBundleRoots = new HashSet<>();
         try {
-            for (Path changedPath: changedPaths) {
+            for (Path changedPath : changedPaths) {
                 final Path relChangedDir = watchedRootDir.relativize(changedPath);
                 final String bundleName = relChangedDir.getName(0).toString();
                 final Path bundleRootDir = watchedRootDir.resolve(bundleName);

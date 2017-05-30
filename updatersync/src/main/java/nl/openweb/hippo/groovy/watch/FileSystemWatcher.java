@@ -17,43 +17,53 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
+import java.io.IOException;
+import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 /**
  * File system observer that uses a {@link WatchService} to get notified about changes.
  */
 public class FileSystemWatcher implements FileSystemObserver, Runnable {
 
+    static final int POLLING_TIME_MILLIS = 100;
     private static final Logger log = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
-
     private static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER =
             (thread, exception) -> log.warn("FileSystemWatcher '{}' crashed", thread.getName(), exception);
-
     private static int instanceCounter = 0;
-
-    static final int POLLING_TIME_MILLIS = 100;
-
-    private final GlobFileNameMatcher watchedFiles;
-    private final Map<Path, ChangesProcessor> changesProcessors;
-    private final WatchService watcher;
-    private final Thread thread;
-
     /**
      * The {@link WatchService} used by this class has a percularity: when a directory is moved,
      * the associated watch key's watchable() still returns the old path. This map is therefore used to
      * keep track of which watch key actually matches to which path.
      */
     final Map<WatchKey, Path> watchedPaths;
+    private final GlobFileNameMatcher watchedFiles;
+    private final Map<Path, ChangesProcessor> changesProcessors;
+    private final WatchService watcher;
+    private final Thread thread;
 
     public FileSystemWatcher(final GlobFileNameMatcher watchedFiles) throws IOException {
         this.watchedFiles = watchedFiles;
@@ -109,7 +119,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     public void run() {
         try {
             log.info("Watch started");
-            while(true) {
+            while (true) {
                 processChanges();
             }
         } catch (ClosedWatchServiceException e) {
@@ -186,7 +196,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
 
         processor.start();
 
-        for (WatchEvent<?> event: key.pollEvents()) {
+        for (WatchEvent<?> event : key.pollEvents()) {
             final WatchEvent.Kind<?> kind = event.kind();
             final Object eventContext = event.context();
 

@@ -17,7 +17,8 @@
 package nl.openweb.tools;
 
 public final class Tools {
-    private Tools(){}
+    private Tools() {
+    }
 
     public static String getEnvironmentInfo() {
         final StringBuilder output = new StringBuilder();

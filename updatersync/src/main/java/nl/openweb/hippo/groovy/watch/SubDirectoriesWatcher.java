@@ -17,14 +17,18 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Watches all sub-directories of a directory for changes using a {@link FileSystemObserver}, and calls the provided
@@ -44,10 +48,6 @@ class SubDirectoriesWatcher implements FileSystemListener {
     private final Set<Path> deletedPaths;
 
 
-    public static void watch(final Path filesDirectory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {
-        new SubDirectoriesWatcher(filesDirectory, fsObserver, listener);
-    }
-
     private SubDirectoriesWatcher(final Path directory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {
         this.rootDirectory = directory;
         this.listener = listener;
@@ -58,6 +58,23 @@ class SubDirectoriesWatcher implements FileSystemListener {
         deletedPaths = new HashSet<>();
 
         observeSubDirectories(directory);
+    }
+
+    public static void watch(final Path filesDirectory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {
+        new SubDirectoriesWatcher(filesDirectory, fsObserver, listener);
+    }
+
+    private static void removeSubPaths(final SortedSet<Path> sortedPaths) {
+        final Iterator<Path> iterator = sortedPaths.iterator();
+        Path current = null;
+        while (iterator.hasNext()) {
+            Path next = iterator.next();
+            if (current != null && next.startsWith(current)) {
+                iterator.remove();
+            } else {
+                current = next;
+            }
+        }
     }
 
     private void observeSubDirectories(final Path directory) throws IOException {
@@ -137,19 +154,6 @@ class SubDirectoriesWatcher implements FileSystemListener {
         notifyStop();
     }
 
-    private static void removeSubPaths(final SortedSet<Path> sortedPaths) {
-        final Iterator<Path> iterator = sortedPaths.iterator();
-        Path current = null;
-        while (iterator.hasNext()) {
-            Path next = iterator.next();
-            if (current != null && next.startsWith(current)) {
-                iterator.remove();
-            } else {
-                current = next;
-            }
-        }
-    }
-
     private void notifyStart() {
         log.debug("Start change");
         try {
@@ -192,8 +196,8 @@ class SubDirectoriesWatcher implements FileSystemListener {
          * Called when one of more directories in one of the watched subdirectories have changed.
          *
          * @param watchedRootDir the (absolute) root directory of the watcher
-         * @param changedPaths the (absolute) paths that changed. Each path is either the path of a created or
-         *                     modified entry, or the containing directory of a deleted entry.
+         * @param changedPaths   the (absolute) paths that changed. Each path is either the path of a created or
+         *                       modified entry, or the containing directory of a deleted entry.
          */
         void onPathsChanged(final Path watchedRootDir, final Set<Path> changedPaths);
 

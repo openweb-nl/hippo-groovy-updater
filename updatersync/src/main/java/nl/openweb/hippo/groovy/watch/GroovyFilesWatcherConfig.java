@@ -39,33 +39,33 @@ public interface GroovyFilesWatcherConfig {
     List<String> getWatchedModules();
 
     /**
-     * @return all file name globbing patterns for files that should be watched
-     * for changes. The pattern syntax is the same as used in {@link java.nio.file.FileSystem#getPathMatcher}, except
-     * that slashes are not allowed (the pattern is supposed to match the file name part of the path only).
+     * @return all file name globbing patterns for files that should be watched for changes. The pattern syntax is the
+     * same as used in {@link java.nio.file.FileSystem#getPathMatcher}, except that slashes are not allowed (the pattern
+     * is supposed to match the file name part of the path only).
      * @see java.nio.file.FileSystem#getPathMatcher
      */
     List<String> getIncludedFiles();
 
     /**
-     * @return all file name globbing patterns for directories that should not be watched
-     * for changes. The pattern syntax is the same as used in {@link java.nio.file.FileSystem#getPathMatcher}, except
-     * that slashes are not allowed (the pattern is supposed to match the file name part of the path only).
-     * All files and sub-directories in excluded directories are excluded too.
+     * @return all file name globbing patterns for directories that should not be watched for changes. The pattern
+     * syntax is the same as used in {@link java.nio.file.FileSystem#getPathMatcher}, except that slashes are not
+     * allowed (the pattern is supposed to match the file name part of the path only). All files and sub-directories in
+     * excluded directories are excluded too.
      * @see java.nio.file.FileSystem#getPathMatcher
      */
     List<String> getExcludedDirectories();
 
     /**
-     * @return the list of operating system name globbing patterns for which files should be observed with a
-     * {@link java.nio.file.WatchService}. Only use OS names for which a native implementation of the watch service is
+     * @return the list of operating system name globbing patterns for which files should be observed with a {@link
+     * java.nio.file.WatchService}. Only use OS names for which a native implementation of the watch service is
      * available without known issues.
      */
     List<String> getUseWatchServiceOnOsNames();
 
     /**
-     * @return the delay in milliseconds between consecutive scans of files. This parameter is only effective
-     * when no {@link java.nio.file.WatchService} is used to watch files for changes. A lower value will pickup
-     * changes faster at the expensive of higher CPU load.
+     * @return the delay in milliseconds between consecutive scans of files. This parameter is only effective when no
+     * {@link java.nio.file.WatchService} is used to watch files for changes. A lower value will pickup changes faster
+     * at the expensive of higher CPU load.
      */
     long getWatchDelayMillis();
 

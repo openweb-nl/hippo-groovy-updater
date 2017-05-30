@@ -1,11 +1,3 @@
-import nl.openweb.hippo.groovy.XmlGenerator;
-import nl.openweb.hippo.groovy.annotations.Bootstrap;
-import nl.openweb.hippo.groovy.annotations.Updater;
-import nl.openweb.hippo.groovy.model.jaxb.Node;
-import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
-
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -14,6 +6,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
+import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
+
+import nl.openweb.hippo.groovy.XmlGenerator;
+import nl.openweb.hippo.groovy.annotations.Bootstrap;
+import nl.openweb.hippo.groovy.annotations.Updater;
+import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.XmlGenerator.stripAnnotations;
 import static org.junit.Assert.assertEquals;
@@ -39,7 +40,7 @@ public class TestUpdaterTransforming {
         StringWriter writer = new StringWriter();
 
         getMarshaller().marshal(updateScriptNode, writer);
-        final String xml=writer.toString();
+        final String xml = writer.toString();
 
         String expectedContent = FileUtils.fileRead(resultFile);
         assertEquals("failed parsing of " + name, expectedContent, xml);
@@ -71,7 +72,7 @@ public class TestUpdaterTransforming {
         StringWriter writer = new StringWriter();
 
         getMarshaller().marshal(node, writer);
-        final String xml=writer.toString();
+        final String xml = writer.toString();
         URL testfileResultUrl = getClass().getResource("resulting-hippoecm-extension.xml");
         File resultFile = new File(testfileResultUrl.toURI());
 
@@ -89,7 +90,7 @@ public class TestUpdaterTransforming {
         StringWriter writer = new StringWriter();
 
         getMarshaller().marshal(node, writer);
-        final String xml=writer.toString();
+        final String xml = writer.toString();
         URL testfileResultUrl = getClass().getResource("sub-hippoecm-extension.xml");
         File resultFile = new File(testfileResultUrl.toURI());
 

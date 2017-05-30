@@ -49,11 +49,10 @@ import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherConfig;
 
 public class WatchFilesUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(WatchFilesUtils.class);
-
     public static final String PROJECT_BASEDIR_PROPERTY = "project.basedir";
     public static final String RESOURCE_FILES_LOCATION_IN_MODULE = "src/main/resources";
     public static final String SCRIPT_FILES_LOCATION_IN_MODULE = "src/main/scripts";
+    private static final Logger log = LoggerFactory.getLogger(WatchFilesUtils.class);
 
     public static Path getProjectBaseDir() {
         final String projectBaseDir = System.getProperty(PROJECT_BASEDIR_PROPERTY);
@@ -85,7 +84,7 @@ public class WatchFilesUtils {
             filesDirectories.addAll(pathList);
             log.debug("Found {} paths to add for watching. {}", pathList.size(), pathList.stream().map(Path::toString)
                     .collect(Collectors.joining(", ")));
-            if(pathList.isEmpty()){
+            if (pathList.isEmpty()) {
                 log.warn("Cannot watch groovy files in module '{}': it does not contain directory '{}' or {}",
                         watchedModule, SCRIPT_FILES_LOCATION_IN_MODULE, RESOURCE_FILES_LOCATION_IN_MODULE);
             }

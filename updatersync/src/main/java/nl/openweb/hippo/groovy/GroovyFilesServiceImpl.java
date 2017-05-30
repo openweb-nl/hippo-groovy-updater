@@ -72,7 +72,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
 
     public GroovyFilesServiceImpl() {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
-        URL[] urls = ((URLClassLoader)cl).getURLs();
+        URL[] urls = ((URLClassLoader) cl).getURLs();
         Arrays.stream(urls).map(URL::getPath).forEach(XmlGenerator::addClassPath);
     }
 
@@ -90,26 +90,6 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         String warning = String.format(message, args);
         log.info(warning);
         return warning;
-    }
-
-    private Node getRegistryNode(Session session) throws RepositoryException {
-        final Node scriptRegistry = JcrUtils.getNodeIfExists(SCRIPT_ROOT, session);
-        if (scriptRegistry == null) {
-            warnAndThrow("Cannot find files root at '%s'", SCRIPT_ROOT);
-        }
-        return scriptRegistry;
-    }
-
-    public void importGroovyFiles(Session session, File file) throws IOException, RepositoryException {
-        List<File> groovyFiles = getGroovyFiles(file);
-        for (File groovyFile : groovyFiles) {
-            importGroovyFiles(session, groovyFile);
-        }
-    }
-
-    public void importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException {
-        setUpdateScriptJcrNode(getRegistryNode(session), file);
-        session.save();
     }
 
     public static void setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
@@ -132,5 +112,25 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
                 updater.xpath().isEmpty() ? updater.parameters() : updater.xpath());
         scriptNode.setProperty(HIPPOSYS_SCRIPT, stripAnnotations(content, Updater.class, Bootstrap.class));
         scriptNode.setProperty(HIPPOSYS_THROTTLE, updater.throttle());
+    }
+
+    private Node getRegistryNode(Session session) throws RepositoryException {
+        final Node scriptRegistry = JcrUtils.getNodeIfExists(SCRIPT_ROOT, session);
+        if (scriptRegistry == null) {
+            warnAndThrow("Cannot find files root at '%s'", SCRIPT_ROOT);
+        }
+        return scriptRegistry;
+    }
+
+    public void importGroovyFiles(Session session, File file) throws IOException, RepositoryException {
+        List<File> groovyFiles = getGroovyFiles(file);
+        for (File groovyFile : groovyFiles) {
+            importGroovyFiles(session, groovyFile);
+        }
+    }
+
+    public void importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException {
+        setUpdateScriptJcrNode(getRegistryNode(session), file);
+        session.save();
     }
 }
