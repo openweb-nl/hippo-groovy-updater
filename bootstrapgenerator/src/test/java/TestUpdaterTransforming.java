@@ -67,7 +67,7 @@ public class TestUpdaterTransforming {
         URI resourceURI = getClass().getResource("").toURI();
         File root = new File(resourceURI);
         List<File> groovyFiles = XmlGenerator.getGroovyFiles(root);
-        Node node = XmlGenerator.getEcmExtensionNode(root, groovyFiles, "my-updater-prefix-");
+        Node node = XmlGenerator.getEcmExtensionNode(root, new File(root, "target"), groovyFiles, "my-updater-prefix-");
 
         StringWriter writer = new StringWriter();
 
@@ -85,7 +85,7 @@ public class TestUpdaterTransforming {
         URI resourceURI = getClass().getResource("sub").toURI();
         File root = new File(resourceURI);
         List<File> groovyFiles = XmlGenerator.getGroovyFiles(root);
-        Node node = XmlGenerator.getEcmExtensionNode(root, groovyFiles, "my-updater-prefix-");
+        Node node = XmlGenerator.getEcmExtensionNode(root, new File(root, "target"), groovyFiles, "my-updater-prefix-");
 
         StringWriter writer = new StringWriter();
 

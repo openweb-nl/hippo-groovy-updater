@@ -52,14 +52,14 @@ public class GroovyToUpdaterXML extends AbstractMojo {
     private String initializeNamePrefix;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        Log log = getLog();
+        final Log log = getLog();
         log.info("sources: " + sourceDir.getAbsolutePath());
         log.info("target: " + targetDir.getAbsolutePath());
         log.info("Add outputDirectory to classpath for project files: " + targetDir.getPath());
         addClassPath(targetDir.getPath());
 
-        List<File> groovyFiles = getGroovyFiles(sourceDir);
-        List<File> parsedGroovyFiles = processUpdateScripts(groovyFiles);
+        final List<File> groovyFiles = getGroovyFiles(sourceDir);
+        final List<File> parsedGroovyFiles = processUpdateScripts(groovyFiles);
         writeEcmExtensions(parsedGroovyFiles);
     }
 
@@ -70,7 +70,7 @@ public class GroovyToUpdaterXML extends AbstractMojo {
      * @throws MojoExecutionException
      */
     private void writeEcmExtensions(final List<File> parsedGroovyFiles) throws MojoExecutionException {
-        Node ecmExtensionNode = getEcmExtensionNode(sourceDir, parsedGroovyFiles, initializeNamePrefix);
+        final Node ecmExtensionNode = getEcmExtensionNode(sourceDir, targetDir, parsedGroovyFiles, initializeNamePrefix);
         if (ecmExtensionNode == null) {
             throw new MojoExecutionException("No input for " + ECM_EXTENSIONS_NAME);
         }
@@ -96,24 +96,24 @@ public class GroovyToUpdaterXML extends AbstractMojo {
      * @param file groovy script to parse
      * @return parsing successful
      */
-    private boolean processUpdateScript(File file) {
+    private boolean processUpdateScript(final File file) {
         getLog().debug("Converting " + file.getAbsolutePath() + " to updater xml");
-        Node updateScriptNode = getUpdateScriptNode(file);
+        final Node updateScriptNode = getUpdateScriptNode(file);
         if (updateScriptNode == null) {
             getLog().error("Unparsable file: " + file.getAbsolutePath());
             return false;
         }
-        File targetFile = new File(targetDir, getUpdateScriptXmlFilename(sourceDir, file));
+        final File targetFile = new File(targetDir, getUpdateScriptXmlFilename(sourceDir, file));
         targetFile.getParentFile().mkdirs();
         getLog().info("Write " + targetFile.getAbsolutePath());
         return marshal(updateScriptNode, targetFile);
     }
 
-    private boolean marshal(Node node, File file) {
+    private boolean marshal(final Node node, final File file) {
         try {
             getMarshaller().marshal(node, file);
             return true;
-        } catch (JAXBException e) {
+        } catch (final JAXBException e) {
             getLog().error("Failed to make xml: " + file.getAbsolutePath(), e);
             return false;
         }

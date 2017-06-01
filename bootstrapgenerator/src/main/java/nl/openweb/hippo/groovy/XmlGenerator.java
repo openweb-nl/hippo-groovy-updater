@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXB;
 
@@ -84,22 +85,22 @@ public final class XmlGenerator {
      * @param file the groovy file to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
-    public static Node getUpdateScriptNode(File file) {
-        String content;
+    public static Node getUpdateScriptNode(final File file) {
+        final String content;
         final Updater updater;
         try {
             content = FileUtils.fileRead(file);
-            Class scriptClass = getScriptClass(file);
+            final Class scriptClass = getScriptClass(file);
             updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
 
         if (updater == null) {
             return null;
         }
-        Node rootnode = XmlGenerator.createNode(updater.name());
-        List<Object> properties = rootnode.getNodeOrProperty();
+        final Node rootnode = XmlGenerator.createNode(updater.name());
+        final List<Object> properties = rootnode.getNodeOrProperty();
         properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, ValueType.NAME));
         properties.add(createProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), ValueType.LONG));
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_DESCRIPTION, updater.description());
@@ -112,7 +113,7 @@ public final class XmlGenerator {
         return rootnode;
     }
 
-    public static Class getScriptClass(File file) throws IOException {
+    public static Class getScriptClass(final File file) throws IOException {
         gcl.clearCache();
         return gcl.parseClass(file);
     }
@@ -123,11 +124,11 @@ public final class XmlGenerator {
      *
      * @param path path to add to the classpath
      */
-    public static void addClassPath(String path) {
+    public static void addClassPath(final String path) {
         gcl.addClasspath(path);
     }
 
-    private static void addStringPropertyIfNotEmpty(List<Object> properties, String name, String value) {
+    private static void addStringPropertyIfNotEmpty(final List<Object> properties, final String name, final String value) {
         if (StringUtils.isNotBlank(value)) {
             properties.add(createProperty(name, value, ValueType.STRING));
         }
@@ -136,14 +137,14 @@ public final class XmlGenerator {
     /**
      * Do some useful tweaks to make the script pleasant and readable
      */
-    private static String processScriptContent(String script) {
-        String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
+    private static String processScriptContent(final String script) {
+        final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
         return wrap(stripAnnotations);
     }
 
     public static String stripAnnotations(final String script, final Class<? extends Annotation>... classes) {
         String result = script;
-        for (Class<? extends Annotation> aClass : classes) {
+        for (final Class<? extends Annotation> aClass : classes) {
             if (result.contains(aClass.getPackage().getName()) &&
                     result.contains(aClass.getSimpleName())) {
                 result = stripAnnotation(result, aClass.getSimpleName());
@@ -155,8 +156,8 @@ public final class XmlGenerator {
     }
 
     private static String stripAnnotation(final String script, final String className) {
-        String annotationName = "@" + className;
-        String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
+        final String annotationName = "@" + className;
+        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
         String s = script.replaceAll(regex, NEWLINE);
         s = s.replaceAll("(\n){3,}", "\n\n");
         return s;
@@ -175,7 +176,7 @@ public final class XmlGenerator {
     }
 
     public static Property createProperty(final String name, final Object value, final String type) {
-        Property property = new Property();
+        final Property property = new Property();
         property.setName(name);
         property.setType(type);
         property.getValue().add(value.toString());
@@ -187,29 +188,31 @@ public final class XmlGenerator {
      * Generate files to generate a node model for the hippoecm-extension.xml
      *
      * @param sourcePath        sourcepath of groovy files
+     * @param targetDir         the target where the ecmExtensions from resources would be
      * @param files             groovy files, need to be relative to the source path
-     * @param updaterNamePrefix prefix for the initialize items nodes
-     * @return Node object representing the hippoecm-extension to marshall to xml
+     * @param updaterNamePrefix prefix for the initialize items nodes   @return Node object representing the hippoecm-extension to marshall to xml
      */
-    public static Node getEcmExtensionNode(File sourcePath, List<File> files, String updaterNamePrefix) {
-        List<Object> properties;
-        Node rootnode = getExistingEcmExtensions(sourcePath);
-        if (rootnode == null) {
-            rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
-            properties = rootnode.getNodeOrProperty();
-            properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
-        } else {
-            properties = rootnode.getNodeOrProperty();
+    public static Node getEcmExtensionNode(final File sourcePath, final File targetDir, final List<File> files, final String updaterNamePrefix) {
+        final List<Object> properties;
+        final Node rootnode;
+        final Node ecmExtensionsScriptNode = getExistingEcmExtensions(sourcePath);
+        final Node ecmExtensionTargetNode = getExistingEcmExtensions(targetDir);
 
-        }
-        files.stream().map(file -> createInitializeItem(sourcePath, file, updaterNamePrefix)).filter(Objects::nonNull)
+        rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
+        properties = rootnode.getNodeOrProperty();
+        properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
+
+        final Stream<Node> sourceStream = Stream.concat(ecmExtensionsScriptNode == null ? Stream.empty() : ecmExtensionsScriptNode.getSubnodes().stream(),
+                ecmExtensionTargetNode == null ? Stream.empty() : ecmExtensionTargetNode.getSubnodes().stream());
+
+        Stream.concat(sourceStream, files.stream().map(file -> createInitializeItem(sourcePath, file, updaterNamePrefix)).filter(Objects::nonNull))
                 .sorted(Comparator.comparingDouble(node -> Double.valueOf(node.getPropertyByName(HIPPO_SEQUENCE).getSingleValue())))
                 .forEach(properties::add);
         return rootnode;
     }
 
-    private static Node getExistingEcmExtensions(File sourcePath) {
-        File extensions = new File(sourcePath, ECM_EXTENSIONS_NAME);
+    private static Node getExistingEcmExtensions(final File sourcePath) {
+        final File extensions = new File(sourcePath, ECM_EXTENSIONS_NAME);
         if (extensions.exists()) {
             return JAXB.unmarshal(extensions, Node.class);
         }
@@ -224,10 +227,10 @@ public final class XmlGenerator {
      * @param namePrefix prefix for the initialize items nodes
      * @return Node object representing the initializeitem node for the hippoecm-extension to marshall to xml
      */
-    private static Node createInitializeItem(File sourcePath, File file, String namePrefix) {
-        Bootstrap bootstrap;
+    private static Node createInitializeItem(final File sourcePath, final File file, final String namePrefix) {
+        final Bootstrap bootstrap;
         try {
-            Class scriptClass = getScriptClass(file);
+            final Class scriptClass = getScriptClass(file);
             if (scriptClass.isAnnotationPresent(Updater.class)) {
                 bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
                         scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
@@ -235,12 +238,12 @@ public final class XmlGenerator {
                 return null;
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
-        String resource = getUpdateScriptXmlFilename(sourcePath, file);
-        Node initNode = createNode(namePrefix + resource);
-        List<Object> properties = initNode.getNodeOrProperty();
+        final String resource = getUpdateScriptXmlFilename(sourcePath, file);
+        final Node initNode = createNode(namePrefix + resource);
+        final List<Object> properties = initNode.getNodeOrProperty();
 
         String contentroot = "queue";
         if (bootstrap.contentroot().equals("registry")) {
@@ -263,8 +266,8 @@ public final class XmlGenerator {
      * @param file     File object for the groovy script
      * @return the path, relative to the basePath, converted \ to /, with xml extension
      */
-    public static String getUpdateScriptXmlFilename(File basePath, File file) {
-        String fileName = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
+    public static String getUpdateScriptXmlFilename(final File basePath, final File file) {
+        final String fileName = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
         return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)) + XML_EXTENSION;
     }
 
@@ -275,7 +278,7 @@ public final class XmlGenerator {
      * @return Node with given name
      */
     public static Node createNode(final String name) {
-        Node node = new Node();
+        final Node node = new Node();
         String initName = name;
         if (initName.endsWith(XML_EXTENSION)) {
             initName = initName.substring(0, initName.length() - XML_EXTENSION.length());
@@ -291,9 +294,9 @@ public final class XmlGenerator {
      * @param dir directory to obtain groovy files from
      * @return List of groovy files
      */
-    public static List<File> getGroovyFiles(File dir) {
-        File[] groovyFiles = dir.listFiles((file) -> file.isFile() && file.getName().endsWith(GROOVY_EXTENSION));
-        File[] directories = dir.listFiles(File::isDirectory);
+    public static List<File> getGroovyFiles(final File dir) {
+        final File[] groovyFiles = dir.listFiles((file) -> file.isFile() && file.getName().endsWith(GROOVY_EXTENSION));
+        final File[] directories = dir.listFiles(File::isDirectory);
         final List<File> allFiles = new ArrayList<>();
         if (groovyFiles != null) {
             allFiles.addAll(Arrays.asList(groovyFiles));
