@@ -31,6 +31,14 @@ In the build section define (minimal) usage of the plugin
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
     <version>1.2</version>
+    <dependencies>
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-repository-dependencies</artifactId>
+        <version>${hippo.repository.version}</version>
+        <type>pom</type>
+      </dependency>
+    </dependencies>
     <executions>
       <execution>
         <id>default-resources</id>

@@ -47,6 +47,7 @@ import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.Files.XML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEFOLDER;
+import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEITEM;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DRYRUN;
@@ -180,7 +181,6 @@ public final class XmlGenerator {
         property.setName(name);
         property.setType(type);
         property.getValue().add(value.toString());
-        property.setMultiple(false);
         return property;
     }
 
@@ -200,7 +200,7 @@ public final class XmlGenerator {
 
         rootnode = createNode(Constants.NodeType.HIPPO_INITIALIZE);
         properties = rootnode.getNodeOrProperty();
-        properties.add(XmlGenerator.createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
+        properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
 
         final Stream<Node> sourceStream = Stream.concat(ecmExtensionsScriptNode == null ? Stream.empty() : ecmExtensionsScriptNode.getSubnodes().stream(),
                 ecmExtensionTargetNode == null ? Stream.empty() : ecmExtensionTargetNode.getSubnodes().stream());
@@ -249,6 +249,7 @@ public final class XmlGenerator {
         if (bootstrap.contentroot().equals("registry")) {
             contentroot = bootstrap.contentroot();
         }
+        properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEITEM, ValueType.NAME));
         addStringPropertyIfNotEmpty(properties, HIPPO_CONTENTRESOURCE, resource);
         properties.add(createProperty(HIPPO_CONTENTROOT, "/hippo:configuration/hippo:update/hippo:" + contentroot, ValueType.STRING));
         properties.add(createProperty(HIPPO_SEQUENCE, bootstrap.sequence(), "Double"));

@@ -29,6 +29,8 @@ import nl.openweb.hippo.groovy.model.jaxb.Property;
 public class Marshal {
 
     public static final String CDATA_START = "<![CDATA[";
+    public static final String INDENT_STRING = "com.sun.xml.bind.indentString";
+    public static final String INDENTATION = "  ";
 
     private Marshal() {
     }
@@ -37,6 +39,7 @@ public class Marshal {
         JAXBContext jaxbContext = JAXBContext.newInstance(Node.class, Property.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(INDENT_STRING, INDENTATION);
         marshaller.setProperty(CharacterEscapeHandler.class.getName(), (CharacterEscapeHandler) (chars, start, length, isAttVal, writer) -> {
             boolean cdata = new String(chars).trim().startsWith(CDATA_START);
             if (cdata) {

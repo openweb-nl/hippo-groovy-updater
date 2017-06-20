@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sv:node sv:name="Test Updater 2" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
-    <sv:property sv:multiple="false" sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hipposys:updaterinfo</sv:value>
-    </sv:property>
-    <sv:property sv:multiple="false" sv:name="hipposys:batchsize" sv:type="Long">
-        <sv:value>1</sv:value>
-    </sv:property>
-    <sv:property sv:multiple="false" sv:name="hipposys:description" sv:type="String">
-        <sv:value>Test thing</sv:value>
-    </sv:property>
-    <sv:property sv:multiple="false" sv:name="hipposys:dryrun" sv:type="Boolean">
-        <sv:value>true</sv:value>
-    </sv:property>
-    <sv:property sv:multiple="false" sv:name="hipposys:parameters" sv:type="String">
-        <sv:value>{prop: val}</sv:value>
-    </sv:property>
-    <sv:property sv:multiple="false" sv:name="hipposys:path" sv:type="String">
-        <sv:value>/content</sv:value>
-    </sv:property>
-    <sv:property sv:multiple="false" sv:name="hipposys:script" sv:type="String">
-        <sv:value><![CDATA[
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>hipposys:updaterinfo</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:batchsize" sv:type="Long">
+    <sv:value>1</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:description" sv:type="String">
+    <sv:value>Test thing</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:dryrun" sv:type="Boolean">
+    <sv:value>true</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:parameters" sv:type="String">
+    <sv:value>{prop: val}</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:path" sv:type="String">
+    <sv:value>/content</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:script" sv:type="String">
+    <sv:value><![CDATA[
 import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
@@ -35,8 +35,8 @@ class TestUpdater2 extends BaseNodeUpdateVisitor {
     }
 }
 ]]></sv:value>
-    </sv:property>
-    <sv:property sv:multiple="false" sv:name="hipposys:throttle" sv:type="Long">
-        <sv:value>200</sv:value>
-    </sv:property>
+  </sv:property>
+  <sv:property sv:name="hipposys:throttle" sv:type="Long">
+    <sv:value>200</sv:value>
+  </sv:property>
 </sv:node>

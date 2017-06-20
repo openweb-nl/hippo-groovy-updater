@@ -46,6 +46,7 @@ public interface Constants {
 
     interface NodeType {
         String HIPPOSYS_UPDATERINFO = "hipposys:updaterinfo";
+        String HIPPO_INITIALIZEITEM = "hippo:initializeitem";
         String HIPPO_INITIALIZE = "hippo:initialize";
         String HIPPO_INITIALIZEFOLDER = "hippo:initializefolder";
     }
