@@ -4,7 +4,7 @@
   <name>Groovy updater</name>
   <groupId>nl.openweb.hippo.updater</groupId>
   <artifactId>groovy-updater</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
 
   <modules>
     <module>annotations</module>
@@ -20,7 +20,7 @@
     <connection>scm:git:ssh://git@stash.open-web.nl:7999/hp/hippo-groovy-updater.git</connection>
     <developerConnection>scm:git:ssh://git@stash.open-web.nl:7999/hp/hippo-groovy-updater.git</developerConnection>
     <url>https://stash.open-web.nl/projects/HP/repos/hippo-groovy-updater/browse</url>
-    <tag>HEAD</tag>
+    <tag>groovy-updater-1.3</tag>
   </scm>
 
   <distributionManagement>
