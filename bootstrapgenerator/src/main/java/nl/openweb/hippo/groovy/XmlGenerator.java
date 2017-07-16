@@ -18,10 +18,6 @@ package nl.openweb.hippo.groovy;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +29,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.util.FileUtils;
 
-import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.Constants;
@@ -43,7 +38,6 @@ import nl.openweb.hippo.groovy.model.jaxb.Node;
 import nl.openweb.hippo.groovy.model.jaxb.Property;
 import static nl.openweb.hippo.groovy.Marshal.CDATA_START;
 import static nl.openweb.hippo.groovy.model.Constants.Files.ECM_EXTENSIONS_NAME;
-import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.Files.XML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEFOLDER;
@@ -66,16 +60,10 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_T
 /**
  * Generator to parse a groovy file to the bootstrap xmls
  */
-public final class XmlGenerator {
+public final class XmlGenerator extends Generator{
 
     public static final String CDATA_END = "]]>";
-    public static final String NEWLINE = "\n";
     public static final String SEPARATOR = "/";
-    private static final GroovyClassLoader gcl = new GroovyClassLoader();
-    private static final String REGEX_WHITESPACE = "\\s*";
-    private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
-    private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
-    private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
 
     private XmlGenerator() {
     }
@@ -114,21 +102,6 @@ public final class XmlGenerator {
         return rootnode;
     }
 
-    public static Class getScriptClass(final File file) throws IOException {
-        gcl.clearCache();
-        return gcl.parseClass(file);
-    }
-
-    /**
-     * Add a classpath to the groovy parsing engine, for example if the groovy script uses classes from within the
-     * project
-     *
-     * @param path path to add to the classpath
-     */
-    public static void addClassPath(final String path) {
-        gcl.addClasspath(path);
-    }
-
     private static void addStringPropertyIfNotEmpty(final List<Object> properties, final String name, final String value) {
         if (StringUtils.isNotBlank(value)) {
             properties.add(createProperty(name, value, ValueType.STRING));
@@ -141,27 +114,6 @@ public final class XmlGenerator {
     private static String processScriptContent(final String script) {
         final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
         return wrap(stripAnnotations);
-    }
-
-    public static String stripAnnotations(final String script, final Class<? extends Annotation>... classes) {
-        String result = script;
-        for (final Class<? extends Annotation> aClass : classes) {
-            if (result.contains(aClass.getPackage().getName()) &&
-                    result.contains(aClass.getSimpleName())) {
-                result = stripAnnotation(result, aClass.getSimpleName());
-                result = stripAnnotation(result, aClass.getName());
-                result = result.replaceAll("import\\s*" + aClass.getName() + "\\s*[;]?\n", "");
-            }
-        }
-        return result;
-    }
-
-    private static String stripAnnotation(final String script, final String className) {
-        final String annotationName = "@" + className;
-        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
-        String s = script.replaceAll(regex, NEWLINE);
-        s = s.replaceAll("(\n){3,}", "\n\n");
-        return s;
     }
 
     /**
@@ -289,22 +241,5 @@ public final class XmlGenerator {
         return node;
     }
 
-    /**
-     * Obtain groovy files from given location
-     *
-     * @param dir directory to obtain groovy files from
-     * @return List of groovy files
-     */
-    public static List<File> getGroovyFiles(final File dir) {
-        final File[] groovyFiles = dir.listFiles((file) -> file.isFile() && file.getName().endsWith(GROOVY_EXTENSION));
-        final File[] directories = dir.listFiles(File::isDirectory);
-        final List<File> allFiles = new ArrayList<>();
-        if (groovyFiles != null) {
-            allFiles.addAll(Arrays.asList(groovyFiles));
-        }
-        if (directories != null) {
-            Arrays.stream(directories).map(XmlGenerator::getGroovyFiles).forEach(allFiles::addAll);
-        }
-        return Collections.unmodifiableList(allFiles);
-    }
+
 }

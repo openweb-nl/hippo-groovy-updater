@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import nl.openweb.hippo.groovy.annotations.Updater
-import org.onehippo.repository.update.BaseNodeUpdateVisitor
+package nl.openweb.tools;
 
-import javax.jcr.Node
-
-@Updater(name = "Test Updater 3", xpath = "//element(*, hippo:document)")
-class TestUpdater3 extends BaseNodeUpdateVisitor {
-    boolean doUpdate(Node node) {
-        log.info "manipulate node < > & an %^&* /> {}", node.path
-        return true
+public final class Tools {
+    private Tools() {
     }
 
-    boolean undoUpdate(Node node) {
-        throw new UnsupportedOperationException('Updater does not implement undoUpdate method')
+    public static String getEnvironmentInfo() {
+        final StringBuilder output = new StringBuilder();
+        System.getenv().forEach((key, value) -> output.append(
+                key)
+                .append(": ")
+                .append(value)
+                .append("\n"));
+        return output.toString();
     }
 }

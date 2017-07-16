@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.openweb.hippo.groovy.maven;
 
-import nl.openweb.hippo.groovy.annotations.Updater
-import org.onehippo.repository.update.BaseNodeUpdateVisitor
+import org.apache.maven.plugins.annotations.Mojo;
 
-import javax.jcr.Node
+import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
+import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
 
-@Updater(name = "Test Updater 3", xpath = "//element(*, hippo:document)")
-class TestUpdater3 extends BaseNodeUpdateVisitor {
-    boolean doUpdate(Node node) {
-        log.info "manipulate node < > & an %^&* /> {}", node.path
-        return true
-    }
-
-    boolean undoUpdate(Node node) {
-        throw new UnsupportedOperationException('Updater does not implement undoUpdate method')
+@Deprecated
+@Mojo(name = "generate")
+public class GroovyToUpdaterBootstrapDefault extends GroovyToUpdaterBootstrap{
+    @Override
+    protected ScriptProcessor getProcessorBase(){
+        getLog().warn("The goal \"generate\" is deprecated, move to \"generate-xml\" or \"generate-yaml\"");
+        return new ScriptProcessorXML();
     }
 }

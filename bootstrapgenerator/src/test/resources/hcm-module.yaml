@@ -1,0 +1,5 @@
+group: 
+  name: my-updater-project
+  after: myhippoproject
+project: my-updater-project
+module: my-updater-project-update-scripts

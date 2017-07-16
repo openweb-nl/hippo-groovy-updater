@@ -54,9 +54,9 @@ import org.slf4j.LoggerFactory;
 
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
-import static nl.openweb.hippo.groovy.XmlGenerator.getGroovyFiles;
-import static nl.openweb.hippo.groovy.XmlGenerator.getScriptClass;
-import static nl.openweb.hippo.groovy.XmlGenerator.stripAnnotations;
+import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
+import static nl.openweb.hippo.groovy.Generator.getScriptClass;
+import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
@@ -73,7 +73,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
     public GroovyFilesServiceImpl() {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
         URL[] urls = ((URLClassLoader) cl).getURLs();
-        Arrays.stream(urls).map(URL::getPath).forEach(XmlGenerator::addClassPath);
+        Arrays.stream(urls).map(URL::getPath).forEach(Generator::addClassPath);
     }
 
     private static void warnAndThrow(final String message, final Object... args) {

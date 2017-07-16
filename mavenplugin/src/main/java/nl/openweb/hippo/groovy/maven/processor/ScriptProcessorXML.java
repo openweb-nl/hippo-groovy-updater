@@ -13,55 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package nl.openweb.hippo.groovy.maven;
+package nl.openweb.hippo.groovy.maven.processor;
 
 import java.io.File;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import nl.openweb.hippo.groovy.model.jaxb.Node;
-import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
-import static nl.openweb.hippo.groovy.XmlGenerator.addClassPath;
 import static nl.openweb.hippo.groovy.XmlGenerator.getEcmExtensionNode;
-import static nl.openweb.hippo.groovy.XmlGenerator.getGroovyFiles;
 import static nl.openweb.hippo.groovy.XmlGenerator.getUpdateScriptNode;
 import static nl.openweb.hippo.groovy.XmlGenerator.getUpdateScriptXmlFilename;
 import static nl.openweb.hippo.groovy.model.Constants.Files.ECM_EXTENSIONS_NAME;
 
-/**
- * Groovy Updater Maven Plugin to generate bootstrap from groovy files
- */
-@Mojo(name = "generate")
-public class GroovyToUpdaterXML extends AbstractMojo {
-
-    @Parameter(defaultValue = "${project.build.scriptSourceDirectory}", property = "sourceDir")
-    private File sourceDir;
-    @Parameter(defaultValue = "${project.build.outputDirectory}", property = "targetDir")
-    private File targetDir;
-    @Parameter(defaultValue = "hippo-updater-", property = "initializeNamePrefix")
-    private String initializeNamePrefix;
-
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        final Log log = getLog();
-        log.info("sources: " + sourceDir.getAbsolutePath());
-        log.info("target: " + targetDir.getAbsolutePath());
-        log.info("Add outputDirectory to classpath for project files: " + targetDir.getPath());
-        addClassPath(targetDir.getPath());
-
-        final List<File> groovyFiles = getGroovyFiles(sourceDir);
-        final List<File> parsedGroovyFiles = processUpdateScripts(groovyFiles);
-        writeEcmExtensions(parsedGroovyFiles);
-    }
+public class ScriptProcessorXML extends ScriptProcessor{
 
     /**
      * Write hippoecm-extension.xml file
@@ -85,9 +53,10 @@ public class GroovyToUpdaterXML extends AbstractMojo {
      * @param groovyFiles groovy scripts to parse
      * @return list of valid parsed groovy files
      */
-    private List<File> processUpdateScripts(final List<File> groovyFiles) {
-        getLog().info("Converting " + groovyFiles.size() + " groovy scripts to updater xml");
-        return groovyFiles.stream().filter(this::processUpdateScript).collect(toList());
+    public List<File> processUpdateScripts(final List<File> groovyFiles) throws MojoExecutionException{
+        List<File> files = super.processUpdateScripts(groovyFiles);
+        writeEcmExtensions(files);
+        return files;
     }
 
     /**
@@ -96,11 +65,12 @@ public class GroovyToUpdaterXML extends AbstractMojo {
      * @param file groovy script to parse
      * @return parsing successful
      */
-    private boolean processUpdateScript(final File file) {
+    @Override
+    protected boolean processUpdateScript(final File file) {
         getLog().debug("Converting " + file.getAbsolutePath() + " to updater xml");
         final Node updateScriptNode = getUpdateScriptNode(file);
         if (updateScriptNode == null) {
-            getLog().error("Unparsable file: " + file.getAbsolutePath());
+            getLog().warn("Skipping file: " + file.getAbsolutePath() + ", not a valid updatescript");
             return false;
         }
         final File targetFile = new File(targetDir, getUpdateScriptXmlFilename(sourceDir, file));
@@ -109,7 +79,13 @@ public class GroovyToUpdaterXML extends AbstractMojo {
         return marshal(updateScriptNode, targetFile);
     }
 
-    private boolean marshal(final Node node, final File file) {
+    /**
+     * Write the node in XML style to the file
+     * @param node
+     * @param file
+     * @return result of writing to the file
+     */
+    protected boolean marshal(final Node node, final File file) {
         try {
             getMarshaller().marshal(node, file);
             return true;
@@ -118,6 +94,4 @@ public class GroovyToUpdaterXML extends AbstractMojo {
             return false;
         }
     }
-
-
 }
