@@ -24,6 +24,7 @@ public interface Constants {
     interface Files {
         String GROOVY_EXTENSION = ".groovy";
         String XML_EXTENSION = ".xml";
+        String YAML_EXTENSION = ".yaml";
         String ECM_EXTENSIONS_NAME = "hippoecm-extension.xml";
     }
 

@@ -30,7 +30,7 @@ In the build section define (minimal) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.2</version>
+    <version>1.4</version>
     <dependencies>
       <dependency>
         <groupId>org.onehippo.cms7</groupId>
@@ -44,7 +44,7 @@ In the build section define (minimal) usage of the plugin
         <id>default-resources</id>
         <phase>compile</phase>
         <goals>
-          <goal>generate</goal>
+          <goal>generate-xml</goal>
         </goals>
       </execution>
     </executions>
@@ -55,7 +55,7 @@ Or define (full) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.2</version>
+    <version>1.4</version>
     <configuration>
       <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
       <targetDir>${project.build.outputDirectory}</targetDir>
@@ -66,7 +66,31 @@ Or define (full) usage of the plugin
         <id>default-resources</id>
         <phase>compile</phase>
         <goals>
-          <goal>generate</goal>
+          <goal>generate-xml</goal>
+        </goals>
+      </execution>
+    </executions>
+  </plugin>
+```
+Since Hippo 12 use the yaml generating.
+Add the hcm-module.yaml in the project yourself.
+```xml
+  <plugin>
+    <groupId>nl.openweb.hippo.updater</groupId>
+    <artifactId>groovy-updater-maven-plugin</artifactId>
+    <version>1.4</version>
+    <configuration>
+      <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
+      <targetDir>${project.build.outputDirectory}</targetDir>
+      <initializeNamePrefix>sampleproject-update-</initializeNamePrefix>
+      <yamlPath>hcm-content/configuration/update</yamlPath>
+    </configuration>
+    <executions>
+      <execution>
+        <id>default-resources</id>
+        <phase>compile</phase>
+        <goals>
+          <goal>generate-yaml</goal>
         </goals>
       </execution>
     </executions>
@@ -97,7 +121,7 @@ Add this dependency to the cms, for local development only.
   <dependency>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
-    <version>1.2</version>
+    <version>1.4</version>
     <exclusions>
         <!-- Plugin uses other version numbers in project -->
         <exclusion>
