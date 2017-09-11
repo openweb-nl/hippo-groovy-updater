@@ -34,6 +34,8 @@
  */
 package nl.openweb.hippo.groovy.util;
 
+import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,13 +59,16 @@ public class WatchFilesUtils {
     public static Path getProjectBaseDir() {
         final String projectBaseDir = System.getProperty(PROJECT_BASEDIR_PROPERTY);
         if (projectBaseDir != null && !projectBaseDir.isEmpty()) {
-            final Path baseDir = FileSystems.getDefault().getPath(projectBaseDir);
-            if (Files.isDirectory(baseDir)) {
-                log.debug("Basedir found: " + baseDir.toString());
-                return baseDir;
-            } else {
-                log.warn("Watching groovy files is disabled: environment variable '{}' does not point to a directory", PROJECT_BASEDIR_PROPERTY);
+            try(FileSystem fileSystem = FileSystems.getDefault()){
+                final Path baseDir = fileSystem.getPath(projectBaseDir);
+                if (Files.isDirectory(baseDir)) {
+                    log.debug("Basedir found: " + baseDir.toString());
+                    return baseDir;
+                }
+            } catch (IOException e) {
+                log.error("error fetching baseDir", e);
             }
+            log.warn("Watching groovy files is disabled: environment variable '{}' does not point to a directory", PROJECT_BASEDIR_PROPERTY);
         } else {
             log.info("Watching groovy files is disabled: environment variable '{}' not set or empty", PROJECT_BASEDIR_PROPERTY);
         }
