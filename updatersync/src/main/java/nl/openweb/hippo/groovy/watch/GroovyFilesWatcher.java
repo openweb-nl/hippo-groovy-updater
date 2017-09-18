@@ -135,10 +135,8 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         try {
             for (Path changedPath : changedPaths) {
                 final Path relChangedDir = watchedRootDir.relativize(changedPath);
-                final String scriptName = relChangedDir.getName(0).toString();
-                final String scriptSubDir = getBundleSubDir(relChangedDir);
 
-                log.info("Replacing groovyfile '{}': /{}", scriptName, scriptSubDir);
+                log.info("Reloading groovyfile '{}'", relChangedDir.toString());
                 try {
                     service.importGroovyFile(session, changedPath.toFile());
                     processedPaths.add(changedPath);

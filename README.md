@@ -99,6 +99,12 @@ Add the hcm-module.yaml in the project yourself.
 ## Commonly used dependencies for writing the groovy scripts
 ```xml
     <dependency>
+      <groupId>nl.openweb.hippo.updater</groupId>
+      <artifactId>groovy-updater-annotations</artifactId>
+      <version>1.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-repository-api</artifactId>
       <scope>provided</scope>
@@ -134,5 +140,6 @@ Add this dependency to the cms, for local development only.
 By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, update the bootstrap accordingly at: `/hippo:configuration/hippo:modules/groovyfiles-service-module/hippo:moduleconfig/watchedModules`
 
 Notes:
-* The sample app only provides an example for the use of the maven plugin.
- It does not take into account usage of buildnumber for the updaters
+* The sample app only provides an example for the use of the maven plugin. \
+  It does not take into account usage of buildnumber for the updaters
+* It is recommended to add an info logging level for nl.openweb.hippo.groovy to your development log4j configuration
