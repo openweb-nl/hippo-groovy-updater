@@ -123,14 +123,16 @@ Add this dependency to the cms, for local development only.
     <artifactId>groovy-updater-sync</artifactId>
     <version>1.4</version>
     <exclusions>
-        <!-- Plugin uses other version numbers in project -->
-        <exclusion>
-          <groupId>org.onehippo.cms7</groupId>
-          <artifactId>hippo-repository-dependencies</artifactId>
-        </exclusion>
-      </exclusions>
+      <!-- Plugin uses other version numbers in project -->
+      <exclusion>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-repository-dependencies</artifactId>
+      </exclusion>
+    </exclusions>
   </dependency>
 ```
+By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, update the bootstrap accordingly at: `/hippo:configuration/hippo:modules/groovyfiles-service-module/hippo:moduleconfig/watchedModules`
+
 Notes:
 * The sample app only provides an example for the use of the maven plugin.
  It does not take into account usage of buildnumber for the updaters
