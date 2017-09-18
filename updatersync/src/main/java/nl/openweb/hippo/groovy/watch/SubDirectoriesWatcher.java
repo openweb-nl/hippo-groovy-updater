@@ -61,7 +61,8 @@ class SubDirectoriesWatcher implements FileSystemListener {
     }
 
     public static void watch(final Path filesDirectory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {
-        new SubDirectoriesWatcher(filesDirectory, fsObserver, listener);
+        SubDirectoriesWatcher watcher = new SubDirectoriesWatcher(filesDirectory, fsObserver, listener);
+        fsObserver.registerDirectory(filesDirectory, watcher);
     }
 
     private static void removeSubPaths(final SortedSet<Path> sortedPaths) {
