@@ -81,6 +81,13 @@ public class TestMavenPlugin{
         File input = new File(getClass().getResource("src/scripts").toURI());
         File yaml_output = new File(new File(getClass().getResource("").toURI()), "yaml_output");
 
+        File resource = new File(getClass()
+                .getResource("src/resources/hcm-actions.yaml").toURI());
+        File targetResource = new File(yaml_output, "hcm-actions.yaml");
+        if(yaml_output.exists()){
+            FileUtils.deleteDirectory(yaml_output);
+            assertFalse(yaml_output.exists());
+        }
         processor.setSourceDir(input);
         processor.setTargetDir(yaml_output);
         ((ScriptProcessorYAML)processor).setYamlPath("hcm-content/configuration/update");
@@ -89,6 +96,8 @@ public class TestMavenPlugin{
             FileUtils.deleteDirectory(yaml_output);
             assertFalse(yaml_output.exists());
         }
+        targetResource.mkdirs();
+        Files.copy(resource.toPath(), targetResource.toPath(), StandardCopyOption.REPLACE_EXISTING);
         processor.processUpdateScripts(getGroovyFiles(input));
         File xml_expected = new File(getClass().getResource("target_yaml").toURI());
 

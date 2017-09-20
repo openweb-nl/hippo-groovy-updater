@@ -80,6 +80,7 @@
     <commons-io.version>2.5</commons-io.version>
     <commons-lang3.version>3.4</commons-lang3.version>
     <groovy.version>2.4.7</groovy.version>
+    <snakeyaml.version>1.18</snakeyaml.version>
     <hippo.repository.version>4.2.1</hippo.repository.version>
     <glassfish.jaxb-runtime.version>2.2.11</glassfish.jaxb-runtime.version>
     <javax.jcr.version>2.0</javax.jcr.version>

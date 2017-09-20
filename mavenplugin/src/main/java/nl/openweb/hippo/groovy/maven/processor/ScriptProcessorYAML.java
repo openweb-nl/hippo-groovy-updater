@@ -18,15 +18,42 @@ package nl.openweb.hippo.groovy.maven.processor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugin.MojoExecutionException;
 
+import nl.openweb.hippo.groovy.YamlGenerator;
+import static nl.openweb.hippo.groovy.YamlGenerator.HCM_ACTIONS_NAME;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateScriptYamlFilename;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateYamlScript;
 
 public class ScriptProcessorYAML extends ScriptProcessor{
     protected String yamlPath;
+
+    /**
+     * Generate updater xml files from groovy scripts
+     *
+     * @param groovyFiles groovy scripts to parse
+     * @return list of valid parsed groovy files
+     */
+    public List<File> processUpdateScripts(final List<File> groovyFiles) throws MojoExecutionException {
+        List<File> files = super.processUpdateScripts(groovyFiles);
+        writeActionList(files);
+        return files;
+    }
+
+    private void writeActionList(final List<File> files) throws MojoExecutionException {
+        try {
+            String hcmActionsList = YamlGenerator.getHcmActionsList(sourceDir, targetDir, files);
+            if(StringUtils.isNotBlank(hcmActionsList)){
+                marshal(hcmActionsList, new File(targetDir, HCM_ACTIONS_NAME));
+            }
+        } catch (IOException e) {
+            throw new MojoExecutionException("failed to generate hcm-actions.yaml",e);
+        }
+    }
 
     /**
      * Generate updater yaml from groovy file

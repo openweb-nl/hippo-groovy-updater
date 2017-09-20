@@ -1,0 +1,6 @@
+action-lists:
+- 2.0:
+    /content/documents/my-site/new: reload
+    /content/gallery/my-site/cleaned: reload
+- 2.1:
+    /content/documents/my-site/new/obsolete: delete

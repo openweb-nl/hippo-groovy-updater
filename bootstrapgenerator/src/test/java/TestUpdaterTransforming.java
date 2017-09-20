@@ -121,4 +121,16 @@ public class TestUpdaterTransforming {
         assertEquals(expectedContent, xml);
     }
 
+    @Test
+    public void generateHcmActions() throws URISyntaxException, IOException {
+        URI resourceURI = getClass().getResource("").toURI();
+        File root = new File(resourceURI);
+        List<File> groovyFiles = Generator.getGroovyFiles(root);
+        String yaml = YamlGenerator.getHcmActionsList(root, new File(root, "target"), groovyFiles);
+
+        URL testfileResultUrl = getClass().getResource("resulting-hcm-actions.yaml");
+        File resultFile = new File(testfileResultUrl.toURI());
+        String expectedContent = FileUtils.fileRead(resultFile);
+        assertEquals(expectedContent, yaml);
+    }
 }
