@@ -20,7 +20,7 @@
   <name>Groovy updater</name>
   <groupId>nl.openweb.hippo.updater</groupId>
   <artifactId>groovy-updater</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.4</version>
 
   <modules>
     <module>annotations</module>
@@ -36,7 +36,7 @@
     <connection>scm:git:git@github.com:openweb-nl/hippo-groovy-updater.git</connection>
     <developerConnection>scm:git:git@github.com:openweb-nl/hippo-groovy-updater.git</developerConnection>
     <url>https://github.com/openweb-nl/hippo-groovy-updater</url>
-    <tag>HEAD</tag>
+    <tag>groovy-updater-1.4</tag>
   </scm>
 
   <distributionManagement>
