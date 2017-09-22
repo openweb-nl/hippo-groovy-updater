@@ -79,8 +79,7 @@ public final class XmlGenerator extends Generator{
         final Updater updater;
         try {
             content = FileUtils.fileRead(file);
-            final Class scriptClass = getScriptClass(file);
-            updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
+            updater = getUpdater(file);
         } catch (final IOException e) {
             return null;
         }

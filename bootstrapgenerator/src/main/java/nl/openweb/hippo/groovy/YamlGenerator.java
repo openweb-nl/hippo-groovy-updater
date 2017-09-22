@@ -19,11 +19,13 @@ package nl.openweb.hippo.groovy;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,6 +44,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toMap;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.Generator.getScriptClass;
+import static nl.openweb.hippo.groovy.Generator.getUpdater;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
@@ -60,8 +63,6 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_T
  */
 public abstract class YamlGenerator {
 
-    public static final String INDENT = "  ";
-    public static final String INDENT_SCRIPT = "   ";
     public static final String HCM_ACTIONS_NAME = "hcm-actions.yaml";
 
     protected YamlGenerator() {
@@ -73,16 +74,12 @@ public abstract class YamlGenerator {
      * @param file the groovy file to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
-    public static String getUpdateYamlScript(final File file) {
+    public static Map<String, Map<String, Object>> getUpdateYamlScript(final File file) {
         final String content;
         final Updater updater;
-        final Bootstrap bootstrap;
         try {
             content = FileUtils.fileRead(file);
-            final Class scriptClass = getScriptClass(file);
-            updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
-            bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
-                    scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
+            updater = getUpdater(file);
         } catch (final IOException e) {
             return null;
         }
@@ -90,26 +87,23 @@ public abstract class YamlGenerator {
         if (updater == null) {
             return null;
         }
-        String contentroot = "queue";
-        if (bootstrap.contentroot().equals("registry")) {
-            contentroot = bootstrap.contentroot();
-        }
+
         StringBuilder yaml = new StringBuilder();
         //location
-        yaml.append("/hippo:configuration/hippo:update/hippo:" + contentroot + "/" + updater.name() + ":");
         yaml.append(NEWLINE);
-        yaml.append(getYamlPropertyString(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, true));
+        Map<String, Object> properties = new LinkedHashMap<>();
+        addNotEmptyProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, properties);
 
 
-        yaml.append(getYamlPropertyString(HIPPOSYS_BATCHSIZE, Long.toString(updater.batchSize()), true));
-        yaml.append(getYamlPropertyString(HIPPOSYS_DESCRIPTION, updater.description(), false));
-        yaml.append(getYamlPropertyString(HIPPOSYS_DRYRUN, Boolean.toString(updater.dryRun()), true));
-        yaml.append(getYamlPropertySingleQuoteWrapped(HIPPOSYS_PARAMETERS, updater.parameters(), false));
-        yaml.append(getYamlPropertyString(HIPPOSYS_PATH, updater.path(), false));
-        yaml.append(getYamlPropertyString(HIPPOSYS_QUERY, updater.xpath(), false));
-        yaml.append(getYamlPropertyString(HIPPOSYS_SCRIPT, processScriptContent(content), false));
-        yaml.append(getYamlPropertyString(HIPPOSYS_THROTTLE, Long.toString(updater.throttle()), true));
-        return yaml.toString();
+        addNotEmptyProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), properties);
+        addNotEmptyProperty(HIPPOSYS_DESCRIPTION, updater.description(), properties);
+        addNotEmptyProperty(HIPPOSYS_DRYRUN, updater.dryRun(), properties);
+        addNotEmptyProperty(HIPPOSYS_PARAMETERS, updater.parameters(), properties);
+        addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
+        addNotEmptyProperty(HIPPOSYS_QUERY, updater.xpath(), properties);
+        addNotEmptyProperty(HIPPOSYS_SCRIPT, processScriptContent(content), properties);
+        addNotEmptyProperty(HIPPOSYS_THROTTLE, updater.throttle(), properties);
+        return Collections.singletonMap(getBootstrapPath(file), properties);
     }
 
     /**
@@ -117,35 +111,23 @@ public abstract class YamlGenerator {
      */
     private static String processScriptContent(final String script) {
         final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
-        return removeEmptyIndents(indent(stripAnnotations));
-    }
-
-
-    /**
-     * Indent string for yaml readability
-     *
-     * @param content
-     * @return the content, indented
-     *
-     */
-    private static String indent(final String content) {
-        return "|" + NEWLINE + INDENT_SCRIPT + content.replaceAll(NEWLINE, NEWLINE + INDENT_SCRIPT);
+        return removeEmptyIndents(stripAnnotations);
     }
 
     private static String removeEmptyIndents(String content){
         return content.replaceAll(NEWLINE + "\\s+" + NEWLINE, NEWLINE + NEWLINE);
     }
 
-    public static String getYamlPropertySingleQuoteWrapped(final String name, final String value, final boolean mandatory){
-        return StringUtils.isNotBlank(value) || mandatory
-                ? INDENT + name + ": '" + value + "'" + NEWLINE
+    public static String getSingleQuoteWrapped(final String value){
+        return StringUtils.isNotBlank(value)
+                ? "'" + value + "'" + NEWLINE
                 : StringUtils.EMPTY;
     }
 
-    public static String getYamlPropertyString(final String name, final String value, final boolean mandatory) {
-        return StringUtils.isNotBlank(value) || mandatory
-                ? INDENT + name + ": " + value + NEWLINE
-                : StringUtils.EMPTY;
+    private static void addNotEmptyProperty(final String name, final Object value, final Map<String, Object> properties) {
+        if(value != null && (!(value instanceof String) || StringUtils.isNotBlank((String)value))){
+            properties.put(name, value);
+        }
     }
 
     /**
@@ -226,8 +208,7 @@ public abstract class YamlGenerator {
         Map<String, Object> out = new HashMap<>();
         out.put("action-lists", collect);
 
-        Yaml yaml = new Yaml();
-        return yaml.dumpAs(out, null, DumperOptions.FlowStyle.BLOCK);
+        return getYamlString(out);
     }
 
     private static String getBootstrapPath(final File file){
@@ -246,5 +227,21 @@ public abstract class YamlGenerator {
         } catch (IOException e) {
         }
         return null;
+    }
+
+    public static String getYamlString(Map<?,?> map){
+        return map == null ? StringUtils.EMPTY : getYaml().dump(map);
+    }
+
+    public static void writeToYamlFile(Map<?,?> map, File file) throws IOException {
+        if(map != null){
+            getYaml().dump(map, new FileWriter(file, false));
+        }
+    }
+
+    private static Yaml getYaml(){
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        return new Yaml(options);
     }
 }

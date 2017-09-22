@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import groovy.lang.GroovyClassLoader;
+import nl.openweb.hippo.groovy.annotations.Updater;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
@@ -89,5 +90,16 @@ public abstract class Generator {
             Arrays.stream(directories).map(Generator::getGroovyFiles).forEach(allFiles::addAll);
         }
         return Collections.unmodifiableList(allFiles);
+    }
+
+    public static final Updater getUpdater(final File file){
+        final Updater updater;
+        try {
+            final Class scriptClass = getScriptClass(file);
+            updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
+        } catch (final IOException e) {
+            return null;
+        }
+        return updater;
     }
 }

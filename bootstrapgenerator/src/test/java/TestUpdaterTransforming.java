@@ -34,6 +34,7 @@ import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
+import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 import static org.junit.Assert.assertEquals;
 
 
@@ -60,7 +61,7 @@ public class TestUpdaterTransforming {
 
         getMarshaller().marshal(updateScriptNode, writer);
         final String xml = writer.toString();
-        final String yaml = YamlGenerator.getUpdateYamlScript(file);
+        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(file));
 
         String expectedContent = FileUtils.fileRead(resultFile);
         String expectedContentYaml = FileUtils.fileRead(resultFileYaml);

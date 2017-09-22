@@ -28,6 +28,7 @@ import nl.openweb.hippo.groovy.YamlGenerator;
 import static nl.openweb.hippo.groovy.YamlGenerator.HCM_ACTIONS_NAME;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateScriptYamlFilename;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateYamlScript;
+import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 
 public class ScriptProcessorYAML extends ScriptProcessor{
     protected String yamlPath;
@@ -64,7 +65,7 @@ public class ScriptProcessorYAML extends ScriptProcessor{
     @Override
     protected boolean processUpdateScript(final File file) {
         getLog().debug("Converting " + file.getAbsolutePath() + " to updater yaml");
-        final String updateScript = getUpdateYamlScript(file);
+        final String updateScript = getYamlString(getUpdateYamlScript(file));
         if (StringUtils.isBlank(updateScript)) {
             getLog().warn("Skipping file: " + file.getAbsolutePath() + ", not a valid updatescript");
             return false;
