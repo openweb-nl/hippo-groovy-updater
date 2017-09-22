@@ -25,6 +25,24 @@ Bootstrap definition is optional
 * @Bootstrap(reload = true)
 ```
 ## Use of the maven plugin
+In the root pom, add the repositories:
+```xml
+ <repositories>
+    ...
+    <!-- needed for the groovy updater sync module --> 
+    <repository>
+      <id>openweb-maven-releases</id>
+      <url>https://maven.open-web.nl/content/repositories/releases/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <!-- needed for the maven groovy updater plugin -->
+    <pluginRepository>
+      <id>openweb-maven-releases</id>
+      <url>https://maven.open-web.nl/content/repositories/releases/</url>
+    </pluginRepository>
+  </pluginRepositories>
+```
 In the build section define (minimal) usage of the plugin
 ```xml
   <plugin>
