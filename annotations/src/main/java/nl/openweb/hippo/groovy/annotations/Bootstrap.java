@@ -27,8 +27,21 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Bootstrap {
+    enum ContentRoot{
+        QUEUE("queue"),
+        REGISTRY("registry");
 
-    String contentroot() default "queue";
+        private String value;
+
+        ContentRoot(String value){
+            this.value = value;
+        }
+
+        public String toString(){
+            return value;
+        }
+    }
+    ContentRoot contentroot() default ContentRoot.QUEUE;
 
     double sequence() default 99999.0d;
 

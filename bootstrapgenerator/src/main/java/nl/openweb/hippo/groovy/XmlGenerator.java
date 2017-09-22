@@ -111,7 +111,7 @@ public final class XmlGenerator extends Generator{
      * Do some useful tweaks to make the script pleasant and readable
      */
     private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
+        final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
         return wrap(stripAnnotations);
     }
 
@@ -196,10 +196,8 @@ public final class XmlGenerator extends Generator{
         final Node initNode = createNode(namePrefix + resource);
         final List<Object> properties = initNode.getNodeOrProperty();
 
-        String contentroot = "queue";
-        if (bootstrap.contentroot().equals("registry")) {
-            contentroot = bootstrap.contentroot();
-        }
+        Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
+
         properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEITEM, ValueType.NAME));
         addStringPropertyIfNotEmpty(properties, HIPPO_CONTENTRESOURCE, resource);
         properties.add(createProperty(HIPPO_CONTENTROOT, "/hippo:configuration/hippo:update/hippo:" + contentroot, ValueType.STRING));

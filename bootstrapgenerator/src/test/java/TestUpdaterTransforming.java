@@ -83,8 +83,8 @@ public class TestUpdaterTransforming {
         String content = FileUtils.fileRead(file);
         String expectedContent = FileUtils.fileRead(resultFile);
 
-        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Bootstrap.class, Updater.class));
-        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Updater.class, Bootstrap.class));
+        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class));
+        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Updater.class, Bootstrap.class, Bootstrap.ContentRoot.class));
 
     }
 

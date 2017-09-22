@@ -18,7 +18,6 @@ package nl.openweb.hippo.groovy;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,7 +52,9 @@ public abstract class Generator {
     public static Class getInterpretingClass(final File file) throws IOException {
         gcl.clearCache();
         String script = FileUtils.fileRead(file);
-        String interpretCode = getFullAnnotation(script, Updater.class) + getFullAnnotation(script, Bootstrap.class);
+        String interpretCode = "import " + Bootstrap.class.getCanonicalName() + ";";
+        interpretCode += "import " + Bootstrap.ContentRoot.class.getCanonicalName() + ";";
+        interpretCode += getFullAnnotation(script, Updater.class) + getFullAnnotation(script, Bootstrap.class);
         interpretCode += "class Interpreting { }";
         return gcl.parseClass(interpretCode);
     }
@@ -68,14 +69,14 @@ public abstract class Generator {
         gcl.addClasspath(path);
     }
 
-    public static String stripAnnotations(final String script, final Class<? extends Annotation>... classes) {
+    public static String stripAnnotations(final String script, final Class<?>... classes) {
         String result = script;
-        for (final Class<? extends Annotation> aClass : classes) {
+        for (final Class<?> aClass : classes) {
             if (result.contains(aClass.getPackage().getName()) &&
                     result.contains(aClass.getSimpleName())) {
                 result = stripAnnotation(result, aClass.getSimpleName());
-                result = stripAnnotation(result, aClass.getName());
-                result = result.replaceAll("import\\s*" + aClass.getName() + "\\s*[;]?\n", "");
+                result = stripAnnotation(result, aClass.getCanonicalName());
+                result = result.replaceAll("import\\s*" + aClass.getCanonicalName() + "\\s*[;]?\n", "");
             }
         }
         return result;

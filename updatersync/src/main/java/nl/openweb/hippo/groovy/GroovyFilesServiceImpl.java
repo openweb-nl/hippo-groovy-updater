@@ -110,7 +110,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         scriptNode.setProperty(HIPPOSYS_PARAMETERS, updater.parameters());
         scriptNode.setProperty(updater.xpath().isEmpty() ? HIPPOSYS_PATH : HIPPOSYS_QUERY,
                 updater.xpath().isEmpty() ? updater.parameters() : updater.xpath());
-        scriptNode.setProperty(HIPPOSYS_SCRIPT, stripAnnotations(content, Updater.class, Bootstrap.class));
+        scriptNode.setProperty(HIPPOSYS_SCRIPT, stripAnnotations(content, Updater.class, Bootstrap.class, Bootstrap.ContentRoot.class));
         scriptNode.setProperty(HIPPOSYS_THROTTLE, updater.throttle());
     }
 

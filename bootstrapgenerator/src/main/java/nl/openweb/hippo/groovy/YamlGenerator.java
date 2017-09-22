@@ -110,7 +110,7 @@ public abstract class YamlGenerator {
      * Do some useful tweaks to make the script pleasant and readable
      */
     private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class);
+        final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
         return removeEmptyIndents(stripAnnotations);
     }
 
@@ -218,10 +218,7 @@ public abstract class YamlGenerator {
                     scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
             if (bootstrap.reload()) {
                 Updater updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
-                String contentroot = "queue";
-                if (bootstrap.contentroot().equals("registry")) {
-                    contentroot = bootstrap.contentroot();
-                }
+                Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
                 return "/hippo:configuration/hippo:update/hippo:" + contentroot + "/" + updater.name();
             }
         } catch (IOException e) {
