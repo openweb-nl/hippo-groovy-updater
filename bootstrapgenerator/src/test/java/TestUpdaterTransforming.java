@@ -32,8 +32,10 @@ import nl.openweb.hippo.groovy.YamlGenerator;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
-import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
+import static nl.openweb.hippo.groovy.Generator.getAnnotation;
+import static nl.openweb.hippo.groovy.Generator.getFullAnnotation;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
+import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 import static org.junit.Assert.assertEquals;
 
@@ -133,5 +135,55 @@ public class TestUpdaterTransforming {
         File resultFile = new File(testfileResultUrl.toURI());
         String expectedContent = FileUtils.fileRead(resultFile);
         assertEquals(expectedContent, yaml);
+    }
+
+    @Test
+    public void extractAnnotation() throws URISyntaxException, IOException {
+        URL testfileUrl = getClass().getResource( "updater.groovy");
+        URL testfileUrl2 = getClass().getResource( "updater-noimport.groovy");
+
+        String content = FileUtils.fileRead(new File(testfileUrl.toURI()));
+        String content2 = FileUtils.fileRead(new File(testfileUrl2.toURI()));
+
+        String updater = getAnnotation(content, Updater.class.getSimpleName());
+        String bootstrap = getAnnotation(content, Bootstrap.class.getSimpleName());
+
+        String fullUpdater = getAnnotation(content, Updater.class.getName());
+        String fullBootstrap = getAnnotation(content, Bootstrap.class.getName());
+
+        String updater2 = getAnnotation(content2, Updater.class.getSimpleName());
+        String bootstrap2 = getAnnotation(content2, Bootstrap.class.getSimpleName());
+
+        String fullUpdater2 = getAnnotation(content2, Updater.class.getName());
+        String fullBootstrap2 = getAnnotation(content2, Bootstrap.class.getName());
+
+
+        String updaterExpected = "@Updater(name = \"Test Updater\",\n" +
+                "        xpath = \"//element(*, hippo:document)\",\n" +
+                " description=\"\", path = \"\", parameters = \" \")";
+        String bootstrapExpected = "@Bootstrap(reload = true, sequence = 99999.0d)";
+        String updaterFull = "@nl.openweb.hippo.groovy.annotations.Updater(name = \"Test Updater\",\n" +
+                "        xpath = \"//element(*, hippo:document)\",\n" +
+                " description=\"\", path = \"\", parameters = \" \")";
+        String bootstrapFull = "@nl.openweb.hippo.groovy.annotations.Bootstrap(reload = true, sequence = 99999.0d)";
+        String bootstrapFull2 = "@nl.openweb.hippo.groovy.annotations.Bootstrap(sequence = 99999.0d)";
+        String updaterFull2 = "@nl.openweb.hippo.groovy.annotations.Updater(name = \"Test Updater noimport\",\n" +
+                "        xpath = \"//element(*, hippo:document)\",\n" +
+                " description=\"\", path = \"\", parameters = \" \")";
+
+
+        assertEquals(updaterExpected, updater);
+        assertEquals(bootstrapExpected, bootstrap);
+        assertEquals("", fullUpdater);
+        assertEquals("", fullBootstrap);
+        assertEquals("", updater2);
+        assertEquals("", bootstrap2);
+        assertEquals(updaterFull2, fullUpdater2);
+        assertEquals(bootstrapFull2, fullBootstrap2);
+
+        assertEquals(updaterFull, getFullAnnotation(content, Updater.class));
+        assertEquals(updaterFull2, getFullAnnotation(content2, Updater.class));
+        assertEquals(bootstrapFull, getFullAnnotation(content, Bootstrap.class));
+        assertEquals(bootstrapFull2, getFullAnnotation(content2, Bootstrap.class));
     }
 }

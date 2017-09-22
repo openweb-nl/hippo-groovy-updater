@@ -31,14 +31,6 @@ In the build section define (minimal) usage of the plugin
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
     <version>1.4</version>
-    <dependencies>
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-repository-dependencies</artifactId>
-        <version>${hippo.repository.version}</version>
-        <type>pom</type>
-      </dependency>
-    </dependencies>
     <executions>
       <execution>
         <id>default-resources</id>
@@ -104,16 +96,6 @@ Add the hcm-module.yaml in the project yourself.
       <version>1.4</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-      <scope>provided</scope>
-    </dependency>
 ```
 ## Updater Script Synchronisation module
 > This module has copied some logic and classes from the well known webfiles module.
@@ -128,13 +110,6 @@ Add this dependency to the cms, for local development only.
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
     <version>1.4</version>
-    <exclusions>
-      <!-- Plugin uses other version numbers in project -->
-      <exclusion>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-repository-dependencies</artifactId>
-      </exclusion>
-    </exclusions>
   </dependency>
 ```
 By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, update the bootstrap accordingly at: `/hippo:configuration/hippo:modules/groovyfiles-service-module/hippo:moduleconfig/watchedModules`

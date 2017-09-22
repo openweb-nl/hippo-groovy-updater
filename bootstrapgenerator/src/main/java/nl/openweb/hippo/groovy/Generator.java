@@ -23,8 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.plexus.util.FileUtils;
 
 import groovy.lang.GroovyClassLoader;
+import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
@@ -37,9 +43,19 @@ public abstract class Generator {
 
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
 
-    public static Class getScriptClass(final File file) throws IOException {
+    /**
+     * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
+     *
+     * @param file the file to make a class representation of
+     * @return a fake class with the Bootstrap and Updater annotations
+     * @throws IOException
+     */
+    public static Class getInterpretingClass(final File file) throws IOException {
         gcl.clearCache();
-        return gcl.parseClass(file);
+        String script = FileUtils.fileRead(file);
+        String interpretCode = getFullAnnotation(script, Updater.class) + getFullAnnotation(script, Bootstrap.class);
+        interpretCode += "class Interpreting { }";
+        return gcl.parseClass(interpretCode);
     }
 
     /**
@@ -73,6 +89,21 @@ public abstract class Generator {
         return s;
     }
 
+    public static String getAnnotation(final String script, final String className) {
+        final String annotationName = "@" + className;
+        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
+        Matcher matcher = Pattern.compile(regex).matcher(script);
+        return matcher.find() ? matcher.group() : StringUtils.EMPTY;
+    }
+
+    public static String getFullAnnotation(final String script, final Class clazz) {
+        String simple = getAnnotation(script, clazz.getSimpleName());
+
+        return StringUtils.isNotBlank(simple) ?
+                simple.replaceFirst("@" + clazz.getSimpleName(), "@" + clazz.getName()) :
+                getAnnotation(script, clazz.getName());
+    }
+
     /**
      * Obtain groovy files from given location
      *
@@ -95,7 +126,7 @@ public abstract class Generator {
     public static final Updater getUpdater(final File file){
         final Updater updater;
         try {
-            final Class scriptClass = getScriptClass(file);
+            final Class scriptClass = getInterpretingClass(file);
             updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
         } catch (final IOException e) {
             return null;

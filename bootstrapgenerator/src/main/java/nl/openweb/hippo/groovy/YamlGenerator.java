@@ -43,7 +43,7 @@ import nl.openweb.hippo.groovy.model.DefaultBootstrap;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toMap;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
-import static nl.openweb.hippo.groovy.Generator.getScriptClass;
+import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.getUpdater;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
@@ -213,7 +213,7 @@ public abstract class YamlGenerator {
 
     private static String getBootstrapPath(final File file){
         try {
-            final Class scriptClass = getScriptClass(file);
+            final Class scriptClass = getInterpretingClass(file);
             Bootstrap bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
                     scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
             if (bootstrap.reload()) {

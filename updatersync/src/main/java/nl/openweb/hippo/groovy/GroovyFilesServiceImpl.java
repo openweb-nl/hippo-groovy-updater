@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
-import static nl.openweb.hippo.groovy.Generator.getScriptClass;
+import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
@@ -97,7 +97,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         final Updater updater;
         try {
             content = FileUtils.fileRead(file);
-            Class scriptClass = getScriptClass(file);
+            Class scriptClass = getInterpretingClass(file);
             updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
         } catch (IOException e) {
             return;

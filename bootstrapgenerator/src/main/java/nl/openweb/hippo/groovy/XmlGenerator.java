@@ -181,7 +181,7 @@ public final class XmlGenerator extends Generator{
     private static Node createInitializeItem(final File sourcePath, final File file, final String namePrefix) {
         final Bootstrap bootstrap;
         try {
-            final Class scriptClass = getScriptClass(file);
+            final Class scriptClass = getInterpretingClass(file);
             if (scriptClass.isAnnotationPresent(Updater.class)) {
                 bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
                         scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
