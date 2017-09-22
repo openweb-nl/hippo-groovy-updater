@@ -103,13 +103,16 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
             return;
         }
         String name = updater.name();
-        Node scriptNode = parent.hasNode(name) ? parent.getNode(name) : parent.addNode(name, HIPPOSYS_UPDATERINFO);
+        if(parent.hasNode(name)){
+            parent.getNode(name).remove();
+        }
+        Node scriptNode = parent.addNode(name, HIPPOSYS_UPDATERINFO);
 
         scriptNode.setProperty(HIPPOSYS_BATCHSIZE, updater.batchSize());
         scriptNode.setProperty(HIPPOSYS_DESCRIPTION, updater.description());
         scriptNode.setProperty(HIPPOSYS_PARAMETERS, updater.parameters());
         scriptNode.setProperty(updater.xpath().isEmpty() ? HIPPOSYS_PATH : HIPPOSYS_QUERY,
-                updater.xpath().isEmpty() ? updater.parameters() : updater.xpath());
+                updater.xpath().isEmpty() ? updater.path() : updater.xpath());
         scriptNode.setProperty(HIPPOSYS_SCRIPT, stripAnnotations(content, Updater.class, Bootstrap.class, Bootstrap.ContentRoot.class));
         scriptNode.setProperty(HIPPOSYS_THROTTLE, updater.throttle());
     }

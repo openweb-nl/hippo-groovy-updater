@@ -99,7 +99,9 @@ public abstract class YamlGenerator {
         addNotEmptyProperty(HIPPOSYS_DESCRIPTION, updater.description(), properties);
         addNotEmptyProperty(HIPPOSYS_DRYRUN, updater.dryRun(), properties);
         addNotEmptyProperty(HIPPOSYS_PARAMETERS, updater.parameters(), properties);
-        addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
+        if(StringUtils.isBlank(updater.xpath())) {
+            addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
+        }
         addNotEmptyProperty(HIPPOSYS_QUERY, updater.xpath(), properties);
         addNotEmptyProperty(HIPPOSYS_SCRIPT, processScriptContent(content), properties);
         addNotEmptyProperty(HIPPOSYS_THROTTLE, updater.throttle(), properties);

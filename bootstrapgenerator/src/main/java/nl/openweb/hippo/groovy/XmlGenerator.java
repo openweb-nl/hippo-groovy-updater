@@ -94,7 +94,9 @@ public final class XmlGenerator extends Generator{
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_DESCRIPTION, updater.description());
         properties.add(createProperty(HIPPOSYS_DRYRUN, updater.dryRun(), ValueType.BOOLEAN));
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, updater.parameters());
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
+        if(StringUtils.isBlank(updater.xpath())) {
+            addStringPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
+        }
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_QUERY, updater.xpath());
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, processScriptContent(content));
         properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), ValueType.LONG));
