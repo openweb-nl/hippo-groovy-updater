@@ -79,13 +79,13 @@ public class ScriptProcessorYAML extends ScriptProcessor{
     }
 
     private void renameWithVersion(File file, Bootstrap bootstrap) {
-
-        String oldFileName = getUpdateScriptYamlFilename(targetDir, file);
-        String newFileName = getUpdateScriptYamlFilename(targetDir, file)
+        String oldFileName = getUpdateScriptYamlFilename(sourceDir, file);
+        String newFileName = getUpdateScriptYamlFilename(sourceDir, file)
                 .replaceAll(YAML_EXTENSION, "-v" + bootstrap.version() + YAML_EXTENSION);
         File oldFile = new File(new File(targetDir, yamlPath), oldFileName);
         File newFile = new File(new File(targetDir, yamlPath), newFileName);
         try {
+            log.info("Reload rename: " + oldFile.getCanonicalPath() + " -> " + newFile.getCanonicalPath());
             Files.move(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             log.error("Failed to move versioned updater to new filename: " + newFileName);

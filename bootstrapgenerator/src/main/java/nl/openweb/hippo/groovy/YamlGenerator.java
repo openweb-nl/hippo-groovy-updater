@@ -150,8 +150,6 @@ public abstract class YamlGenerator {
      * @param files      groovy files, need to be relative to the source path
      */
     public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<Pair<File, Bootstrap>> files) throws IOException {
-        System.out.println(files);
-
         Map<Double, Map<String, String>> collect = files.stream()
                 .filter(pair -> Objects.nonNull(pair.getValue()))
                 .map(pair -> Pair.of(pair.getValue().version().isEmpty() ? 0.1 : Double.valueOf(pair.getValue().version()), getBootstrapPath(pair.getKey())))
