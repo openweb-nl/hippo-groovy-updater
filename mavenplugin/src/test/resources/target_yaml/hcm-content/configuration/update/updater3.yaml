@@ -1,4 +1,4 @@
-null:
+/hippo:configuration/hippo:update/hippo:queue/Test Updater 3:
   jcr:primaryType: hipposys:updaterinfo
   hipposys:batchsize: 10
   hipposys:dryrun: false

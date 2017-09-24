@@ -30,9 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.plexus.util.FileUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -40,8 +42,7 @@ import org.yaml.snakeyaml.Yaml;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.DefaultBootstrap;
-import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.getUpdater;
@@ -88,9 +89,6 @@ public abstract class YamlGenerator {
             return null;
         }
 
-        StringBuilder yaml = new StringBuilder();
-        //location
-        yaml.append(NEWLINE);
         Map<String, Object> properties = new LinkedHashMap<>();
         addNotEmptyProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, properties);
 
@@ -99,7 +97,7 @@ public abstract class YamlGenerator {
         addNotEmptyProperty(HIPPOSYS_DESCRIPTION, updater.description(), properties);
         addNotEmptyProperty(HIPPOSYS_DRYRUN, updater.dryRun(), properties);
         addNotEmptyProperty(HIPPOSYS_PARAMETERS, updater.parameters(), properties);
-        if(StringUtils.isBlank(updater.xpath())) {
+        if (StringUtils.isBlank(updater.xpath())) {
             addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
         }
         addNotEmptyProperty(HIPPOSYS_QUERY, updater.xpath(), properties);
@@ -116,18 +114,18 @@ public abstract class YamlGenerator {
         return removeEmptyIndents(stripAnnotations);
     }
 
-    private static String removeEmptyIndents(String content){
+    private static String removeEmptyIndents(String content) {
         return content.replaceAll(NEWLINE + "\\s+" + NEWLINE, NEWLINE + NEWLINE);
     }
 
-    public static String getSingleQuoteWrapped(final String value){
+    public static String getSingleQuoteWrapped(final String value) {
         return StringUtils.isNotBlank(value)
                 ? "'" + value + "'" + NEWLINE
                 : StringUtils.EMPTY;
     }
 
     private static void addNotEmptyProperty(final String name, final Object value, final Map<String, Object> properties) {
-        if(value != null && (!(value instanceof String) || StringUtils.isNotBlank((String)value))){
+        if (value != null && (!(value instanceof String) || StringUtils.isNotBlank((String) value))) {
             properties.put(name, value);
         }
     }
@@ -147,34 +145,35 @@ public abstract class YamlGenerator {
     /**
      * Generate hcm-action.yaml to reload updaters
      *
-     * @param sourcePath        sourcepath of groovy files
-     * @param targetDir         the target where the ecmExtensions from resources would be
-     * @param files             groovy files, need to be relative to the source path
+     * @param sourcePath sourcepath of groovy files
+     * @param targetDir  the target where the ecmExtensions from resources would be
+     * @param files      groovy files, need to be relative to the source path
      */
-    public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<File> files) throws IOException {
-        Map<String, String> collect = files.stream()
-                .map(YamlGenerator::getBootstrapPath)
-                .filter(Objects::nonNull)
-                .collect(toMap(key -> key, key -> "reload"));
+    public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<Pair<File, Bootstrap>> files) throws IOException {
+        System.out.println(files);
+
+        Map<Double, Map<String, String>> collect = files.stream()
+                .filter(pair -> Objects.nonNull(pair.getValue()))
+                .map(pair -> Pair.of(pair.getValue().version().isEmpty() ? 0.1 : Double.valueOf(pair.getValue().version()), getBootstrapPath(pair.getKey())))
+                .filter(pair -> Objects.nonNull(pair.getValue()))
+                .collect(groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toMap(item -> item, item -> "reload"))));
 
         final List<Map<Double, Object>> hcmHcmActionsSource = getExistingHcmActionsSequence(sourcePath);
 
-        if(hcmHcmActionsSource.isEmpty() && collect.isEmpty()){
+        if (hcmHcmActionsSource.isEmpty() && collect.isEmpty()) {
             return null; // target will remain as is
         }
 
-        final List<Map<Double, Object>> hcmActionsTarget = getExistingHcmActionsSequence(targetDir);
 
-        Map<Double, Object> collected = collect.isEmpty() ?
-                Collections.emptyMap() :
-                singletonMap(0.1, collect);
+        final List<Map<Double, Object>> hcmActionsTarget = getExistingHcmActionsSequence(targetDir);
+        Map<Double, Object> collected = new HashMap<>(collect);
 
         return getHcmActionsYaml(Collections.singletonList(collected), hcmActionsTarget, hcmHcmActionsSource);
     }
 
     private static List<Map<Double, Object>> getExistingHcmActionsSequence(final File sourcePath) throws FileNotFoundException {
         final File extensions = new File(sourcePath, HCM_ACTIONS_NAME);
-        if(extensions.exists()){
+        if (extensions.exists()) {
             Yaml yaml = new Yaml();
             Map<String, List<Map<Double, Object>>> load = (Map<String, List<Map<Double, Object>>>) yaml.load(new FileInputStream(extensions));
             return load.get("action-lists");
@@ -183,21 +182,23 @@ public abstract class YamlGenerator {
     }
 
     @SafeVarargs
-    private static String getHcmActionsYaml(final List<Map<Double, Object>> ... sequences){
+    private static String getHcmActionsYaml(final List<Map<Double, Object>>... sequences) {
         //collect all maps on a key
         Map<Double, Map<String, String>> collectMap = new TreeMap<>();
         for (List<Map<Double, Object>> list : sequences) {
             for (Map<Double, Object> map : list) {
                 //seems all maps have just one entry
                 Iterator<Map.Entry<Double, Object>> iterator = map.entrySet().iterator();
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     Map.Entry<Double, Object> entry = iterator.next();
                     Double key = entry.getKey();
                     if (collectMap.containsKey(key)) {
                         Map<String, String> objects = collectMap.get(key);
                         objects.putAll((Map<String, String>) map.get(key));
-                    }  else {
-                        collectMap.put(key, (Map<String, String>)map.get(key));
+                    } else {
+                        Map<String, String> objects = new LinkedHashMap<>();
+                        objects.putAll((Map<String, String>) map.get(key));
+                        collectMap.put(key, objects);
                     }
                 }
             }
@@ -213,32 +214,31 @@ public abstract class YamlGenerator {
         return getYamlString(out);
     }
 
-    private static String getBootstrapPath(final File file){
+    private static String getBootstrapPath(final File file) {
         try {
             final Class scriptClass = getInterpretingClass(file);
             Bootstrap bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
                     scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
-            if (bootstrap.reload()) {
-                Updater updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
-                Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
-                return "/hippo:configuration/hippo:update/hippo:" + contentroot + "/" + updater.name();
-            }
+            Updater updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
+            Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
+            return "/hippo:configuration/hippo:update/hippo:" + contentroot + "/" + updater.name();
         } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public static String getYamlString(Map<?,?> map){
+    public static String getYamlString(Map<?, ?> map) {
         return map == null ? StringUtils.EMPTY : getYaml().dump(map);
     }
 
-    public static void writeToYamlFile(Map<?,?> map, File file) throws IOException {
-        if(map != null){
+    public static void writeToYamlFile(Map<?, ?> map, File file) throws IOException {
+        if (map != null) {
             getYaml().dump(map, new FileWriter(file, false));
         }
     }
 
-    private static Yaml getYaml(){
+    private static Yaml getYaml() {
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         return new Yaml(options);

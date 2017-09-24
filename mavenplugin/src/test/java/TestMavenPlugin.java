@@ -99,9 +99,9 @@ public class TestMavenPlugin{
         targetResource.mkdirs();
         Files.copy(resource.toPath(), targetResource.toPath(), StandardCopyOption.REPLACE_EXISTING);
         processor.processUpdateScripts(getGroovyFiles(input));
-        File xml_expected = new File(getClass().getResource("target_yaml").toURI());
+        File yaml_expected = new File(getClass().getResource("target_yaml").toURI());
 
-        compareFolders(xml_expected, yaml_output);
+        compareFolders(yaml_expected, yaml_output);
     }
 
     public void compareFolders(File expected, File result) throws IOException {

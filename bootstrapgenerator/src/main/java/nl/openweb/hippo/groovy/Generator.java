@@ -134,4 +134,15 @@ public abstract class Generator {
         }
         return updater;
     }
+
+    public static final Bootstrap getBootstrap(final File file){
+        final Bootstrap bootstrap;
+        try {
+            final Class scriptClass = getInterpretingClass(file);
+            bootstrap = (Bootstrap) scriptClass.getDeclaredAnnotation(Bootstrap.class);
+        } catch (final IOException e) {
+            return null;
+        }
+        return bootstrap;
+    }
 }

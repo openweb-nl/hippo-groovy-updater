@@ -18,17 +18,24 @@ package nl.openweb.hippo.groovy.maven.processor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import nl.openweb.hippo.groovy.YamlGenerator;
+import nl.openweb.hippo.groovy.annotations.Bootstrap;
+import static java.util.stream.Collectors.toList;
+import static nl.openweb.hippo.groovy.Generator.getBootstrap;
 import static nl.openweb.hippo.groovy.YamlGenerator.HCM_ACTIONS_NAME;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateScriptYamlFilename;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateYamlScript;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
+import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 
 public class ScriptProcessorYAML extends ScriptProcessor{
     protected String yamlPath;
@@ -41,18 +48,47 @@ public class ScriptProcessorYAML extends ScriptProcessor{
      */
     public List<File> processUpdateScripts(final List<File> groovyFiles) throws MojoExecutionException {
         List<File> files = super.processUpdateScripts(groovyFiles);
-        writeActionList(files);
+        processReloading(files);
         return files;
     }
 
-    private void writeActionList(final List<File> files) throws MojoExecutionException {
+    private void processReloading(final List<File> files) throws MojoExecutionException {
         try {
-            String hcmActionsList = YamlGenerator.getHcmActionsList(sourceDir, targetDir, files);
+            List<Pair<File, Bootstrap>> pairs = files.stream().map(file -> Pair.of(file, getBootstrap(file)))
+                    .filter(pair -> pair.getValue() != null &&
+                            pair.getValue().reload())
+                    .collect(toList());
+
+            //registry or unversioned scripts
+            List<Pair<File, Bootstrap>> reloadByActionList = pairs.stream()
+                    .filter(pair -> pair.getValue().contentroot().equals(Bootstrap.ContentRoot.REGISTRY) ||
+                            pair.getValue().version().isEmpty())
+                    .collect(toList());
+            String hcmActionsList = YamlGenerator.getHcmActionsList(sourceDir, targetDir, reloadByActionList);
             if(StringUtils.isNotBlank(hcmActionsList)){
                 marshal(hcmActionsList, new File(targetDir, HCM_ACTIONS_NAME));
             }
+
+            //queue and version
+            pairs.stream().filter(pair -> pair.getValue().contentroot().equals(Bootstrap.ContentRoot.QUEUE) &&
+                    !pair.getValue().version().isEmpty())
+                    .forEach(pair -> renameWithVersion(pair.getKey(), pair.getValue()));
         } catch (IOException e) {
             throw new MojoExecutionException("failed to generate hcm-actions.yaml",e);
+        }
+    }
+
+    private void renameWithVersion(File file, Bootstrap bootstrap) {
+
+        String oldFileName = getUpdateScriptYamlFilename(targetDir, file);
+        String newFileName = getUpdateScriptYamlFilename(targetDir, file)
+                .replaceAll(YAML_EXTENSION, "-v" + bootstrap.version() + YAML_EXTENSION);
+        File oldFile = new File(new File(targetDir, yamlPath), oldFileName);
+        File newFile = new File(new File(targetDir, yamlPath), newFileName);
+        try {
+            Files.move(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            log.error("Failed to move versioned updater to new filename: " + newFileName);
         }
     }
 

@@ -150,7 +150,7 @@
       <sv:value>true</sv:value>
     </sv:property>
     <sv:property sv:name="hippo:version" sv:type="String">
-      <sv:value>2</sv:value>
+      <sv:value>1.6</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>

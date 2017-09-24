@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
@@ -32,7 +34,9 @@ import nl.openweb.hippo.groovy.YamlGenerator;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
+import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Generator.getAnnotation;
+import static nl.openweb.hippo.groovy.Generator.getBootstrap;
 import static nl.openweb.hippo.groovy.Generator.getFullAnnotation;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
@@ -129,7 +133,16 @@ public class TestUpdaterTransforming {
         URI resourceURI = getClass().getResource("").toURI();
         File root = new File(resourceURI);
         List<File> groovyFiles = Generator.getGroovyFiles(root);
-        String yaml = YamlGenerator.getHcmActionsList(root, new File(root, "target"), groovyFiles);
+
+        //registry or unversioned scripts
+        List<Pair<File, Bootstrap>> reloadByActionList = groovyFiles.stream().map(file -> Pair.of(file, getBootstrap(file)))
+                .filter(pair -> pair.getValue() != null &&
+                        pair.getValue().reload())
+                .filter(pair -> pair.getValue().contentroot().equals(Bootstrap.ContentRoot.REGISTRY) ||
+                        pair.getValue().version().isEmpty())
+                .collect(toList());
+
+        String yaml = YamlGenerator.getHcmActionsList(root, new File(root, "target"), reloadByActionList);
 
         URL testfileResultUrl = getClass().getResource("resulting-hcm-actions.yaml");
         File resultFile = new File(testfileResultUrl.toURI());
