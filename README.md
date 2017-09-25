@@ -48,7 +48,7 @@ In the build section define (minimal) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <executions>
       <execution>
         <id>default-resources</id>
@@ -65,7 +65,7 @@ Or define (full) usage of the plugin
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <configuration>
       <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
       <targetDir>${project.build.outputDirectory}</targetDir>
@@ -82,13 +82,12 @@ Or define (full) usage of the plugin
     </executions>
   </plugin>
 ```
-Since Hippo 12 use the yaml generating.
-Add the hcm-module.yaml in the project yourself.
+Since Hippo 12 use the yaml generating, you need th generate-yaml goal. \
 ```xml
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <configuration>
       <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
       <targetDir>${project.build.outputDirectory}</targetDir>
@@ -106,12 +105,21 @@ Add the hcm-module.yaml in the project yourself.
     </executions>
   </plugin>
 ```
-## Commonly used dependencies for writing the groovy scripts
+Add the hcm-module.yaml in the project yourself if you choose to have a separate module for updaters.
+```yaml
+group:
+  name: myhippoproject
+project: myhippoproject
+module: 
+  name: myhippoproject-repository-data-updaters
+  after: myhippoproject-repository-data-content
+```
+### Commonly used dependencies for writing the groovy scripts
 ```xml
     <dependency>
       <groupId>nl.openweb.hippo.updater</groupId>
       <artifactId>groovy-updater-annotations</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
       <scope>provided</scope>
     </dependency>
 ```
@@ -122,42 +130,32 @@ The updater scripts add changed groovy scripts to the updaters registry.
 the module is registered at:
   `/hippo:configuration/hippo:modules/groovyfiles`
 
-Add this dependency to the cms, for local development only.
+Add this dependency to the cms or a dependency of the cms, like the updaters module itself, for local development only. \
+It is highly recommended to use a profile for it.
 ```xml
   <dependency>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
   </dependency>
 ```
-By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, update the bootstrap accordingly at: `/hippo:configuration/hippo:modules/groovyfiles-service-module/hippo:moduleconfig/watchedModules`
-#### XML:
+By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, 
+add the system property `groovy.sync.watchedModules` in the cargo container.
 ```xml
-<!-- watchmodule for groovy sync -->
-  <sv:node sv:name="groovyfiles-sync-module-watchedModules">
-    <sv:property sv:name="jcr:primaryType" sv:type="Name">
-      <sv:value>hippo:initializeitem</sv:value>
-    </sv:property>
-    <sv:property sv:name="hippo:contentroot" sv:type="String">
-      <sv:value>/hippo:configuration/hippo:modules/groovyfiles-service-module/hippo:moduleconfig/watchedModules</sv:value>
-    </sv:property>
-    <sv:property sv:name="hippo:contentpropset" sv:type="String" sv:multiple="true">
-      <sv:value>updater</sv:value>
-    </sv:property>
-    <sv:property sv:name="hippo:sequence" sv:type="Double">
-      <sv:value>90000</sv:value>
-    </sv:property>
-  </sv:node>
-```
-#### Yaml:
-```yaml
-definitions:
-  config:
-    /hippo:configuration/hippo:modules/groovyfiles-service-module/hippo:moduleconfig:
-      watchedModules:
-        operation: override
-        type: string
-        value: ['updater']
+  <plugin>
+    <groupId>org.codehaus.cargo</groupId>
+    <artifactId>cargo-maven2-plugin</artifactId>
+    <configuration>
+      ...
+      <container>
+        ...
+        <systemProperties>
+          ...
+          <groovy.sync.watchedModules>updater</groovy.sync.watchedModules>
+        </systemProperties>
+      </container>
+    </configuration>
+  </plugin>
 ```
 Notes:
 * The sample app only provides an example for the use of the maven plugin. \
