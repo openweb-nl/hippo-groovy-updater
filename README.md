@@ -43,7 +43,8 @@ In the root pom, add the repositories:
     </pluginRepository>
   </pluginRepositories>
 ```
-In the build section define (minimal) usage of the plugin
+In the build section of the (new) module containing the groovy updater scripts, define the execution of the plugin \
+*For Hippo 12 use the *'generate-yaml'* goal.*
 ```xml
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
@@ -60,59 +61,21 @@ In the build section define (minimal) usage of the plugin
     </executions>
   </plugin>
 ```
-Or define (full) usage of the plugin
-```xml
-  <plugin>
-    <groupId>nl.openweb.hippo.updater</groupId>
-    <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.5</version>
-    <configuration>
-      <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
-      <targetDir>${project.build.outputDirectory}</targetDir>
-      <initializeNamePrefix>sampleproject-update-</initializeNamePrefix>
-    </configuration>
-    <executions>
-      <execution>
-        <id>default-resources</id>
-        <phase>compile</phase>
-        <goals>
-          <goal>generate-xml</goal>
-        </goals>
-      </execution>
-    </executions>
-  </plugin>
-```
-Since Hippo 12 use the yaml generating, you need th generate-yaml goal. \
-```xml
-  <plugin>
-    <groupId>nl.openweb.hippo.updater</groupId>
-    <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.5</version>
-    <configuration>
-      <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
-      <targetDir>${project.build.outputDirectory}</targetDir>
-      <initializeNamePrefix>sampleproject-update-</initializeNamePrefix>
-      <yamlPath>hcm-content/configuration/update</yamlPath>
-    </configuration>
-    <executions>
-      <execution>
-        <id>default-resources</id>
-        <phase>compile</phase>
-        <goals>
-          <goal>generate-yaml</goal>
-        </goals>
-      </execution>
-    </executions>
-  </plugin>
-```
-Add the hcm-module.yaml in the project yourself if you choose to have a separate module for updaters.
+
+####These are the configuration keys of the plugin:
+* **sourceDir** the source of the groovy files  *(default: ${project.build.scriptSourceDirectory})*
+* **targetDir**  where to generate the bootstrap *(default: ${project.build.outputDirectory})*      
+* **initializeNamePrefix** prefix in the ecm-extension.xml nodenames *(default:hippo-updater-)*                                   
+* **yamlPath** relative path for the yaml bootstrap files *(default: hcm-content/configuration/update)*
+
+When using a separate module in Hippo 12, don't forget to place an hcm-module.yaml in the project.
 ```yaml
 group:
-  name: myhippoproject
-project: myhippoproject
+  name: hippoproject
+project: hippoproject
 module: 
-  name: myhippoproject-repository-data-updaters
-  after: myhippoproject-repository-data-content
+  name: hippoproject-repository-data-updaters
+  after: hippoproject-repository-data-content
 ```
 ### Commonly used dependencies for writing the groovy scripts
 ```xml
@@ -130,7 +93,7 @@ The updater scripts add changed groovy scripts to the updaters registry.
 the module is registered at:
   `/hippo:configuration/hippo:modules/groovyfiles`
 
-Add this dependency to the cms or a dependency of the cms, like the updaters module itself, for local development only. \
+Add this dependency to the cms or a dependency of the cms, like a separate 'updaters' module or 'content', use this for local development only. \
 It is highly recommended to use a profile for it.
 ```xml
   <dependency>
@@ -140,7 +103,7 @@ It is highly recommended to use a profile for it.
   </dependency>
 ```
 By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, 
-add the system property `groovy.sync.watchedModules` in the cargo container.
+set the system property `groovy.sync.watchedModules` in the cargo container.
 ```xml
   <plugin>
     <groupId>org.codehaus.cargo</groupId>
@@ -157,7 +120,10 @@ add the system property `groovy.sync.watchedModules` in the cargo container.
     </configuration>
   </plugin>
 ```
-Notes:
-* The sample app only provides an example for the use of the maven plugin. \
-  It does not take into account usage of buildnumber for the updaters
-* It is recommended to add an info logging level for nl.openweb.hippo.groovy to your development log4j configuration
+### Log4j
+Add an info logging level for nl.openweb.hippo.groovy to your development log4j configuration
+```xml
+    <Logger name="nl.openweb.hippo.groovy" additivity="false" level="info">
+      <AppenderRef ref="messages"/>
+    </Logger>
+```
