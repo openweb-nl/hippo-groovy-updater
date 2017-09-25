@@ -24,6 +24,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hippoecm.repository.util.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
     private static final String WATCHED_MODULES_PROPERTY = "watchedModules";
     private static final String WATCH_DELAY_MILLIS = "watchDelayMillis";
     private static final String MAX_FILE_LENGTH_KB = "maxFileLengthKb";
+    private static final String PARAM_PREFIX = "groovy.sync.";
 
     private List<String> watchedModules;
     private List<String> includedFiles;
@@ -59,7 +61,14 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
 
     private List<String> getMultipleStringConfig(final Node configNode, final String propertyName, final String[] defaultValue) {
         String[] values = getMultipleStringPropertyOrDefault(configNode, propertyName, defaultValue);
-        return Collections.unmodifiableList(Arrays.asList(values));
+        String[] systemPropertyChecked = getMultipleStringFromSystemProperty(propertyName, values);
+        log.debug("Configuration value for " + propertyName + " = " + StringUtils.join(systemPropertyChecked, ";"));
+        return Collections.unmodifiableList(Arrays.asList(systemPropertyChecked));
+    }
+
+    private String[] getMultipleStringFromSystemProperty(final String propertyName, final String[] defaultValue){
+        String propValue = System.getProperty(PARAM_PREFIX + propertyName);
+        return StringUtils.isNotBlank(propValue) ? propValue.split(";") : defaultValue;
     }
 
     private String[] getMultipleStringPropertyOrDefault(final Node configNode, final String propertyName, final String[] defaultValue) {
