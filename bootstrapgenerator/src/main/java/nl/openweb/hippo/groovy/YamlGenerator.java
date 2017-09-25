@@ -44,6 +44,7 @@ import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.DefaultBootstrap;
 import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
+import static nl.openweb.hippo.groovy.Generator.getBootstrap;
 import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.getUpdater;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
@@ -139,7 +140,14 @@ public abstract class YamlGenerator {
      */
     public static String getUpdateScriptYamlFilename(final File basePath, final File file) {
         final String fileName = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
-        return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)) + YAML_EXTENSION;
+        final Bootstrap bootstrap = getBootstrap(file);
+
+        String versionString = bootstrap != null && bootstrap.contentroot().equals(Bootstrap.ContentRoot.QUEUE) &&
+                bootstrap.reload() && !bootstrap.version().isEmpty() ?
+            "-v" + bootstrap.version() :
+                StringUtils.EMPTY;
+
+        return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)) + versionString + YAML_EXTENSION;
     }
 
     /**
