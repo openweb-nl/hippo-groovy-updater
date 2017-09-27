@@ -25,7 +25,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
-import static nl.openweb.hippo.groovy.Generator.addClassPath;
 
 /**
  * Groovy Updater Maven Plugin to generate bootstrap from groovy files
@@ -42,8 +41,6 @@ public abstract class GroovyToUpdaterBootstrap extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         logPluginConfigurationItems();
         getLog().info("Add outputDirectory to classpath for project files: " + targetDir.getPath());
-        addClassPath(targetDir.getPath());
-
         getProcessor().processUpdateScripts();
     }
 

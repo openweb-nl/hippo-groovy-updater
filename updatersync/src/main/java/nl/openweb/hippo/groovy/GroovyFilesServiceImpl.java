@@ -37,9 +37,6 @@ package nl.openweb.hippo.groovy;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -70,11 +67,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
 
     private static final Logger log = LoggerFactory.getLogger(GroovyFilesServiceImpl.class);
 
-    public GroovyFilesServiceImpl() {
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-        URL[] urls = ((URLClassLoader) cl).getURLs();
-        Arrays.stream(urls).map(URL::getPath).forEach(Generator::addClassPath);
-    }
+    public GroovyFilesServiceImpl() {}
 
     private static void warnAndThrow(final String message, final Object... args) {
         throw new GroovyFileException(warn(message, args));

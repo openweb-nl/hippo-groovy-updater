@@ -59,16 +59,6 @@ public abstract class Generator {
         return gcl.parseClass(interpretCode);
     }
 
-    /**
-     * Add a classpath to the groovy parsing engine, for example if the groovy script uses classes from within the
-     * project
-     *
-     * @param path path to add to the classpath
-     */
-    public static void addClassPath(final String path) {
-        gcl.addClasspath(path);
-    }
-
     public static String stripAnnotations(final String script, final Class<?>... classes) {
         String result = script;
         for (final Class<?> aClass : classes) {
