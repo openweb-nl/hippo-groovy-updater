@@ -22,7 +22,7 @@ Minimal use for the Updater definition
 ```
 Bootstrap definition is optional 
 ```groovy
-* @Bootstrap(reload = true)
+@Bootstrap(reload = true)
 ```
 ## Use of the maven plugin
 In the root pom, add the repositories:
@@ -62,7 +62,7 @@ In the build section of the (new) module containing the groovy updater scripts, 
   </plugin>
 ```
 
-####These are the configuration keys of the plugin:
+#### These are the configuration keys of the plugin:
 * **sourceDir** the source of the groovy files  *(default: ${project.build.scriptSourceDirectory})*
 * **targetDir**  where to generate the bootstrap *(default: ${project.build.outputDirectory})*      
 * **initializeNamePrefix** prefix in the ecm-extension.xml nodenames *(default:hippo-updater-)*                                   
