@@ -49,8 +49,8 @@ import org.hippoecm.repository.util.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
+import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
 import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
 import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
@@ -106,7 +106,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         scriptNode.setProperty(HIPPOSYS_PARAMETERS, updater.parameters());
         scriptNode.setProperty(updater.xpath().isEmpty() ? HIPPOSYS_PATH : HIPPOSYS_QUERY,
                 updater.xpath().isEmpty() ? updater.path() : updater.xpath());
-        scriptNode.setProperty(HIPPOSYS_SCRIPT, stripAnnotations(content, Updater.class, Bootstrap.class, Bootstrap.ContentRoot.class));
+        scriptNode.setProperty(HIPPOSYS_SCRIPT, stripAnnotations(content, getAnnotationClasses()));
         scriptNode.setProperty(HIPPOSYS_THROTTLE, updater.throttle());
     }
 

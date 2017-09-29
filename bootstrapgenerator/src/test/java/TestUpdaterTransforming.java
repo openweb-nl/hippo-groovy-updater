@@ -36,12 +36,14 @@ import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Generator.getAnnotation;
+import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
 import static nl.openweb.hippo.groovy.Generator.getBootstrap;
 import static nl.openweb.hippo.groovy.Generator.getFullAnnotation;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class TestUpdaterTransforming {
@@ -87,8 +89,7 @@ public class TestUpdaterTransforming {
         String content = FileUtils.fileRead(file);
         String expectedContent = FileUtils.fileRead(resultFile);
 
-        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class));
-        assertEquals("failed stripping", expectedContent, stripAnnotations(content, Updater.class, Bootstrap.class, Bootstrap.ContentRoot.class));
+        assertEquals("failed stripping", expectedContent, stripAnnotations(content, getAnnotationClasses()));
 
     }
 
@@ -152,8 +153,8 @@ public class TestUpdaterTransforming {
 
     @Test
     public void extractAnnotation() throws URISyntaxException, IOException {
-        URL testfileUrl = getClass().getResource( "updater.groovy");
-        URL testfileUrl2 = getClass().getResource( "updater-noimport.groovy");
+        URL testfileUrl = getClass().getResource("updater.groovy");
+        URL testfileUrl2 = getClass().getResource("updater-noimport.groovy");
 
         String content = FileUtils.fileRead(new File(testfileUrl.toURI()));
         String content2 = FileUtils.fileRead(new File(testfileUrl2.toURI()));
@@ -199,4 +200,16 @@ public class TestUpdaterTransforming {
         assertEquals(bootstrapFull, getFullAnnotation(content, Bootstrap.class));
         assertEquals(bootstrapFull2, getFullAnnotation(content2, Bootstrap.class));
     }
+
+    @Test
+    public void getAnnotationClassesTest() throws Exception {
+        List<Class<?>> classes = getAnnotationClasses();
+
+        assertEquals(3, classes.size());
+        assertTrue(classes.contains(Bootstrap.class));
+        assertTrue(classes.contains(Updater.class));
+        assertTrue(classes.contains(Bootstrap.ContentRoot.class));
+    }
+
+
 }

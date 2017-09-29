@@ -34,12 +34,11 @@ import nl.openweb.hippo.groovy.annotations.Updater;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
+    public static final String NEWLINE = "\n";
     private static final String REGEX_WHITESPACE = "\\s*";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
     private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
-    public static final String NEWLINE = "\n";
-
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
 
     /**
@@ -52,6 +51,7 @@ public abstract class Generator {
     public static Class getInterpretingClass(final File file) throws IOException {
         gcl.clearCache();
         String script = FileUtils.fileRead(file);
+
         String interpretCode = "import " + Bootstrap.class.getCanonicalName() + ";";
         interpretCode += "import " + Bootstrap.ContentRoot.class.getCanonicalName() + ";";
         interpretCode += getFullAnnotation(script, Updater.class) + getFullAnnotation(script, Bootstrap.class);
@@ -59,7 +59,7 @@ public abstract class Generator {
         return gcl.parseClass(interpretCode);
     }
 
-    public static String stripAnnotations(final String script, final Class<?>... classes) {
+    public static String stripAnnotations(final String script, final List<Class<?>> classes) {
         String result = script;
         for (final Class<?> aClass : classes) {
             if (result.contains(aClass.getPackage().getName()) &&
@@ -114,7 +114,7 @@ public abstract class Generator {
         return Collections.unmodifiableList(allFiles);
     }
 
-    public static final Updater getUpdater(final File file){
+    public static final Updater getUpdater(final File file) {
         final Updater updater;
         try {
             final Class scriptClass = getInterpretingClass(file);
@@ -125,7 +125,7 @@ public abstract class Generator {
         return updater;
     }
 
-    public static final Bootstrap getBootstrap(final File file){
+    public static final Bootstrap getBootstrap(final File file) {
         final Bootstrap bootstrap;
         try {
             final Class scriptClass = getInterpretingClass(file);
@@ -134,5 +134,14 @@ public abstract class Generator {
             return null;
         }
         return bootstrap;
+    }
+
+    /**
+     * Technically it's not just Annotations, it's all classes from the Annotations library
+     * This is a convenience method.
+     * @return
+     */
+    public static List<Class<?>> getAnnotationClasses() {
+        return Arrays.asList(Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
     }
 }

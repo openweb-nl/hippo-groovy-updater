@@ -44,6 +44,7 @@ import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.DefaultBootstrap;
 import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
+import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
 import static nl.openweb.hippo.groovy.Generator.getBootstrap;
 import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.getUpdater;
@@ -111,7 +112,7 @@ public abstract class YamlGenerator {
      * Do some useful tweaks to make the script pleasant and readable
      */
     private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
+        final String stripAnnotations = stripAnnotations(script, getAnnotationClasses());
         return removeEmptyIndents(stripAnnotations);
     }
 

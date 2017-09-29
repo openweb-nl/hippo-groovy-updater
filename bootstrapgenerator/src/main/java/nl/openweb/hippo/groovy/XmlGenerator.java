@@ -113,7 +113,7 @@ public final class XmlGenerator extends Generator{
      * Do some useful tweaks to make the script pleasant and readable
      */
     private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
+        final String stripAnnotations = stripAnnotations(script, getAnnotationClasses());
         return wrap(stripAnnotations);
     }
 
