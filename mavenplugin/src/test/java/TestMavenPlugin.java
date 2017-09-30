@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorYAML;
-import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.getScriptClasses;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -66,7 +66,7 @@ public class TestMavenPlugin{
         processor.setSourceDir(input);
         processor.setTargetDir(xml_output);
 
-        processor.processUpdateScripts(getGroovyFiles(input));
+        processor.processUpdateScripts(getScriptClasses(input));
         File xml_expected = new File(getClass().getResource("target_xml").toURI());
 
         compareFolders(xml_expected, xml_output);
@@ -98,7 +98,7 @@ public class TestMavenPlugin{
         }
         targetResource.mkdirs();
         Files.copy(resource.toPath(), targetResource.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        processor.processUpdateScripts(getGroovyFiles(input));
+        processor.processUpdateScripts(getScriptClasses(input));
         File yaml_expected = new File(getClass().getResource("target_yaml").toURI());
 
         compareFolders(yaml_expected, yaml_output);

@@ -24,21 +24,21 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
 import nl.openweb.hippo.groovy.Generator;
+import nl.openweb.hippo.groovy.ScriptClassFactory;
 import nl.openweb.hippo.groovy.XmlGenerator;
 import nl.openweb.hippo.groovy.YamlGenerator;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
+import nl.openweb.hippo.groovy.model.ScriptClass;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Generator.getAnnotation;
 import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
-import static nl.openweb.hippo.groovy.Generator.getBootstrap;
-import static nl.openweb.hippo.groovy.Generator.getFullAnnotation;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
@@ -64,12 +64,12 @@ public class TestUpdaterTransforming {
         File resultFileYaml = new File(testfileResultUrlYaml.toURI());
 
 
-        Node updateScriptNode = XmlGenerator.getUpdateScriptNode(file);
+        Node updateScriptNode = XmlGenerator.getUpdateScriptNode(getInterpretingClass(file));
         StringWriter writer = new StringWriter();
 
         getMarshaller().marshal(updateScriptNode, writer);
         final String xml = writer.toString();
-        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(file));
+        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(getInterpretingClass(file)));
 
         String expectedContent = FileUtils.fileRead(resultFile);
         String expectedContentYaml = FileUtils.fileRead(resultFileYaml);
@@ -89,7 +89,7 @@ public class TestUpdaterTransforming {
         String content = FileUtils.fileRead(file);
         String expectedContent = FileUtils.fileRead(resultFile);
 
-        assertEquals("failed stripping", expectedContent, stripAnnotations(content, getAnnotationClasses()));
+        assertEquals("failed stripping", expectedContent, stripAnnotations(content));
 
     }
 
@@ -97,8 +97,8 @@ public class TestUpdaterTransforming {
     public void generateHippoEcmExtensions() throws URISyntaxException, IOException, JAXBException {
         URI resourceURI = getClass().getResource("").toURI();
         File root = new File(resourceURI);
-        List<File> groovyFiles = Generator.getGroovyFiles(root);
-        Node node = XmlGenerator.getEcmExtensionNode(root, new File(root, "target"), groovyFiles, "my-updater-prefix-");
+        List<ScriptClass> scriptClasses = ScriptClassFactory.getScriptClasses(root);
+        Node node = XmlGenerator.getEcmExtensionNode(root, new File(root, "target"), scriptClasses, "my-updater-prefix-");
 
         StringWriter writer = new StringWriter();
 
@@ -115,8 +115,8 @@ public class TestUpdaterTransforming {
     public void generateNewHippoEcmExtensions() throws URISyntaxException, IOException, JAXBException {
         URI resourceURI = getClass().getResource("sub").toURI();
         File root = new File(resourceURI);
-        List<File> groovyFiles = Generator.getGroovyFiles(root);
-        Node node = XmlGenerator.getEcmExtensionNode(root, new File(root, "target"), groovyFiles, "my-updater-prefix-");
+        List<ScriptClass> scriptClasses = ScriptClassFactory.getScriptClasses(root);
+        Node node = XmlGenerator.getEcmExtensionNode(root, new File(root, "target"), scriptClasses, "my-updater-prefix-");
 
         StringWriter writer = new StringWriter();
 
@@ -136,19 +136,22 @@ public class TestUpdaterTransforming {
         List<File> groovyFiles = Generator.getGroovyFiles(root);
 
         //registry or unversioned scripts
-        List<Pair<File, Bootstrap>> reloadByActionList = groovyFiles.stream().map(file -> Pair.of(file, getBootstrap(file)))
-                .filter(pair -> pair.getValue() != null &&
-                        pair.getValue().reload())
-                .filter(pair -> pair.getValue().contentroot().equals(Bootstrap.ContentRoot.REGISTRY) ||
-                        pair.getValue().version().isEmpty())
+        List<ScriptClass> scriptClassesToReload = groovyFiles.stream().map(ScriptClassFactory::getInterpretingClass)
+                .filter(this::isRegistryOrUnversioned)
                 .collect(toList());
 
-        String yaml = YamlGenerator.getHcmActionsList(root, new File(root, "target"), reloadByActionList);
+        String yaml = YamlGenerator.getHcmActionsList(root, new File(root, "target"), scriptClassesToReload);
 
         URL testfileResultUrl = getClass().getResource("resulting-hcm-actions.yaml");
         File resultFile = new File(testfileResultUrl.toURI());
         String expectedContent = FileUtils.fileRead(resultFile);
         assertEquals(expectedContent, yaml);
+    }
+
+    private boolean isRegistryOrUnversioned(ScriptClass scriptClass){
+        Bootstrap bootstrap = scriptClass.getBootstrap(true);
+        return bootstrap.reload() &&
+                (bootstrap.version().isEmpty() || bootstrap.contentroot().equals(Bootstrap.ContentRoot.REGISTRY));
     }
 
     @Test
@@ -194,11 +197,6 @@ public class TestUpdaterTransforming {
         assertEquals("", bootstrap2);
         assertEquals(updaterFull2, fullUpdater2);
         assertEquals(bootstrapFull2, fullBootstrap2);
-
-        assertEquals(updaterFull, getFullAnnotation(content, Updater.class));
-        assertEquals(updaterFull2, getFullAnnotation(content2, Updater.class));
-        assertEquals(bootstrapFull, getFullAnnotation(content, Bootstrap.class));
-        assertEquals(bootstrapFull2, getFullAnnotation(content2, Bootstrap.class));
     }
 
     @Test

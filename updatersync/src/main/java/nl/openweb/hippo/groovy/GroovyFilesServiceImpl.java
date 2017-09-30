@@ -44,16 +44,14 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.xml.bind.JAXBException;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.hippoecm.repository.util.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.openweb.hippo.groovy.annotations.Updater;
-import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
+import nl.openweb.hippo.groovy.model.ScriptClass;
 import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
-import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
-import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
@@ -86,15 +84,11 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
     }
 
     public static void setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
-        String content;
-        final Updater updater;
-        try {
-            content = FileUtils.fileRead(file);
-            Class scriptClass = getInterpretingClass(file);
-            updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
-        } catch (IOException e) {
+        ScriptClass scriptClass = getInterpretingClass(file);
+        if(!scriptClass.isValid()){
             return;
         }
+        final Updater updater = scriptClass.getUpdater();
         String name = updater.name();
         if(parent.hasNode(name)){
             parent.getNode(name).remove();
@@ -106,7 +100,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         scriptNode.setProperty(HIPPOSYS_PARAMETERS, updater.parameters());
         scriptNode.setProperty(updater.xpath().isEmpty() ? HIPPOSYS_PATH : HIPPOSYS_QUERY,
                 updater.xpath().isEmpty() ? updater.path() : updater.xpath());
-        scriptNode.setProperty(HIPPOSYS_SCRIPT, stripAnnotations(content, getAnnotationClasses()));
+        scriptNode.setProperty(HIPPOSYS_SCRIPT, scriptClass.getContent());
         scriptNode.setProperty(HIPPOSYS_THROTTLE, updater.throttle());
     }
 

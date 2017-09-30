@@ -35,19 +35,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.codehaus.plexus.util.FileUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
-import nl.openweb.hippo.groovy.model.DefaultBootstrap;
+import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
-import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
-import static nl.openweb.hippo.groovy.Generator.getBootstrap;
-import static nl.openweb.hippo.groovy.Generator.getInterpretingClass;
-import static nl.openweb.hippo.groovy.Generator.getUpdater;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
@@ -74,26 +69,14 @@ public abstract class YamlGenerator {
     /**
      * Parse file to updater node
      *
-     * @param file the groovy file to use for source
+     * @param scriptClass class to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
-    public static Map<String, Map<String, Object>> getUpdateYamlScript(final File file) {
-        final String content;
-        final Updater updater;
-        try {
-            content = FileUtils.fileRead(file);
-            updater = getUpdater(file);
-        } catch (final IOException e) {
-            return null;
-        }
-
-        if (updater == null) {
-            return null;
-        }
+    public static Map<String, Map<String, Object>> getUpdateYamlScript(final ScriptClass scriptClass) {
+        final Updater updater = scriptClass.getUpdater();
 
         Map<String, Object> properties = new LinkedHashMap<>();
         addNotEmptyProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, properties);
-
 
         addNotEmptyProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), properties);
         addNotEmptyProperty(HIPPOSYS_DESCRIPTION, updater.description(), properties);
@@ -103,27 +86,21 @@ public abstract class YamlGenerator {
             addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
         }
         addNotEmptyProperty(HIPPOSYS_QUERY, updater.xpath(), properties);
-        addNotEmptyProperty(HIPPOSYS_SCRIPT, processScriptContent(content), properties);
+        addNotEmptyProperty(HIPPOSYS_SCRIPT, processScriptContent(scriptClass.getContent()), properties);
         addNotEmptyProperty(HIPPOSYS_THROTTLE, updater.throttle(), properties);
-        return Collections.singletonMap(getBootstrapPath(file), properties);
+        return Collections.singletonMap(getBootstrapPath(scriptClass), properties);
     }
 
     /**
      * Do some useful tweaks to make the script pleasant and readable
      */
     private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script, getAnnotationClasses());
+        final String stripAnnotations = stripAnnotations(script);
         return removeEmptyIndents(stripAnnotations);
     }
 
     private static String removeEmptyIndents(String content) {
         return content.replaceAll(NEWLINE + "\\s+" + NEWLINE, NEWLINE + NEWLINE);
-    }
-
-    public static String getSingleQuoteWrapped(final String value) {
-        return StringUtils.isNotBlank(value)
-                ? "'" + value + "'" + NEWLINE
-                : StringUtils.EMPTY;
     }
 
     private static void addNotEmptyProperty(final String name, final Object value, final Map<String, Object> properties) {
@@ -135,13 +112,13 @@ public abstract class YamlGenerator {
     /**
      * Get update script yaml filename
      *
-     * @param basePath path to make returning path relative to
-     * @param file     File object for the groovy script
+     * @param basePath      path to make returning path relative to
+     * @param scriptClass   File object for the groovy script
      * @return the path, relative to the basePath, converted \ to /, with yaml extension
      */
-    public static String getUpdateScriptYamlFilename(final File basePath, final File file) {
-        final String fileName = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
-        final Bootstrap bootstrap = getBootstrap(file);
+    public static String getUpdateScriptYamlFilename(final File basePath, final ScriptClass scriptClass) {
+        final String fileName = scriptClass.getFile().getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
+        final Bootstrap bootstrap = scriptClass.getBootstrap();
 
         String versionString = bootstrap != null && bootstrap.contentroot().equals(Bootstrap.ContentRoot.QUEUE) &&
                 bootstrap.reload() && !bootstrap.version().isEmpty() ?
@@ -153,15 +130,14 @@ public abstract class YamlGenerator {
 
     /**
      * Generate hcm-action.yaml to reload updaters
-     *
-     * @param sourcePath sourcepath of groovy files
+     *  @param sourcePath sourcepath of groovy files
      * @param targetDir  the target where the ecmExtensions from resources would be
      * @param files      groovy files, need to be relative to the source path
      */
-    public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<Pair<File, Bootstrap>> files) throws IOException {
-        Map<Double, Map<String, String>> collect = files.stream()
-                .filter(pair -> Objects.nonNull(pair.getValue()))
-                .map(pair -> Pair.of(pair.getValue().version().isEmpty() ? 0.1 : Double.valueOf(pair.getValue().version()), getBootstrapPath(pair.getKey())))
+    public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<ScriptClass> files) throws IOException {
+        Map<Double, Map<String, String>> collect = files.stream().filter(script ->
+        script.getBootstrap() != null)
+                .map(script -> Pair.of(script.getBootstrap().version().isEmpty() ? 0.1 : Double.valueOf(script.getBootstrap().version()), getBootstrapPath(script)))
                 .filter(pair -> Objects.nonNull(pair.getValue()))
                 .collect(groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toMap(item -> item, item -> "reload"))));
 
@@ -170,7 +146,6 @@ public abstract class YamlGenerator {
         if (hcmHcmActionsSource.isEmpty() && collect.isEmpty()) {
             return null; // target will remain as is
         }
-
 
         final List<Map<Double, Object>> hcmActionsTarget = getExistingHcmActionsSequence(targetDir);
         Map<Double, Object> collected = new HashMap<>(collect);
@@ -221,18 +196,11 @@ public abstract class YamlGenerator {
         return getYamlString(out);
     }
 
-    private static String getBootstrapPath(final File file) {
-        try {
-            final Class scriptClass = getInterpretingClass(file);
-            Bootstrap bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
-                    scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
-            Updater updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
-            Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
-            return "/hippo:configuration/hippo:update/hippo:" + contentroot + "/" + updater.name();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private static String getBootstrapPath(final ScriptClass scriptClass) {
+        Updater updater = scriptClass.getUpdater();
+        Bootstrap bootstrap = scriptClass.getBootstrap(true);
+        Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
+        return "/hippo:configuration/hippo:update/hippo:" + contentroot + "/" + updater.name();
     }
 
     public static String getYamlString(Map<?, ?> map) {

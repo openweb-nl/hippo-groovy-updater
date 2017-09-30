@@ -17,7 +17,6 @@
 package nl.openweb.hippo.groovy;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,11 +25,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.plexus.util.FileUtils;
 
 import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
+import nl.openweb.hippo.groovy.model.ScriptClass;
+import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
@@ -41,27 +41,9 @@ public abstract class Generator {
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
 
-    /**
-     * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
-     *
-     * @param file the file to make a class representation of
-     * @return a fake class with the Bootstrap and Updater annotations
-     * @throws IOException
-     */
-    public static Class getInterpretingClass(final File file) throws IOException {
-        gcl.clearCache();
-        String script = FileUtils.fileRead(file);
-
-        String interpretCode = "import " + Bootstrap.class.getCanonicalName() + ";";
-        interpretCode += "import " + Bootstrap.ContentRoot.class.getCanonicalName() + ";";
-        interpretCode += getFullAnnotation(script, Updater.class) + getFullAnnotation(script, Bootstrap.class);
-        interpretCode += "class Interpreting { }";
-        return gcl.parseClass(interpretCode);
-    }
-
-    public static String stripAnnotations(final String script, final List<Class<?>> classes) {
+    public static String stripAnnotations(final String script) {
         String result = script;
-        for (final Class<?> aClass : classes) {
+        for (final Class<?> aClass : getAnnotationClasses()) {
             if (result.contains(aClass.getPackage().getName()) &&
                     result.contains(aClass.getSimpleName())) {
                 result = stripAnnotation(result, aClass.getSimpleName());
@@ -87,12 +69,12 @@ public abstract class Generator {
         return matcher.find() ? matcher.group() : StringUtils.EMPTY;
     }
 
-    public static String getFullAnnotation(final String script, final Class clazz) {
+    public static String getAnnotation(final String script, final Class clazz) {
         String simple = getAnnotation(script, clazz.getSimpleName());
 
         return StringUtils.isNotBlank(simple) ?
-                simple.replaceFirst("@" + clazz.getSimpleName(), "@" + clazz.getName()) :
-                getAnnotation(script, clazz.getName());
+                simple :
+                getAnnotation(script, clazz.getCanonicalName());
     }
 
     /**
@@ -114,28 +96,6 @@ public abstract class Generator {
         return Collections.unmodifiableList(allFiles);
     }
 
-    public static final Updater getUpdater(final File file) {
-        final Updater updater;
-        try {
-            final Class scriptClass = getInterpretingClass(file);
-            updater = (Updater) scriptClass.getDeclaredAnnotation(Updater.class);
-        } catch (final IOException e) {
-            return null;
-        }
-        return updater;
-    }
-
-    public static final Bootstrap getBootstrap(final File file) {
-        final Bootstrap bootstrap;
-        try {
-            final Class scriptClass = getInterpretingClass(file);
-            bootstrap = (Bootstrap) scriptClass.getDeclaredAnnotation(Bootstrap.class);
-        } catch (final IOException e) {
-            return null;
-        }
-        return bootstrap;
-    }
-
     /**
      * Technically it's not just Annotations, it's all classes from the Annotations library
      * This is a convenience method.
@@ -144,4 +104,5 @@ public abstract class Generator {
     public static List<Class<?>> getAnnotationClasses() {
         return Arrays.asList(Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
     }
+
 }

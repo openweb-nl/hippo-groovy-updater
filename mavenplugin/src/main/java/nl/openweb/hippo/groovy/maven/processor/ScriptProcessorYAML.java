@@ -22,13 +22,12 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import nl.openweb.hippo.groovy.YamlGenerator;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
+import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.toList;
-import static nl.openweb.hippo.groovy.Generator.getBootstrap;
 import static nl.openweb.hippo.groovy.YamlGenerator.HCM_ACTIONS_NAME;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateScriptYamlFilename;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateYamlScript;
@@ -43,24 +42,22 @@ public class ScriptProcessorYAML extends ScriptProcessor{
      * @param groovyFiles groovy scripts to parse
      * @return list of valid parsed groovy files
      */
-    public List<File> processUpdateScripts(final List<File> groovyFiles) throws MojoExecutionException {
-        List<File> files = super.processUpdateScripts(groovyFiles);
-        processReloading(files);
-        return files;
+    public List<ScriptClass> processUpdateScripts(final List<ScriptClass> groovyFiles) throws MojoExecutionException {
+        List<ScriptClass> scripts = super.processUpdateScripts(groovyFiles);
+        processReloading(scripts);
+        return scripts;
     }
 
-    private void processReloading(final List<File> files) throws MojoExecutionException {
+    private void processReloading(final List<ScriptClass> files) throws MojoExecutionException {
         try {
-            List<Pair<File, Bootstrap>> pairs = files.stream().map(file -> Pair.of(file, getBootstrap(file)))
-                    .filter(pair -> pair.getValue() != null &&
-                            pair.getValue().reload())
+            //registry or unversioned scripts, versioned queue scripts already have versioned filenames
+            List<ScriptClass> reloadByActionList = files.stream()
+                    .filter(scriptClass -> scriptClass.getBootstrap() != null &&
+                            scriptClass.getBootstrap().reload() &&
+                            (scriptClass.getBootstrap().contentroot().equals(Bootstrap.ContentRoot.REGISTRY) || scriptClass.getBootstrap().version().isEmpty()))
                     .collect(toList());
 
-            //registry or unversioned scripts, versioned queue scripts already have versioned filenames
-            List<Pair<File, Bootstrap>> reloadByActionList = pairs.stream()
-                    .filter(pair -> pair.getValue().contentroot().equals(Bootstrap.ContentRoot.REGISTRY) ||
-                            pair.getValue().version().isEmpty())
-                    .collect(toList());
+
             String hcmActionsList = YamlGenerator.getHcmActionsList(sourceDir, targetDir, reloadByActionList);
             if(StringUtils.isNotBlank(hcmActionsList)){
                 marshal(hcmActionsList, new File(targetDir, HCM_ACTIONS_NAME));
@@ -73,18 +70,18 @@ public class ScriptProcessorYAML extends ScriptProcessor{
     /**
      * Generate updater yaml from groovy file
      *
-     * @param file groovy script to parse
+     * @param scriptClass groovy script to parse
      * @return parsing successful
      */
     @Override
-    protected boolean processUpdateScript(final File file) {
-        getLog().debug("Converting " + file.getAbsolutePath() + " to updater yaml");
-        final String updateScript = getYamlString(getUpdateYamlScript(file));
+    protected boolean processUpdateScript(final ScriptClass scriptClass) {
+        getLog().debug("Converting " + scriptClass.getFile().getAbsolutePath() + " to updater yaml");
+        final String updateScript = getYamlString(getUpdateYamlScript(scriptClass));
         if (StringUtils.isBlank(updateScript)) {
-            getLog().warn("Skipping file: " + file.getAbsolutePath() + ", not a valid updatescript");
+            getLog().warn("Skipping file: " + scriptClass.getFile().getAbsolutePath() + ", not a valid updatescript");
             return false;
         }
-        final File targetFile = new File(new File(targetDir, yamlPath), getUpdateScriptYamlFilename(sourceDir, file));
+        final File targetFile = new File(new File(targetDir, yamlPath), getUpdateScriptYamlFilename(sourceDir, scriptClass));
         targetFile.getParentFile().mkdirs();
         return marshal(updateScript, targetFile);
     }

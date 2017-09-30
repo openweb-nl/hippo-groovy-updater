@@ -21,8 +21,9 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.toList;
-import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.getScriptClasses;
 
 public abstract class ScriptProcessor {
     protected Log log;
@@ -35,28 +36,28 @@ public abstract class ScriptProcessor {
      *
      * @return list of valid parsed groovy files
      */
-    public List<File> processUpdateScripts() throws MojoExecutionException {
-        return processUpdateScripts(getGroovyFiles(sourceDir));
+    public List<ScriptClass> processUpdateScripts() throws MojoExecutionException {
+        return processUpdateScripts(getScriptClasses(sourceDir));
     }
 
     /**
      * Generate updater files from groovy scripts
      *
-     * @param groovyFiles groovy scripts to parse
+     * @param scriptClasses groovy scripts to parse
      * @return list of valid parsed groovy files
      */
-    public List<File> processUpdateScripts(final List<File> groovyFiles) throws MojoExecutionException {
-        getLog().info("Converting " + groovyFiles.size() + " groovy scripts to bootstrap format");
-        return groovyFiles.stream().filter(this::processUpdateScript).collect(toList());
+    public List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClasses) throws MojoExecutionException {
+        getLog().info("Converting " + scriptClasses.size() + " groovy scripts to bootstrap format");
+        return scriptClasses.stream().filter(this::processUpdateScript).collect(toList());
     }
 
     /**
      * Generate updater bootstrap file from groovy file
      *
-     * @param file groovy script to parse
+     * @param scriptClass groovy script to parse
      * @return parsing successful
      */
-    abstract protected boolean processUpdateScript(final File file);
+    abstract protected boolean processUpdateScript(final ScriptClass scriptClass);
 
     protected Log getLog(){
         return log;

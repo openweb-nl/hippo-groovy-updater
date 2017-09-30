@@ -17,7 +17,6 @@
 package nl.openweb.hippo.groovy;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -27,13 +26,12 @@ import javax.xml.bind.JAXB;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.plexus.util.FileUtils;
 
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.Constants;
 import nl.openweb.hippo.groovy.model.Constants.ValueType;
-import nl.openweb.hippo.groovy.model.DefaultBootstrap;
+import nl.openweb.hippo.groovy.model.ScriptClass;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import nl.openweb.hippo.groovy.model.jaxb.Property;
 import static nl.openweb.hippo.groovy.Marshal.CDATA_START;
@@ -71,22 +69,11 @@ public final class XmlGenerator extends Generator{
     /**
      * Parse file to updater node
      *
-     * @param file the groovy file to use for source
+     * @param script the script to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
-    public static Node getUpdateScriptNode(final File file) {
-        final String content;
-        final Updater updater;
-        try {
-            content = FileUtils.fileRead(file);
-            updater = getUpdater(file);
-        } catch (final IOException e) {
-            return null;
-        }
-
-        if (updater == null) {
-            return null;
-        }
+    public static Node getUpdateScriptNode(final ScriptClass script) {
+        final Updater updater = script.getUpdater();
         final Node rootnode = XmlGenerator.createNode(updater.name());
         final List<Object> properties = rootnode.getNodeOrProperty();
         properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, ValueType.NAME));
@@ -98,7 +85,7 @@ public final class XmlGenerator extends Generator{
             addStringPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
         }
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_QUERY, updater.xpath());
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, processScriptContent(content));
+        addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, processScriptContent(script.getContent()));
         properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), ValueType.LONG));
         return rootnode;
     }
@@ -113,7 +100,7 @@ public final class XmlGenerator extends Generator{
      * Do some useful tweaks to make the script pleasant and readable
      */
     private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script, getAnnotationClasses());
+        final String stripAnnotations = stripAnnotations(script);
         return wrap(stripAnnotations);
     }
 
@@ -142,10 +129,10 @@ public final class XmlGenerator extends Generator{
      *
      * @param sourcePath        sourcepath of groovy files
      * @param targetDir         the target where the ecmExtensions from resources would be
-     * @param files             groovy files, need to be relative to the source path
+     * @param scriptClasses             groovy files, need to be relative to the source path
      * @param updaterNamePrefix prefix for the initialize items nodes   @return Node object representing the hippoecm-extension to marshall to xml
      */
-    public static Node getEcmExtensionNode(final File sourcePath, final File targetDir, final List<File> files, final String updaterNamePrefix) {
+    public static Node getEcmExtensionNode(final File sourcePath, final File targetDir, final List<ScriptClass> scriptClasses, final String updaterNamePrefix) {
         final List<Object> properties;
         final Node rootnode;
         final Node ecmExtensionsScriptNode = getExistingEcmExtensions(sourcePath);
@@ -158,7 +145,7 @@ public final class XmlGenerator extends Generator{
         final Stream<Node> sourceStream = Stream.concat(ecmExtensionsScriptNode == null ? Stream.empty() : ecmExtensionsScriptNode.getSubnodes().stream(),
                 ecmExtensionTargetNode == null ? Stream.empty() : ecmExtensionTargetNode.getSubnodes().stream());
 
-        Stream.concat(sourceStream, files.stream().map(file -> createInitializeItem(sourcePath, file, updaterNamePrefix)).filter(Objects::nonNull))
+        Stream.concat(sourceStream, scriptClasses.stream().map(script -> createInitializeItem(sourcePath, script, updaterNamePrefix)).filter(Objects::nonNull))
                 .sorted(Comparator.comparingDouble(node -> Double.valueOf(node.getPropertyByName(HIPPO_SEQUENCE).getSingleValue())))
                 .forEach(properties::add);
         return rootnode;
@@ -176,25 +163,14 @@ public final class XmlGenerator extends Generator{
      * Create initialize item for the given file
      *
      * @param sourcePath sourcepath of groovy files
-     * @param file       groovy files, need to be relative to the source path
+     * @param scriptClass       groovy files, need to be relative to the source path
      * @param namePrefix prefix for the initialize items nodes
      * @return Node object representing the initializeitem node for the hippoecm-extension to marshall to xml
      */
-    private static Node createInitializeItem(final File sourcePath, final File file, final String namePrefix) {
-        final Bootstrap bootstrap;
-        try {
-            final Class scriptClass = getInterpretingClass(file);
-            if (scriptClass.isAnnotationPresent(Updater.class)) {
-                bootstrap = (Bootstrap) (scriptClass.isAnnotationPresent(Bootstrap.class) ?
-                        scriptClass : DefaultBootstrap.class).getAnnotation(Bootstrap.class);
-            } else {
-                return null;
-            }
+    private static Node createInitializeItem(final File sourcePath, final ScriptClass scriptClass, final String namePrefix) {
+        final Bootstrap bootstrap = scriptClass.getBootstrap(true);
 
-        } catch (final IOException e) {
-            return null;
-        }
-        final String resource = getUpdateScriptXmlFilename(sourcePath, file);
+        final String resource = getUpdateScriptXmlFilename(sourcePath, scriptClass.getFile());
         final Node initNode = createNode(namePrefix + resource);
         final List<Object> properties = initNode.getNodeOrProperty();
 
