@@ -24,6 +24,10 @@ Bootstrap definition is optional
 ```groovy
 @Bootstrap(reload = true)
 ```
+To exclude a groovy script from being bootstrapped:
+```groovy
+@Exclude
+```
 ## Use of the maven plugin
 In the root pom, add the repositories:
 ```xml
