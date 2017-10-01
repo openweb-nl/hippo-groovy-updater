@@ -43,7 +43,6 @@ import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
-import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
@@ -86,17 +85,9 @@ public abstract class YamlGenerator {
             addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
         }
         addNotEmptyProperty(HIPPOSYS_QUERY, updater.xpath(), properties);
-        addNotEmptyProperty(HIPPOSYS_SCRIPT, processScriptContent(scriptClass.getContent()), properties);
+        addNotEmptyProperty(HIPPOSYS_SCRIPT, removeEmptyIndents(scriptClass.getContent()), properties);
         addNotEmptyProperty(HIPPOSYS_THROTTLE, updater.throttle(), properties);
         return Collections.singletonMap(getBootstrapPath(scriptClass), properties);
-    }
-
-    /**
-     * Do some useful tweaks to make the script pleasant and readable
-     */
-    private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script);
-        return removeEmptyIndents(stripAnnotations);
     }
 
     private static String removeEmptyIndents(String content) {

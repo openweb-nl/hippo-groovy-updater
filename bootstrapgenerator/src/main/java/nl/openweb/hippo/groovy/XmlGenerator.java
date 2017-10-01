@@ -85,7 +85,7 @@ public final class XmlGenerator extends Generator{
             addStringPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
         }
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_QUERY, updater.xpath());
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, processScriptContent(script.getContent()));
+        addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, wrap(script.getContent()));
         properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), ValueType.LONG));
         return rootnode;
     }
@@ -94,14 +94,6 @@ public final class XmlGenerator extends Generator{
         if (StringUtils.isNotBlank(value)) {
             properties.add(createProperty(name, value, ValueType.STRING));
         }
-    }
-
-    /**
-     * Do some useful tweaks to make the script pleasant and readable
-     */
-    private static String processScriptContent(final String script) {
-        final String stripAnnotations = stripAnnotations(script);
-        return wrap(stripAnnotations);
     }
 
     /**
