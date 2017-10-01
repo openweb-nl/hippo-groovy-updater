@@ -83,10 +83,19 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         return warning;
     }
 
-    public static void setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
+    /**
+     * do the update or create a node of the groovy file
+     * this will not save the session
+     *
+     * @param parent parentnode of the Node te be
+     * @param file file to transform into a Node
+     * @return success
+     * @throws RepositoryException
+     */
+    public static boolean setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
         ScriptClass scriptClass = getInterpretingClass(file);
         if(!scriptClass.isValid()){
-            return;
+            return false;
         }
         final Updater updater = scriptClass.getUpdater();
         String name = updater.name();
@@ -102,6 +111,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
                 updater.xpath().isEmpty() ? updater.path() : updater.xpath());
         scriptNode.setProperty(HIPPOSYS_SCRIPT, scriptClass.getContent());
         scriptNode.setProperty(HIPPOSYS_THROTTLE, updater.throttle());
+        return true;
     }
 
     private Node getRegistryNode(Session session) throws RepositoryException {
@@ -119,8 +129,17 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         }
     }
 
-    public void importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException {
-        setUpdateScriptJcrNode(getRegistryNode(session), file);
-        session.save();
+    /**
+     * This method will take care of updating the node in the repository
+     *
+     * @param session jcr session tu use
+     * @param file file to transform
+     * @return success
+     * @throws IOException
+     * @throws RepositoryException
+     * @throws JAXBException
+     */
+    public boolean importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException {
+        return setUpdateScriptJcrNode(getRegistryNode(session), file);
     }
 }

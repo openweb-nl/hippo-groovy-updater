@@ -26,6 +26,7 @@ import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
 
 public class ScriptClassFactory {
     private static GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
@@ -38,26 +39,40 @@ public class ScriptClassFactory {
      * @throws IOException
      */
     public static ScriptClass getInterpretingClass(final File file) {
+        return  getInterpretingClassStrippingCode(file);
+    }
+
+    public static ScriptClass getInterpretingClassStrippingCode(final File file) {
         groovyClassLoader.clearCache();
         String script;
         try {
             script = FileUtils.fileRead(file);
+
+            String imports = getAnnotationClasses().stream()
+                    .map(clazz -> "import " + clazz.getCanonicalName() + ";")
+                    .collect(joining());
+
+            String interpretCode =  imports + script.replaceAll("import .+\n", "")
+                    .replaceAll("package .*\n", "")
+                    .replaceAll("extends .*\\{", "{");
+
+            interpretCode = scrubAnnotations(interpretCode);
+
+            return new ScriptClass(file, groovyClassLoader.parseClass(interpretCode), script);
         } catch (IOException e) {
             return null;
         }
-        String imports = Generator.getAnnotationClasses().stream()
-                .map(clazz -> "import " + clazz.getCanonicalName() + ";")
-                .collect(joining());
-        String annotations = Generator.getAnnotationClasses().stream()
-                .map(clazz -> Generator.getAnnotation(script, clazz))
-                .collect(joining());
+    }
 
-        String interpretCode = imports + annotations + "class Interpreting { }";
-        return new ScriptClass(file, groovyClassLoader.parseClass(interpretCode), script);
+    private static String scrubAnnotations(final String interpretCode) {
+        String possibleAnnotationNames = getAnnotationClasses().stream()
+                .map(annotation -> annotation.getCanonicalName().replace(".", "\\.") +"|"+ annotation.getSimpleName())
+                .collect(joining("|"));
+        return interpretCode.replaceAll("@((?!" + possibleAnnotationNames + ")[\\w]+)(\\([^\\)]*\\))?", "");
     }
 
     public static List<ScriptClass> getScriptClasses(File sourceDir){
         return Generator.getGroovyFiles(sourceDir).stream().map(ScriptClassFactory::getInterpretingClass)
-                .filter(ScriptClass::isValid).collect(toList());
+                .filter(script -> script.isValid() && !script.isExcluded()).collect(toList());
     }
 }

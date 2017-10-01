@@ -31,6 +31,7 @@ import nl.openweb.hippo.groovy.Generator;
 import nl.openweb.hippo.groovy.ScriptClassFactory;
 import nl.openweb.hippo.groovy.XmlGenerator;
 import nl.openweb.hippo.groovy.YamlGenerator;
+import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
@@ -48,10 +49,12 @@ import static org.junit.Assert.assertTrue;
 
 public class TestUpdaterTransforming {
     @Test
-    public void testXmlUpdatescriptCreating() throws URISyntaxException, IOException, JAXBException {
+    public void testUpdatescriptCreating() throws URISyntaxException, IOException, JAXBException {
         checkGeneration("updater");
         checkGeneration("updater2");
         checkGeneration("updater3");
+        checkGeneration("sub/updater2");
+        checkGeneration("sub/updater3");
     }
 
     private void checkGeneration(String name) throws URISyntaxException, IOException, JAXBException {
@@ -203,7 +206,8 @@ public class TestUpdaterTransforming {
     public void getAnnotationClassesTest() throws Exception {
         List<Class<?>> classes = getAnnotationClasses();
 
-        assertEquals(3, classes.size());
+        assertEquals(4, classes.size());
+        assertTrue(classes.contains(Exclude.class));
         assertTrue(classes.contains(Bootstrap.class));
         assertTrue(classes.contains(Updater.class));
         assertTrue(classes.contains(Bootstrap.ContentRoot.class));

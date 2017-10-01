@@ -138,8 +138,11 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
 
                 log.info("Reloading groovyfile '{}'", relChangedDir.toString());
                 try {
-                    service.importGroovyFile(session, changedPath.toFile());
-                    processedPaths.add(changedPath);
+                    if(service.importGroovyFile(session, changedPath.toFile())) {
+                        processedPaths.add(changedPath);
+                    }else{
+                        log.info("** Failed to process '{}' as a groovy updater", relChangedDir.toString());
+                    }
                 } catch (IOException e) {
                     // we do not have to take action. An IOException is the result of a concurrent change (delete/move)
                     // during creation or processing of the archive. The change will trigger a new import

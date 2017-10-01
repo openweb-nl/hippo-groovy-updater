@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sv:node sv:name="Test Sub Updater 3" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>hipposys:updaterinfo</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:batchsize" sv:type="Long">
+    <sv:value>10</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:dryrun" sv:type="Boolean">
+    <sv:value>false</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:query" sv:type="String">
+    <sv:value>//element(*, hippo:document)</sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:script" sv:type="String">
+    <sv:value><![CDATA[
+import com.sun.xml.txw2.annotation.XmlElement
+import org.onehippo.repository.update.BaseNodeUpdateVisitor
+
+import javax.jcr.Node
+import javax.xml.bind.annotation.XmlAccessOrder
+import javax.xml.bind.annotation.XmlAccessorOrder
+
+//This has several comments, since real code can do the same
+/*
+Also, there is some other annotation
+ * you never know if there is another thing working it
+ * Of course, maybe it could break using:( in a comment
+ */
+@XmlElement
+@XmlAccessorOrder(
+        value = XmlAccessOrder.ALPHABETICAL
+)
+//
+class TestSubUpdater3 extends BaseNodeUpdateVisitor {
+    boolean doUpdate(Node node) {
+        log.info "manipulate node < > & an %^&* /> {}", node.path
+        return true
+    }
+
+    boolean undoUpdate(Node node) {
+        throw new UnsupportedOperationException('Updater does not implement undoUpdate method')
+    }
+}
+]]></sv:value>
+  </sv:property>
+  <sv:property sv:name="hipposys:throttle" sv:type="Long">
+    <sv:value>1000</sv:value>
+  </sv:property>
+</sv:node>

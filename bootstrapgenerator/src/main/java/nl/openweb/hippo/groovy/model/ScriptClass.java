@@ -18,6 +18,7 @@ package nl.openweb.hippo.groovy.model;
 
 import java.io.File;
 
+import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
@@ -62,4 +63,6 @@ public class ScriptClass {
     public boolean isValid() {
         return interpretClass.isAnnotationPresent(Updater.class);
     }
+
+    public boolean isExcluded() {return interpretClass.isAnnotationPresent(Exclude.class); }
 }

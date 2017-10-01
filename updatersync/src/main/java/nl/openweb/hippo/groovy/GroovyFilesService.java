@@ -52,5 +52,5 @@ public interface GroovyFilesService {
 
     public void importGroovyFiles(Session session, File file) throws IOException, RepositoryException;
 
-    public void importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException;
+    public boolean importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException;
 }

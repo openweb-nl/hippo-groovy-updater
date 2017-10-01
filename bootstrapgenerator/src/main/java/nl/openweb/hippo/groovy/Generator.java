@@ -27,10 +27,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import groovy.lang.GroovyClassLoader;
+import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
-import nl.openweb.hippo.groovy.model.ScriptClass;
-import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
@@ -57,7 +56,7 @@ public abstract class Generator {
     private static String stripAnnotation(final String script, final String className) {
         final String annotationName = "@" + className;
         final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
-        String s = script.replaceAll(regex, NEWLINE);
+        String s = script.replaceAll(regex, StringUtils.EMPTY);
         s = s.replaceAll("(\n){3,}", "\n\n");
         return s;
     }
@@ -102,7 +101,7 @@ public abstract class Generator {
      * @return
      */
     public static List<Class<?>> getAnnotationClasses() {
-        return Arrays.asList(Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
+        return Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
     }
 
 }
