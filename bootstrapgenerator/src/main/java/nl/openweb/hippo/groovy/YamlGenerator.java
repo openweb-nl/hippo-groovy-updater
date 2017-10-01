@@ -19,7 +19,6 @@ package nl.openweb.hippo.groovy;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +41,7 @@ import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.groupingBy;
+import static nl.openweb.hippo.groovy.Generator.HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
@@ -61,6 +61,8 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_T
 public abstract class YamlGenerator {
 
     public static final String HCM_ACTIONS_NAME = "hcm-actions.yaml";
+    private static final String RELOAD = "reload";
+    private static final double DEFAULT_ACTION_VERSION = 0.1;
 
     protected YamlGenerator() {
     }
@@ -128,9 +130,9 @@ public abstract class YamlGenerator {
     public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<ScriptClass> files) throws IOException {
         Map<Double, Map<String, String>> collect = files.stream().filter(script ->
         script.getBootstrap() != null)
-                .map(script -> Pair.of(script.getBootstrap().version().isEmpty() ? 0.1 : Double.valueOf(script.getBootstrap().version()), getBootstrapPath(script)))
+                .map(script -> Pair.of(script.getBootstrap().version().isEmpty() ? DEFAULT_ACTION_VERSION : Double.valueOf(script.getBootstrap().version()), getBootstrapPath(script)))
                 .filter(pair -> Objects.nonNull(pair.getValue()))
-                .collect(groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toMap(item -> item, item -> "reload"))));
+                .collect(groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toMap(item -> item, item -> RELOAD))));
 
         final List<Map<Double, Object>> hcmHcmActionsSource = getExistingHcmActionsSequence(sourcePath);
 
@@ -191,17 +193,11 @@ public abstract class YamlGenerator {
         Updater updater = scriptClass.getUpdater();
         Bootstrap bootstrap = scriptClass.getBootstrap(true);
         Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
-        return "/hippo:configuration/hippo:update/hippo:" + contentroot + "/" + updater.name();
+        return HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX + contentroot + "/" + updater.name();
     }
 
     public static String getYamlString(Map<?, ?> map) {
         return map == null ? StringUtils.EMPTY : getYaml().dump(map);
-    }
-
-    public static void writeToYamlFile(Map<?, ?> map, File file) throws IOException {
-        if (map != null) {
-            getYaml().dump(map, new FileWriter(file, false));
-        }
     }
 
     private static Yaml getYaml() {

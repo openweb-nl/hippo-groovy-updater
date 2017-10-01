@@ -53,8 +53,8 @@ public class ScriptClassFactory {
                     .collect(joining());
 
             String interpretCode =  imports + script.replaceAll("import .+\n", "")
-                    .replaceAll("package .*\n", "")
-                    .replaceAll("extends .*\\{", "{");
+                    .replaceAll("package\\s.*\n", "")
+                    .replaceAll("extends\\s.*\\{[^\\u001a]*", "{}");
 
             interpretCode = scrubAnnotations(interpretCode);
 

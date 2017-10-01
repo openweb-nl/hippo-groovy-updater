@@ -57,5 +57,6 @@ public interface Constants {
         String NAME = "Name";
         String LONG = "Long";
         String BOOLEAN = "Boolean";
+        String DOUBLE = "Double";
     }
 }

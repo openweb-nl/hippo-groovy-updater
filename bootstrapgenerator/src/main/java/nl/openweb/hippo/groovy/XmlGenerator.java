@@ -170,10 +170,10 @@ public final class XmlGenerator extends Generator{
 
         properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEITEM, ValueType.NAME));
         addStringPropertyIfNotEmpty(properties, HIPPO_CONTENTRESOURCE, resource);
-        properties.add(createProperty(HIPPO_CONTENTROOT, "/hippo:configuration/hippo:update/hippo:" + contentroot, ValueType.STRING));
-        properties.add(createProperty(HIPPO_SEQUENCE, bootstrap.sequence(), "Double"));
+        properties.add(createProperty(HIPPO_CONTENTROOT, HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX + contentroot, ValueType.STRING));
+        properties.add(createProperty(HIPPO_SEQUENCE, bootstrap.sequence(), ValueType.DOUBLE));
         if (bootstrap.reload()) {
-            properties.add(createProperty(HIPPO_RELOADONSTARTUP, bootstrap.reload(), "Boolean"));
+            properties.add(createProperty(HIPPO_RELOADONSTARTUP, bootstrap.reload(), ValueType.BOOLEAN));
         }
         addStringPropertyIfNotEmpty(properties, HIPPO_VERSION, bootstrap.version());
         return initNode;

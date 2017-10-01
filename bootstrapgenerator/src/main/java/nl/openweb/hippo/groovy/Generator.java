@@ -39,6 +39,8 @@ public abstract class Generator {
     private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
+    public static final List<Class<?>> ANNOTATED_CLASSES = Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
+    protected static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
 
     public static String stripAnnotations(final String script) {
         String result = script;
@@ -101,7 +103,7 @@ public abstract class Generator {
      * @return
      */
     public static List<Class<?>> getAnnotationClasses() {
-        return Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
+        return ANNOTATED_CLASSES;
     }
 
 }
