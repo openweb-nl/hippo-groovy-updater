@@ -36,7 +36,6 @@ public class ScriptClassFactory {
      *
      * @param file the file to make a class representation of
      * @return a fake class with the Bootstrap and Updater annotations
-     * @throws IOException
      */
     public static ScriptClass getInterpretingClass(final File file) {
         return  getInterpretingClassStrippingCode(file);

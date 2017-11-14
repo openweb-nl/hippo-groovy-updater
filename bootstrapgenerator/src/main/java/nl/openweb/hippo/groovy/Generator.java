@@ -100,7 +100,7 @@ public abstract class Generator {
     /**
      * Technically it's not just Annotations, it's all classes from the Annotations library
      * This is a convenience method.
-     * @return
+     * @return a list of the annotation classes
      */
     public static List<Class<?>> getAnnotationClasses() {
         return ANNOTATED_CLASSES;

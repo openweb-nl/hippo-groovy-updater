@@ -123,6 +123,8 @@ public final class XmlGenerator extends Generator{
      * @param targetDir         the target where the ecmExtensions from resources would be
      * @param scriptClasses             groovy files, need to be relative to the source path
      * @param updaterNamePrefix prefix for the initialize items nodes   @return Node object representing the hippoecm-extension to marshall to xml
+     *
+     * @return the Node object for the ecm-extensions
      */
     public static Node getEcmExtensionNode(final File sourcePath, final File targetDir, final List<ScriptClass> scriptClasses, final String updaterNamePrefix) {
         final List<Object> properties;

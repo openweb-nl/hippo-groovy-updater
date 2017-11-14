@@ -123,9 +123,11 @@ public abstract class YamlGenerator {
 
     /**
      * Generate hcm-action.yaml to reload updaters
-     *  @param sourcePath sourcepath of groovy files
+     * @param sourcePath sourcepath of groovy files
      * @param targetDir  the target where the ecmExtensions from resources would be
      * @param files      groovy files, need to be relative to the source path
+     *
+     * @throws IOException
      */
     public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<ScriptClass> files) throws IOException {
         Map<Double, Map<String, String>> collect = files.stream().filter(script ->
