@@ -49,6 +49,11 @@ import static org.junit.Assert.assertTrue;
 
 public class TestUpdaterTransforming {
     @Test
+    public void testScrubbingAnnotations() throws JAXBException, IOException, URISyntaxException {
+        checkGeneration("sub/annotatestrip");
+    }
+
+    @Test
     public void testUpdatescriptCreating() throws URISyntaxException, IOException, JAXBException {
         checkGeneration("updater");
         checkGeneration("updater2");

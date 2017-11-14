@@ -84,7 +84,7 @@
     <hippo.repository.version>4.2.1</hippo.repository.version>
     <glassfish.jaxb-runtime.version>2.2.11</glassfish.jaxb-runtime.version>
     <javax.jcr.version>2.0</javax.jcr.version>
-    <junit.version>4.8.2</junit.version>
+    <junit.version>4.12</junit.version>
     <maven.plugin.api.version>3.5.0</maven.plugin.api.version>
     <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
     <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
@@ -95,7 +95,7 @@
     <maven.plugin.plugin.version>3.5</maven.plugin.plugin.version>
     <plexus-utils.version>3.0.24</plexus-utils.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j.version>1.7.21</slf4j.version>
+    <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
   <dependencyManagement>
@@ -152,6 +152,12 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
         <scope>test</scope>
       </dependency>

@@ -67,7 +67,7 @@ public class ScriptClassFactory {
         String possibleAnnotationNames = getAnnotationClasses().stream()
                 .map(annotation -> annotation.getCanonicalName().replace(".", "\\.") +"|"+ annotation.getSimpleName())
                 .collect(joining("|"));
-        return interpretCode.replaceAll("@((?!" + possibleAnnotationNames + ")[\\w]+)(\\([^\\)]*\\))?", "");
+        return interpretCode.replaceAll("@((?!" + possibleAnnotationNames + ")[\\w]+)([\\s]+|(\\([^\\)]*\\)))", "");
     }
 
     public static List<ScriptClass> getScriptClasses(File sourceDir){

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.io.File;
+
+package nl.openweb.hippo.groovy.maven;import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
@@ -50,11 +51,11 @@ public class TestMavenPlugin{
         processor.setInitializeNamePrefix("sampleproject-update-");
         processor.setLog(new SystemStreamLog());
 
-        File input = new File(getClass().getResource("src/scripts").toURI());
-        File xml_output = new File(new File(getClass().getResource("").toURI()), "xml_output");
+        File input = new File(getClass().getResource("/src/scripts").toURI());
+        File xml_output = new File(new File(getClass().getResource("/").toURI()), "xml_output");
 
         File resource = new File(getClass()
-                .getResource("src/resources/hippoecm-extension.xml").toURI());
+                .getResource("/src/resources/hippoecm-extension.xml").toURI());
         File targetResource = new File(xml_output, "hippoecm-extension.xml");
         if(xml_output.exists()){
             FileUtils.deleteDirectory(xml_output);
@@ -67,7 +68,7 @@ public class TestMavenPlugin{
         processor.setTargetDir(xml_output);
 
         processor.processUpdateScripts(getScriptClasses(input));
-        File xml_expected = new File(getClass().getResource("target_xml").toURI());
+        File xml_expected = new File(getClass().getResource("/target_xml").toURI());
 
         compareFolders(xml_expected, xml_output);
     }
@@ -78,11 +79,11 @@ public class TestMavenPlugin{
         processor.setInitializeNamePrefix("my-hippo-updater-");
         processor.setLog(new SystemStreamLog());
 
-        File input = new File(getClass().getResource("src/scripts").toURI());
-        File yaml_output = new File(new File(getClass().getResource("").toURI()), "yaml_output");
+        File input = new File(getClass().getResource("/src/scripts").toURI());
+        File yaml_output = new File(new File(getClass().getResource("/").toURI()), "yaml_output");
 
         File resource = new File(getClass()
-                .getResource("src/resources/hcm-actions.yaml").toURI());
+                .getResource("/src/resources/hcm-actions.yaml").toURI());
         File targetResource = new File(yaml_output, "hcm-actions.yaml");
         if(yaml_output.exists()){
             FileUtils.deleteDirectory(yaml_output);
@@ -99,7 +100,7 @@ public class TestMavenPlugin{
         targetResource.mkdirs();
         Files.copy(resource.toPath(), targetResource.toPath(), StandardCopyOption.REPLACE_EXISTING);
         processor.processUpdateScripts(getScriptClasses(input));
-        File yaml_expected = new File(getClass().getResource("target_yaml").toURI());
+        File yaml_expected = new File(getClass().getResource("/target_yaml").toURI());
 
         compareFolders(yaml_expected, yaml_output);
     }
@@ -121,7 +122,7 @@ public class TestMavenPlugin{
 
         Files.walkFileTree(expected.toPath(), visitor);
 
-        logger.info("comparing %s paths", expectedFilePaths.size());
+        logger.info("comparing {} paths", expectedFilePaths.size());
         assertContentCompares(expectedFilePaths, resultFilesPaths);
         assertNameCompares(expectedFolderPaths, resultFoldersPaths);
 
@@ -132,7 +133,7 @@ public class TestMavenPlugin{
         for(int i = 1; i < expectedFolderPaths.size(); i++) {
             Path expectedPath = expectedFolderPaths.get(i);
             Path resultPath = resultFoldersPaths.get(i);
-            logger.info("Comparing %s and %s", expectedPath.toString(), resultPath.toString());
+            logger.info("Comparing {} and {}", expectedPath.toString(), resultPath.toString());
             assertEquals(expectedPath.getName(expectedPath.getNameCount() - 1),
                     resultPath.getName(resultPath.getNameCount() - 1));
         }
@@ -144,10 +145,10 @@ public class TestMavenPlugin{
 
             Path expectedPath = expectedPaths.get(i);
             Path resultPath = resultPaths.get(i);
-            logger.info("Comparing %s and %s", expectedPath.toString(), resultPath.toString());
-            assertEquals(expectedPath.getName(expectedPath.getNameCount() - 1),
+            logger.info("Comparing {} and {}", expectedPath.toString(), resultPath.toString());
+            assertEquals("Filecount is wrong", expectedPath.getName(expectedPath.getNameCount() - 1),
                     resultPath.getName(resultPath.getNameCount() - 1));
-            assertEquals(Files.readAllLines(expectedPath), Files.readAllLines(resultPath));
+            assertEquals("Files differ! Incorrect tranform!",Files.readAllLines(expectedPath), Files.readAllLines(resultPath));
         }
     }
 
