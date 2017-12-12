@@ -29,31 +29,13 @@ To exclude a groovy script from being bootstrapped:
 @Exclude
 ```
 ## Use of the maven plugin
-In the root pom, add the repositories:
-```xml
- <repositories>
-    ...
-    <!-- needed for the groovy updater sync module --> 
-    <repository>
-      <id>openweb-maven-releases</id>
-      <url>https://maven.open-web.nl/content/repositories/releases/</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <!-- needed for the maven groovy updater plugin -->
-    <pluginRepository>
-      <id>openweb-maven-releases</id>
-      <url>https://maven.open-web.nl/content/repositories/releases/</url>
-    </pluginRepository>
-  </pluginRepositories>
-```
 In the build section of the (new) module containing the groovy updater scripts, define the execution of the plugin \
 *For Hippo 12 use the *'generate-yaml'* goal.*
 ```xml
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.5</version>
+    <version>1.9</version>
     <executions>
       <execution>
         <id>default-resources</id>
@@ -86,7 +68,7 @@ module:
     <dependency>
       <groupId>nl.openweb.hippo.updater</groupId>
       <artifactId>groovy-updater-annotations</artifactId>
-      <version>1.5</version>
+      <version>1.9</version>
       <scope>provided</scope>
     </dependency>
 ```
@@ -103,7 +85,7 @@ It is highly recommended to use a profile for it.
   <dependency>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
-    <version>1.5</version>
+    <version>1.9</version>
   </dependency>
 ```
 By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, 
