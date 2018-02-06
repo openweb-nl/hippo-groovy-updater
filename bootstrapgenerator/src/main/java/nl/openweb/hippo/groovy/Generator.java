@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,8 +28,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import groovy.lang.GroovyClassLoader;
-import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
+import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
@@ -90,9 +91,12 @@ public abstract class Generator {
         final List<File> allFiles = new ArrayList<>();
         if (groovyFiles != null) {
             allFiles.addAll(Arrays.asList(groovyFiles));
+            Collections.sort(allFiles, Comparator.comparing(File::getName));
         }
         if (directories != null) {
-            Arrays.stream(directories).map(Generator::getGroovyFiles).forEach(allFiles::addAll);
+            Arrays.stream(directories)
+                    .sorted(Comparator.comparing(File::getName))
+                    .map(Generator::getGroovyFiles).forEach(allFiles::addAll);
         }
         return Collections.unmodifiableList(allFiles);
     }
