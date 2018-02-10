@@ -141,6 +141,7 @@ public final class XmlGenerator extends Generator{
 
         Stream.concat(sourceStream, scriptClasses.stream().map(script -> createInitializeItem(sourcePath, script, updaterNamePrefix)).filter(Objects::nonNull))
                 .sorted(Comparator.comparingDouble(node -> Double.valueOf(node.getPropertyByName(HIPPO_SEQUENCE).getSingleValue())))
+                .distinct()
                 .forEach(properties::add);
         return rootnode;
     }

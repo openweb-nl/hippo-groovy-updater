@@ -15,11 +15,13 @@
  */
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -31,17 +33,17 @@ import nl.openweb.hippo.groovy.Generator;
 import nl.openweb.hippo.groovy.ScriptClassFactory;
 import nl.openweb.hippo.groovy.XmlGenerator;
 import nl.openweb.hippo.groovy.YamlGenerator;
-import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
+import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Generator.getAnnotation;
 import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
-import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -135,6 +137,19 @@ public class TestUpdaterTransforming {
 
         String expectedContent = FileUtils.fileRead(resultFile);
         assertEquals(expectedContent, xml);
+
+        // Do it again, multiple runs shouldn't generate duplicates
+        File intermediate = Files.createTempDirectory("test").toFile();
+        FileWriter fileWriter = new FileWriter(new File(intermediate, "hippoecm-extension.xml"));
+        getMarshaller().marshal(node, fileWriter);
+
+        Node node2 = XmlGenerator.getEcmExtensionNode(root, intermediate, scriptClasses, "my-updater-prefix-");
+        StringWriter writer2 = new StringWriter();
+        intermediate.delete();
+        getMarshaller().marshal(node2, writer2);
+        final String xml2 = writer2.toString();
+
+        assertEquals(xml, xml2);
     }
 
     @Test

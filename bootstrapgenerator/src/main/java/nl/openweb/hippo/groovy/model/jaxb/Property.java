@@ -28,6 +28,9 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * <p>
  * Java class for anonymous complex type.
@@ -158,4 +161,33 @@ public class Property {
         this.type = value;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final Property property = (Property) o;
+
+        return new EqualsBuilder()
+                .append(value, property.value)
+                .append(multiple, property.multiple)
+                .append(name, property.name)
+                .append(type, property.type)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(value)
+                .append(multiple)
+                .append(name)
+                .append(type)
+                .toHashCode();
+    }
 }
