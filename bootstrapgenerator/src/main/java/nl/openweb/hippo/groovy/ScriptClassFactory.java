@@ -29,6 +29,8 @@ import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
 
 public class ScriptClassFactory {
+    private static final String LINE_END_WINDOWS = "\r\n";
+    private static final String LINE_END_LINUX = "\n";
     private static GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
     /**
@@ -45,6 +47,7 @@ public class ScriptClassFactory {
         groovyClassLoader.clearCache();
         String script;
         try {
+            ensureLinuxLineEnding(file);
             script = FileUtils.fileRead(file);
 
             String imports = getAnnotationClasses().stream()
@@ -60,6 +63,13 @@ public class ScriptClassFactory {
             return new ScriptClass(file, groovyClassLoader.parseClass(interpretCode), script);
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    private static void ensureLinuxLineEnding(final File file) throws IOException {
+        String content = FileUtils.fileRead(file);
+        if(content.contains(LINE_END_WINDOWS)){
+            FileUtils.fileWrite(file, content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX));
         }
     }
 

@@ -64,6 +64,12 @@ public class TestUpdaterTransforming {
         checkGeneration("sub/updater3");
     }
 
+    private void enforceWindowsFileEndings(File file) throws IOException {
+        String content = FileUtils.fileRead(file);
+        String lfContent = content.replaceAll("\r\n", "\n");
+        FileUtils.fileWrite(file, lfContent.replaceAll("\n", "\r\n"));
+    }
+
     private void checkGeneration(String name) throws URISyntaxException, IOException, JAXBException {
         URL testfileUrl = getClass().getResource(name + ".groovy");
         URL testfileResultUrl = getClass().getResource(name + ".xml");
@@ -73,6 +79,7 @@ public class TestUpdaterTransforming {
         File resultFile = new File(testfileResultUrl.toURI());
         File resultFileYaml = new File(testfileResultUrlYaml.toURI());
 
+        enforceWindowsFileEndings(file);
 
         Node updateScriptNode = XmlGenerator.getUpdateScriptNode(getInterpretingClass(file));
         StringWriter writer = new StringWriter();
