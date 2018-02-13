@@ -20,7 +20,7 @@
 
   <groupId>nl.openweb.hippo.updater</groupId>
   <artifactId>groovy-updater</artifactId>
-  <version>1.10-SNAPSHOT</version>
+  <version>1.10</version>
   <packaging>pom</packaging>
 
   <name>Groovy updater</name>
@@ -33,7 +33,7 @@
     <connection>scm:git:git@github.com:openweb-nl/hippo-groovy-updater.git</connection>
     <developerConnection>scm:git:git@github.com:openweb-nl/hippo-groovy-updater.git</developerConnection>
     <url>https://github.com/openweb-nl/hippo-groovy-updater</url>
-    <tag>HEAD</tag>
+    <tag>groovy-updater-1.10</tag>
   </scm>
 
   <distributionManagement>
