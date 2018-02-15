@@ -35,7 +35,7 @@ In the build section of the (new) module containing the groovy updater scripts, 
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.9</version>
+    <version>1.11</version>
     <executions>
       <execution>
         <id>default-resources</id>
@@ -68,7 +68,7 @@ module:
     <dependency>
       <groupId>nl.openweb.hippo.updater</groupId>
       <artifactId>groovy-updater-annotations</artifactId>
-      <version>1.9</version>
+      <version>1.11</version>
       <scope>provided</scope>
     </dependency>
 ```
@@ -85,7 +85,7 @@ It is highly recommended to use a profile for it.
   <dependency>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
-    <version>1.9</version>
+    <version>1.11</version>
   </dependency>
 ```
 By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, 
