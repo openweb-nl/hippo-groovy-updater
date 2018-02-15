@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import javax.xml.bind.JAXB;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
@@ -191,7 +190,7 @@ public final class XmlGenerator extends Generator{
      */
     public static String getUpdateScriptXmlFilename(final File basePath, final File file) {
         final String fileName = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
-        return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)) + XML_EXTENSION;
+        return sanitizeFileName(fileName) + XML_EXTENSION;
     }
 
     /**

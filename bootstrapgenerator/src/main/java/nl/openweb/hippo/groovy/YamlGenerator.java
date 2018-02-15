@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.yaml.snakeyaml.DumperOptions;
@@ -43,6 +42,7 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
+import static nl.openweb.hippo.groovy.Generator.sanitizeFileName;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
@@ -118,7 +118,7 @@ public abstract class YamlGenerator {
             "-v" + bootstrap.version() :
                 StringUtils.EMPTY;
 
-        return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)) + versionString + YAML_EXTENSION;
+        return sanitizeFileName(fileName) + versionString + YAML_EXTENSION;
     }
 
     /**

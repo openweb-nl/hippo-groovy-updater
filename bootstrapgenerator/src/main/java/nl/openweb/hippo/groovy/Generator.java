@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import groovy.lang.GroovyClassLoader;
@@ -99,6 +100,10 @@ public abstract class Generator {
                     .map(Generator::getGroovyFiles).forEach(allFiles::addAll);
         }
         return Collections.unmodifiableList(allFiles);
+    }
+
+    protected static String sanitizeFileName(final String fileName) {
+        return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)).replaceAll("\\s", "_");
     }
 
     /**
