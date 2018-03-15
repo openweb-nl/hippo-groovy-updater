@@ -51,6 +51,7 @@ In the build section of the (new) module containing the groovy updater scripts, 
 #### These are the configuration keys of the plugin:
 * **sourceDir** the source of the groovy files  *(default: ${project.build.scriptSourceDirectory})*
 * **targetDir**  where to generate the bootstrap *(default: ${project.build.outputDirectory})*      
+* **defaultContentRoot**  default contentroot value _(registry/queue)_ *(default: queue)*      
 * **initializeNamePrefix** prefix in the ecm-extension.xml nodenames *(default:hippo-updater-)*                                   
 * **yamlPath** relative path for the yaml bootstrap files *(default: hcm-content/configuration/update)*
 

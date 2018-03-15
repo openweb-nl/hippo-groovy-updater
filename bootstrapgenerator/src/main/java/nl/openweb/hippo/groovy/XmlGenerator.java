@@ -168,7 +168,7 @@ public final class XmlGenerator extends Generator{
         final Node initNode = createNode(namePrefix + resource);
         final List<Object> properties = initNode.getNodeOrProperty();
 
-        Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
+        Bootstrap.ContentRoot contentroot = getContentroot(bootstrap);
 
         properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEITEM, ValueType.NAME));
         addStringPropertyIfNotEmpty(properties, HIPPO_CONTENTRESOURCE, resource);

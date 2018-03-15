@@ -36,13 +36,15 @@ import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
     public static final String NEWLINE = "\n";
+    public static final List<Class<?>> ANNOTATED_CLASSES = Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
+    protected static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
     private static final String REGEX_WHITESPACE = "\\s*";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
     private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
     private static final GroovyClassLoader gcl = new GroovyClassLoader();
-    public static final List<Class<?>> ANNOTATED_CLASSES = Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
-    protected static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
+
+    protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
 
     public static String stripAnnotations(final String script) {
         String result = script;
@@ -80,6 +82,10 @@ public abstract class Generator {
                 getAnnotation(script, clazz.getCanonicalName());
     }
 
+    public static Bootstrap.ContentRoot getContentroot(final Bootstrap bootstrap) {
+        return bootstrap.contentroot().equals(Bootstrap.ContentRoot.DEFAULT) ? defaultContentRoot : bootstrap.contentroot();
+    }
+
     /**
      * Obtain groovy files from given location
      *
@@ -109,10 +115,14 @@ public abstract class Generator {
     /**
      * Technically it's not just Annotations, it's all classes from the Annotations library
      * This is a convenience method.
+     *
      * @return a list of the annotation classes
      */
     public static List<Class<?>> getAnnotationClasses() {
         return ANNOTATED_CLASSES;
     }
 
+    public static void setDefaultContentRoot(Bootstrap.ContentRoot contentRoot){
+        defaultContentRoot = contentRoot;
+    }
 }

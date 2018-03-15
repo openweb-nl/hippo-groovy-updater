@@ -42,6 +42,7 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
+import static nl.openweb.hippo.groovy.Generator.getContentroot;
 import static nl.openweb.hippo.groovy.Generator.sanitizeFileName;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
@@ -113,7 +114,7 @@ public abstract class YamlGenerator {
         final String fileName = scriptClass.getFile().getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
         final Bootstrap bootstrap = scriptClass.getBootstrap();
 
-        String versionString = bootstrap != null && bootstrap.contentroot().equals(Bootstrap.ContentRoot.QUEUE) &&
+        String versionString = bootstrap != null && getContentroot(bootstrap).equals(Bootstrap.ContentRoot.QUEUE) &&
                 bootstrap.reload() && !bootstrap.version().isEmpty() ?
             "-v" + bootstrap.version() :
                 StringUtils.EMPTY;
@@ -194,7 +195,7 @@ public abstract class YamlGenerator {
     private static String getBootstrapPath(final ScriptClass scriptClass) {
         Updater updater = scriptClass.getUpdater();
         Bootstrap bootstrap = scriptClass.getBootstrap(true);
-        Bootstrap.ContentRoot contentroot = bootstrap.contentroot();
+        Bootstrap.ContentRoot contentroot = getContentroot(bootstrap);
         return HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX + contentroot + "/" + updater.name();
     }
 

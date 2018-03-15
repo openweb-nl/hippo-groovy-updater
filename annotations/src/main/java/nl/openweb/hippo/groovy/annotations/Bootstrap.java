@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Bootstrap {
     enum ContentRoot{
+        DEFAULT(""),
         QUEUE("queue"),
         REGISTRY("registry");
 
@@ -41,7 +42,8 @@ public @interface Bootstrap {
             return value;
         }
     }
-    ContentRoot contentroot() default ContentRoot.QUEUE;
+
+    ContentRoot contentroot() default ContentRoot.DEFAULT;
 
     double sequence() default 99999.0d;
 

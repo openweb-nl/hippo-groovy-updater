@@ -24,6 +24,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import nl.openweb.hippo.groovy.Generator;
+import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
 
 /**
@@ -37,6 +39,8 @@ public abstract class GroovyToUpdaterBootstrap extends AbstractMojo {
     private File targetDir;
     @Parameter(defaultValue = "hippo-updater-", property = "initializeNamePrefix")
     private String initializeNamePrefix;
+    @Parameter(defaultValue = "queue", property = "defaultContentRoot")
+    private String defaultContentRoot;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         logPluginConfigurationItems();
@@ -58,6 +62,8 @@ public abstract class GroovyToUpdaterBootstrap extends AbstractMojo {
         processor.setTargetDir(targetDir);
         processor.setSourceDir(sourceDir);
         processor.setInitializeNamePrefix(initializeNamePrefix);
+        Generator.setDefaultContentRoot(defaultContentRoot.equalsIgnoreCase("registry") ?
+                Bootstrap.ContentRoot.REGISTRY : Bootstrap.ContentRoot.QUEUE);
         return processor;
     }
 
