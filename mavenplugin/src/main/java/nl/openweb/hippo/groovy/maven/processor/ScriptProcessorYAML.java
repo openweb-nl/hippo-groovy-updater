@@ -24,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
+import nl.openweb.hippo.groovy.Generator;
 import nl.openweb.hippo.groovy.YamlGenerator;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.model.ScriptClass;
@@ -54,9 +55,9 @@ public class ScriptProcessorYAML extends ScriptProcessor{
             List<ScriptClass> reloadByActionList = files.stream()
                     .filter(scriptClass -> scriptClass.getBootstrap() != null &&
                             scriptClass.getBootstrap().reload() &&
-                            (scriptClass.getBootstrap().contentroot().equals(Bootstrap.ContentRoot.REGISTRY) || scriptClass.getBootstrap().version().isEmpty()))
+                            (Generator.getContentroot(scriptClass.getBootstrap()).equals(Bootstrap.ContentRoot.REGISTRY) ||
+                                    scriptClass.getBootstrap().version().isEmpty()))
                     .collect(toList());
-
 
             String hcmActionsList = YamlGenerator.getHcmActionsList(sourceDir, targetDir, reloadByActionList);
             if(StringUtils.isNotBlank(hcmActionsList)){

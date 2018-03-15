@@ -27,6 +27,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import nl.openweb.hippo.groovy.Generator;
@@ -44,12 +45,20 @@ import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
+import static nl.openweb.hippo.groovy.XmlGenerator.getContentroot;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 
 public class TestUpdaterTransforming {
+
+    @Before
+    public void setup(){
+        Generator.setDefaultContentRoot(Bootstrap.ContentRoot.QUEUE);
+    }
+
     @Test
     public void testScrubbingAnnotations() throws JAXBException, IOException, URISyntaxException {
         checkGeneration("sub/annotatestrip");
@@ -64,7 +73,7 @@ public class TestUpdaterTransforming {
         checkGeneration("sub/updater3");
     }
 
-    private void enforceWindowsFileEndings(File file) throws IOException {
+    public static void enforceWindowsFileEndings(File file) throws IOException {
         String content = FileUtils.fileRead(file);
         String lfContent = content.replaceAll("\r\n", "\n");
         FileUtils.fileWrite(file, lfContent.replaceAll("\n", "\r\n"));
@@ -92,7 +101,6 @@ public class TestUpdaterTransforming {
         String expectedContentYaml = FileUtils.fileRead(resultFileYaml);
         assertEquals("failed xml parsing of " + name, expectedContent, xml);
         assertEquals("failed yaml parsing of " + name, expectedContentYaml, yaml);
-
     }
 
     @Test
@@ -181,7 +189,7 @@ public class TestUpdaterTransforming {
     private boolean isRegistryOrUnversioned(ScriptClass scriptClass){
         Bootstrap bootstrap = scriptClass.getBootstrap(true);
         return bootstrap.reload() &&
-                (bootstrap.version().isEmpty() || bootstrap.contentroot().equals(Bootstrap.ContentRoot.REGISTRY));
+                (bootstrap.version().isEmpty() || getContentroot(bootstrap).equals(Bootstrap.ContentRoot.REGISTRY));
     }
 
     @Test
@@ -240,5 +248,38 @@ public class TestUpdaterTransforming {
         assertTrue(classes.contains(Bootstrap.ContentRoot.class));
     }
 
+    @Test
+    public void checkDefaultingContentRootYamlFile() throws URISyntaxException, IOException, JAXBException {
+        Generator.setDefaultContentRoot(Bootstrap.ContentRoot.REGISTRY);
+        URL testfileUrl = getClass().getResource("updater.groovy");
+        URL testfileResultUrlYaml = getClass().getResource("updater.yaml");
 
+        File file = new File(testfileUrl.toURI());
+        File resultFileYaml = new File(testfileResultUrlYaml.toURI());
+        TestUpdaterTransforming.enforceWindowsFileEndings(file);
+
+        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(getInterpretingClass(file)));
+
+        String unExpectedContentYaml = FileUtils.fileRead(resultFileYaml);
+        assertNotEquals("failed yaml parsing of updater", unExpectedContentYaml, yaml);
+    }
+
+    @Test
+    public void checkEcmExtensionGeneration() throws URISyntaxException, JAXBException, IOException, ClassNotFoundException {
+        Generator.setDefaultContentRoot(Bootstrap.ContentRoot.REGISTRY);
+        URI resourceURI = getClass().getResource("sub").toURI();
+        File root = new File(resourceURI);
+        List<ScriptClass> scriptClasses = ScriptClassFactory.getScriptClasses(root);
+        Node node = XmlGenerator.getEcmExtensionNode(root, new File(root, "target"), scriptClasses, "my-updater-prefix-");
+
+        StringWriter writer = new StringWriter();
+
+        getMarshaller().marshal(node, writer);
+        final String xml = writer.toString();
+        URL testfileResultUrl = getClass().getResource("sub-hippoecm-extension.xml");
+        File resultFile = new File(testfileResultUrl.toURI());
+
+        String unExpectedContent = FileUtils.fileRead(resultFile);
+        assertNotEquals(unExpectedContent, xml);
+    }
 }
