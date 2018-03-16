@@ -49,28 +49,28 @@ public final class Tools {
 
     public static void compareFolders(File expected, File result) throws IOException {
         final CollectFilesVisitor visitor = new CollectFilesVisitor();
+        final CollectFilesVisitor visitor2 = new CollectFilesVisitor();
         List<Path> resultFilesPaths = new ArrayList<>();
         List<Path> resultFoldersPaths = new ArrayList<>();
+        List<Path> expectedFilePaths = new ArrayList<>();
+        List<Path> expectedFolderPaths = new ArrayList<>();
 
         visitor.setCollectedFilesList(resultFilesPaths);
         visitor.setCollectedFoldersList(resultFoldersPaths);
+        visitor2.setCollectedFilesList(expectedFilePaths);
+        visitor2.setCollectedFoldersList(expectedFolderPaths);
 
         Files.walkFileTree(result.toPath(), visitor);
-
-        List<Path> expectedFilePaths = new ArrayList<>();
-        List<Path> expectedFolderPaths = new ArrayList<>();
-        visitor.setCollectedFilesList(expectedFilePaths);
-        visitor.setCollectedFoldersList(expectedFolderPaths);
-
-        Files.walkFileTree(expected.toPath(), visitor);
+        Files.walkFileTree(expected.toPath(), visitor2);
 
         logger.info("comparing {} paths", expectedFilePaths.size());
         assertContentCompares(expectedFilePaths, resultFilesPaths);
-        assertNameCompares(expectedFolderPaths, resultFoldersPaths);
+        assertNameCompares(expectedFilePaths, resultFilesPaths, expected.getAbsolutePath(), result.getAbsolutePath());
+        assertNameCompares(expectedFolderPaths, resultFoldersPaths, expected.getAbsolutePath(), result.getAbsolutePath());
 
     }
 
-    private static void assertNameCompares(final List<Path> expectedFolderPaths, final List<Path> resultFoldersPaths) {
+    private static void assertNameCompares(final List<Path> expectedFolderPaths, final List<Path> resultFoldersPaths, final String expectedSourcePath, final String resultSourcePath) {
         assertEquals(expectedFolderPaths.size(), resultFoldersPaths.size());
         for(int i = 1; i < expectedFolderPaths.size(); i++) {
             Path expectedPath = expectedFolderPaths.get(i);
@@ -78,13 +78,14 @@ public final class Tools {
             logger.info("Comparing {} and {}", expectedPath.toString(), resultPath.toString());
             assertEquals(expectedPath.getName(expectedPath.getNameCount() - 1),
                     resultPath.getName(resultPath.getNameCount() - 1));
+            assertEquals(expectedPath.toString().substring(expectedSourcePath.length()),
+                    resultPath.toString().substring(resultSourcePath.length()));
         }
     }
 
     private static void assertContentCompares(final List<Path> expectedPaths, final List<Path> resultPaths) throws IOException {
         assertEquals(expectedPaths.size(), resultPaths.size());
         for(int i = 0; i < expectedPaths.size(); i++){
-
             Path expectedPath = expectedPaths.get(i);
             Path resultPath = resultPaths.get(i);
             logger.info("Comparing {} and {}", expectedPath.toString(), resultPath.toString());
