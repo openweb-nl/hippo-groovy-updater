@@ -35,7 +35,7 @@ In the build section of the (new) module containing the groovy updater scripts, 
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-maven-plugin</artifactId>
-    <version>1.11</version>
+    <version>${groovy-updater-maven-plugin.version}</version>
     <executions>
       <execution>
         <id>default-resources</id>
@@ -49,11 +49,22 @@ In the build section of the (new) module containing the groovy updater scripts, 
 ```
 
 #### These are the configuration keys of the plugin:
-* **sourceDir** the source of the groovy files  *(default: ${project.build.scriptSourceDirectory})*
-* **targetDir**  where to generate the bootstrap *(default: ${project.build.outputDirectory})*      
-* **defaultContentRoot**  default contentroot value _(registry/queue)_ *(default: queue)*      
-* **initializeNamePrefix** prefix in the ecm-extension.xml nodenames *(default:hippo-updater-)*                                   
-* **yamlPath** relative path for the yaml bootstrap files *(default: hcm-content/configuration/update)*
+* **sourceDir** 
+  *  the source of the groovy files  
+    ```default: ${project.build.scriptSourceDirectory}```
+* **targetDir** 
+  *  where to generate the bootstrap  
+     ```(default: ${project.build.outputDirectory})```
+* **defaultContentRoot** (since 1.12)
+  *  default contentroot value _(registry/queue)_   
+     ```(default: queue)```
+* **initializeNamePrefix** 
+  *  prefix in the ecm-extension.xml nodenames   
+     ```(default:hippo-updater-) ``` 
+* **yamlPath** 
+  *  relative path for the yaml bootstrap files  
+     ```(default: hcm-content/configuration/update)```
+
 
 When using a separate module in Hippo 12, don't forget to place an hcm-module.yaml in the project.
 ```yaml
@@ -69,7 +80,13 @@ module:
     <dependency>
       <groupId>nl.openweb.hippo.updater</groupId>
       <artifactId>groovy-updater-annotations</artifactId>
-      <version>1.11</version>
+      <version>${groovy-updater-maven-plugin.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+      <version>${jackrabbit.version}</version>
       <scope>provided</scope>
     </dependency>
 ```
@@ -86,7 +103,7 @@ It is highly recommended to use a profile for it.
   <dependency>
     <groupId>nl.openweb.hippo.updater</groupId>
     <artifactId>groovy-updater-sync</artifactId>
-    <version>1.11</version>
+    <version>${groovy-updater-maven-plugin.version}</version>
   </dependency>
 ```
 By default the updater-sync plugin watches a module named 'updater', to use a different module as source for the scripts, 
@@ -109,6 +126,13 @@ set the system property `groovy.sync.watchedModules` in the cargo container.
 ```
 ### Log4j
 Add an info logging level for nl.openweb.hippo.groovy to your development log4j configuration
+```xml
+    <logger name="nl.openweb.hippo.groovy" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="messages"/>
+    </logger>
+```
+**Log4j2:**
 ```xml
     <Logger name="nl.openweb.hippo.groovy" additivity="false" level="info">
       <AppenderRef ref="messages"/>
