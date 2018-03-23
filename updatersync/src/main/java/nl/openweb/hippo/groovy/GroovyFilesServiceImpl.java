@@ -60,12 +60,11 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
+import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 
 public class GroovyFilesServiceImpl implements GroovyFilesService {
 
     private static final Logger log = LoggerFactory.getLogger(GroovyFilesServiceImpl.class);
-
-    public GroovyFilesServiceImpl() {}
 
     private static void warnAndThrow(final String message, final Object... args) {
         throw new GroovyFileException(warn(message, args));

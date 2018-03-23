@@ -52,7 +52,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     static final int POLLING_TIME_MILLIS = 100;
     private static final Logger log = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
     private static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER =
-            (thread, exception) -> log.warn("FileSystemWatcher '{}' crashed", thread.getName(), exception);
+            (exceptionThread, exception) -> log.warn("FileSystemWatcher '{}' crashed", exceptionThread.getName(), exception);
     private static int instanceCounter = 0;
     /**
      * The {@link WatchService} used by this class has a percularity: when a directory is moved,
@@ -63,7 +63,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     private final GlobFileNameMatcher watchedFiles;
     private final Map<Path, ChangesProcessor> changesProcessors;
     private final WatchService watcher;
-    private final Thread thread;
+    private final Thread fileSystemWatcherThread;
 
     public FileSystemWatcher(final GlobFileNameMatcher watchedFiles) throws IOException {
         this.watchedFiles = watchedFiles;
@@ -72,11 +72,11 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
         watcher = FileSystems.getDefault().newWatchService();
         watchedPaths = new WeakHashMap<>();
 
-        thread = new Thread(this);
-        thread.setName("FileSystemWatcher-" + instanceCounter);
+        fileSystemWatcherThread = new Thread(this);
+        fileSystemWatcherThread.setName("FileSystemWatcher-" + instanceCounter);
         instanceCounter++;
-        thread.setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER);
-        thread.start();
+        fileSystemWatcherThread.setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER);
+        fileSystemWatcherThread.start();
     }
 
     @Override
@@ -119,7 +119,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     public void run() {
         try {
             log.info("Watch started");
-            while (true) {
+            while (fileSystemWatcherThread.isAlive()) {
                 processChanges();
             }
         } catch (ClosedWatchServiceException e) {
@@ -210,18 +210,22 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
                 }
                 processor.processChange(kind, watchedDirectory, true);
             } else {
-                final Path changedRelPath = (Path) eventContext;
-                final Path changedAbsPath = watchedDirectory.resolve(changedRelPath);
-                final boolean isDirectory = isDirectory(changedAbsPath, kind);
-                if (watchedFiles.matches(changedAbsPath, isDirectory)) {
-                    if (isDirectory && kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                        registerQuietly(changedAbsPath);
-                    }
-                    processor.processChange(kind, changedAbsPath, isDirectory);
-                } else {
-                    log.debug("Skipping excluded path {}", changedAbsPath);
-                }
+                processEvent(watchedDirectory, processor, kind, (Path) eventContext);
             }
+        }
+    }
+
+    private void processEvent(final Path watchedDirectory, final ChangesProcessor processor, final WatchEvent.Kind<?> kind, final Path eventContext) {
+        final Path changedRelPath = eventContext;
+        final Path changedAbsPath = watchedDirectory.resolve(changedRelPath);
+        final boolean isDirectory = isDirectory(changedAbsPath, kind);
+        if (watchedFiles.matches(changedAbsPath, isDirectory)) {
+            if (isDirectory && kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                registerQuietly(changedAbsPath);
+            }
+            processor.processChange(kind, changedAbsPath, isDirectory);
+        } else {
+            log.debug("Skipping excluded path {}", changedAbsPath);
         }
     }
 
@@ -262,7 +266,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     public synchronized void shutdown() {
         try {
             watcher.close();
-            thread.join();
+            fileSystemWatcherThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (IOException e) {
@@ -290,34 +294,42 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
 
         void processChange(final WatchEvent.Kind<?> kind, final Path changedAbsPath, final boolean isDirectory) {
             if (isDirectory) {
-                if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                    listener.directoryCreated(changedAbsPath);
-                } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                    listener.directoryModified(changedAbsPath);
-                } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                    listener.directoryDeleted(changedAbsPath);
-                } else if (kind == StandardWatchEventKinds.OVERFLOW) {
-                    if (Files.exists(changedAbsPath)) {
-                        log.info("Having an event overflow for '{}'. Entire directory '{}' will be recreated",
-                                changedAbsPath, changedAbsPath);
-                        listener.directoryCreated(changedAbsPath);
-                    } else {
-                        log.info("Having an event overflow for non existing directory '{}'. Directory will be removed",
-                                changedAbsPath, changedAbsPath);
-                        listener.directoryDeleted(changedAbsPath);
-                    }
-                }
+                processDirectoryChange(kind, changedAbsPath);
             } else {
-                if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                    listener.fileCreated(changedAbsPath);
-                } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                    listener.fileModified(changedAbsPath);
-                } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                    listener.fileDeleted(changedAbsPath);
-                } else if (kind == StandardWatchEventKinds.OVERFLOW) {
-                    throw new IllegalStateException("Only a directory should even possibly overflow in events, for example" +
-                            " by saving 1000 new files in one go.");
+                processFileChange(kind, changedAbsPath);
+            }
+        }
+
+        private void processDirectoryChange(final WatchEvent.Kind<?> kind, final Path changedAbsPath) {
+            if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                listener.directoryCreated(changedAbsPath);
+            } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                listener.directoryModified(changedAbsPath);
+            } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                listener.directoryDeleted(changedAbsPath);
+            } else if (kind == StandardWatchEventKinds.OVERFLOW) {
+                if (Files.exists(changedAbsPath)) {
+                    log.info("Having an event overflow for '{}'. Entire directory '{}' will be recreated",
+                            changedAbsPath, changedAbsPath);
+                    listener.directoryCreated(changedAbsPath);
+                } else {
+                    log.info("Having an event overflow for non existing directory '{}'. Directory will be removed",
+                            changedAbsPath, changedAbsPath);
+                    listener.directoryDeleted(changedAbsPath);
                 }
+            }
+        }
+
+        private void processFileChange(final WatchEvent.Kind<?> kind, final Path changedAbsPath) {
+            if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                listener.fileCreated(changedAbsPath);
+            } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                listener.fileModified(changedAbsPath);
+            } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                listener.fileDeleted(changedAbsPath);
+            } else if (kind == StandardWatchEventKinds.OVERFLOW) {
+                throw new IllegalStateException("Only a directory should even possibly overflow in events, for example" +
+                        " by saving 1000 new files in one go.");
             }
         }
 

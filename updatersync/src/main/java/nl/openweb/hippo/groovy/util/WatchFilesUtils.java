@@ -52,6 +52,13 @@ public class WatchFilesUtils {
     public static final String PROJECT_BASEDIR_PROPERTY = "project.basedir";
     public static final String RESOURCE_FILES_LOCATION_IN_MODULE = "src/main/resources";
     public static final String SCRIPT_FILES_LOCATION_IN_MODULE = "src/main/scripts";
+    public static final String SCRIPT_ROOT = "/hippo:configuration/hippo:update/hippo:registry";
+    public static final String[] DEFAULT_INCLUDED_FILES = {};
+    public static final String[] DEFAULT_EXCLUDED_DIRECTORIES = {};
+    public static final String[] DEFAULT_USE_WATCH_SERVICE_ON_OS_NAMES = {};
+    public static final String[] DEFAULT_WATCHED_MODULES = {};
+    public static final Long DEFAULT_WATCH_DELAY_MILLIS = 500L;
+    public static final Long DEFAULT_MAX_FILE_LENGTH_KB = 256L;
     private static final Logger log = LoggerFactory.getLogger(WatchFilesUtils.class);
 
     public static Path getProjectBaseDir() {

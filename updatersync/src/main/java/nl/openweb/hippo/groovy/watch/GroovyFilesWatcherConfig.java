@@ -25,13 +25,6 @@ import java.util.List;
  */
 public interface GroovyFilesWatcherConfig {
 
-    String[] DEFAULT_INCLUDED_FILES = {};
-    String[] DEFAULT_EXCLUDED_DIRECTORIES = {};
-    String[] DEFAULT_USE_WATCH_SERVICE_ON_OS_NAMES = {};
-    String[] DEFAULT_WATCHED_MODULES = {};
-    Long DEFAULT_WATCH_DELAY_MILLIS = 500L;
-    Long DEFAULT_MAX_FILE_LENGTH_KB = 256L;
-
     /**
      * @return the names of the Maven modules that should be watched for changes below the directory
      * <code>src/main/resources</code>. May contain slashes to indicate child modules (e.g "bootstrap/updates").

@@ -43,7 +43,7 @@ import nl.openweb.hippo.groovy.util.WatchFilesUtils;
  */
 public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesListener {
 
-    public static Logger log = LoggerFactory.getLogger(GroovyFilesWatcher.class);
+    private static final Logger log = LoggerFactory.getLogger(GroovyFilesWatcher.class);
 
     private final GroovyFilesWatcherConfig config;
     private final GroovyFilesService service;

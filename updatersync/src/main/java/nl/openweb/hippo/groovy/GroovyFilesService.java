@@ -48,9 +48,8 @@ import org.onehippo.cms7.services.WhiteboardService;
 @SingletonService
 @WhiteboardService
 public interface GroovyFilesService {
-    public static final String SCRIPT_ROOT = "/hippo:configuration/hippo:update/hippo:registry";
 
-    public void importGroovyFiles(Session session, File file) throws IOException, RepositoryException;
+    void importGroovyFiles(Session session, File file) throws IOException, RepositoryException;
 
-    public boolean importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException;
+    boolean importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException;
 }
