@@ -26,6 +26,9 @@
   <artifactId>groovy-updater-sample-project</artifactId>
   <name>Sample project for the Maven plugin</name>
 
+  <properties>
+    <sonar.exclude>true</sonar.exclude>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>nl.openweb.hippo.updater</groupId>
