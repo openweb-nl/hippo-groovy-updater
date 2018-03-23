@@ -40,9 +40,9 @@ import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.groupingBy;
-import static nl.openweb.hippo.groovy.Generator.HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.Generator.getContentroot;
+import static nl.openweb.hippo.groovy.Generator.getUpdatePath;
 import static nl.openweb.hippo.groovy.Generator.sanitizeFileName;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
@@ -66,6 +66,7 @@ public abstract class YamlGenerator {
     private static final double DEFAULT_ACTION_VERSION = 0.1;
 
     protected YamlGenerator() {
+        super();
     }
 
     /**
@@ -196,7 +197,7 @@ public abstract class YamlGenerator {
         Updater updater = scriptClass.getUpdater();
         Bootstrap bootstrap = scriptClass.getBootstrap(true);
         Bootstrap.ContentRoot contentroot = getContentroot(bootstrap);
-        return HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX + contentroot + "/" + updater.name();
+        return getUpdatePath(contentroot) + "/" + updater.name();
     }
 
     public static String getYamlString(Map<?, ?> map) {

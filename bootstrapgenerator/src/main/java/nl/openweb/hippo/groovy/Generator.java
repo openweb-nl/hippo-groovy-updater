@@ -28,23 +28,23 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
-    public static final String NEWLINE = "\n";
-    public static final List<Class<?>> ANNOTATED_CLASSES = Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
-    protected static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
+    protected static final String NEWLINE = "\n";
+    private static final List<Class<?>> ANNOTATED_CLASSES = Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
+    private static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
     private static final String REGEX_WHITESPACE = "\\s*";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
     private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
-    private static final GroovyClassLoader gcl = new GroovyClassLoader();
 
     protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
+
+    protected Generator(){}
 
     public static String stripAnnotations(final String script) {
         String result = script;
@@ -93,7 +93,7 @@ public abstract class Generator {
      * @return List of groovy files
      */
     public static List<File> getGroovyFiles(final File dir) {
-        final File[] groovyFiles = dir.listFiles((file) -> file.isFile() && file.getName().endsWith(GROOVY_EXTENSION));
+        final File[] groovyFiles = dir.listFiles(file -> file.isFile() && file.getName().endsWith(GROOVY_EXTENSION));
         final File[] directories = dir.listFiles(File::isDirectory);
         final List<File> allFiles = new ArrayList<>();
         if (groovyFiles != null) {
@@ -110,6 +110,10 @@ public abstract class Generator {
 
     protected static String sanitizeFileName(final String fileName) {
         return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)).replaceAll("\\s", "_");
+    }
+
+    protected static String getUpdatePath(Bootstrap.ContentRoot contentroot){
+        return HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX + contentroot;
     }
 
     /**

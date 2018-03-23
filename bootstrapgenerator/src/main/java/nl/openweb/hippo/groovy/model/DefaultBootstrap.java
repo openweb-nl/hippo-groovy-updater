@@ -26,9 +26,6 @@ public class DefaultBootstrap {
 
     private static final Bootstrap defaultBootstrap = DefaultBootstrap.class.getAnnotation(Bootstrap.class);
 
-    public DefaultBootstrap() {
-    }
-
     public static Bootstrap getBootstrap(){
         return defaultBootstrap;
     }

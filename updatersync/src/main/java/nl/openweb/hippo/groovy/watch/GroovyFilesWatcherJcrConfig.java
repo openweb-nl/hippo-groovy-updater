@@ -29,6 +29,7 @@ import org.hippoecm.repository.util.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.openweb.hippo.groovy.util.WatchFilesUtils;
 import static org.hippoecm.repository.util.JcrUtils.getMultipleStringProperty;
 
 public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
@@ -51,12 +52,12 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
     private long maxFileLengthBytes;
 
     public GroovyFilesWatcherJcrConfig(final Node configNode) throws RepositoryException {
-        watchedModules = getMultipleStringConfig(configNode, WATCHED_MODULES_PROPERTY, DEFAULT_WATCHED_MODULES);
-        includedFiles = getMultipleStringConfig(configNode, INCLUDED_FILES, DEFAULT_INCLUDED_FILES);
-        excludedDirs = getMultipleStringConfig(configNode, EXCLUDED_DIRECTORIES, DEFAULT_EXCLUDED_DIRECTORIES);
-        useWatchServiceOnOsNames = getMultipleStringConfig(configNode, USE_WATCH_SERVICE_ON_OS_NAMES, DEFAULT_USE_WATCH_SERVICE_ON_OS_NAMES);
-        watchDelayMillis = JcrUtils.getLongProperty(configNode, WATCH_DELAY_MILLIS, DEFAULT_WATCH_DELAY_MILLIS);
-        maxFileLengthBytes = 1024 * JcrUtils.getLongProperty(configNode, MAX_FILE_LENGTH_KB, DEFAULT_MAX_FILE_LENGTH_KB);
+        watchedModules = getMultipleStringConfig(configNode, WATCHED_MODULES_PROPERTY, WatchFilesUtils.DEFAULT_WATCHED_MODULES);
+        includedFiles = getMultipleStringConfig(configNode, INCLUDED_FILES, WatchFilesUtils.DEFAULT_INCLUDED_FILES);
+        excludedDirs = getMultipleStringConfig(configNode, EXCLUDED_DIRECTORIES, WatchFilesUtils.DEFAULT_EXCLUDED_DIRECTORIES);
+        useWatchServiceOnOsNames = getMultipleStringConfig(configNode, USE_WATCH_SERVICE_ON_OS_NAMES, WatchFilesUtils.DEFAULT_USE_WATCH_SERVICE_ON_OS_NAMES);
+        watchDelayMillis = JcrUtils.getLongProperty(configNode, WATCH_DELAY_MILLIS, WatchFilesUtils.DEFAULT_WATCH_DELAY_MILLIS);
+        maxFileLengthBytes = 1024 * JcrUtils.getLongProperty(configNode, MAX_FILE_LENGTH_KB, WatchFilesUtils.DEFAULT_MAX_FILE_LENGTH_KB);
     }
 
     private List<String> getMultipleStringConfig(final Node configNode, final String propertyName, final String[] defaultValue) {

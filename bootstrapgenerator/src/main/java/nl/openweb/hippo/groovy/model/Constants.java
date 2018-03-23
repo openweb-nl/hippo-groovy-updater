@@ -19,44 +19,63 @@ package nl.openweb.hippo.groovy.model;
 /**
  * Constants for generating bootstrap xml
  */
-public interface Constants {
-
-    interface Files {
-        String GROOVY_EXTENSION = ".groovy";
-        String XML_EXTENSION = ".xml";
-        String YAML_EXTENSION = ".yaml";
-        String ECM_EXTENSIONS_NAME = "hippoecm-extension.xml";
+public final class Constants {
+    private Constants(){
+        //no public construction
     }
 
-    interface PropertyName {
-        String JCR_PRIMARY_TYPE = "jcr:primaryType";
-        String HIPPOSYS_BATCHSIZE = "hipposys:batchsize";
-        String HIPPOSYS_DRYRUN = "hipposys:dryrun";
-        String HIPPOSYS_PARAMETERS = "hipposys:parameters";
-        String HIPPOSYS_QUERY = "hipposys:query";
-        String HIPPOSYS_SCRIPT = "hipposys:script";
-        String HIPPOSYS_THROTTLE = "hipposys:throttle";
-        String HIPPOSYS_DESCRIPTION = "hipposys:description";
-        String HIPPOSYS_PATH = "hipposys:path";
-        String HIPPO_SEQUENCE = "hippo:sequence";
-        String HIPPO_CONTENTRESOURCE = "hippo:contentresource";
-        String HIPPO_CONTENTROOT = "hippo:contentroot";
-        String HIPPO_RELOADONSTARTUP = "hippo:reloadonstartup";
-        String HIPPO_VERSION = "hippo:version";
+    public final class Files {
+        private Files(){
+            //no public construction
+        }
+
+        public static final String GROOVY_EXTENSION = ".groovy";
+        public static final String XML_EXTENSION = ".xml";
+        public static final String YAML_EXTENSION = ".yaml";
+        public static final String ECM_EXTENSIONS_NAME = "hippoecm-extension.xml";
     }
 
-    interface NodeType {
-        String HIPPOSYS_UPDATERINFO = "hipposys:updaterinfo";
-        String HIPPO_INITIALIZEITEM = "hippo:initializeitem";
-        String HIPPO_INITIALIZE = "hippo:initialize";
-        String HIPPO_INITIALIZEFOLDER = "hippo:initializefolder";
+    public final class PropertyName {
+        private PropertyName(){
+            //no public construction
+        }
+
+        public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
+        public static final String HIPPOSYS_BATCHSIZE = "hipposys:batchsize";
+        public static final String HIPPOSYS_DRYRUN = "hipposys:dryrun";
+        public static final String HIPPOSYS_PARAMETERS = "hipposys:parameters";
+        public static final String HIPPOSYS_QUERY = "hipposys:query";
+        public static final String HIPPOSYS_SCRIPT = "hipposys:script";
+        public static final String HIPPOSYS_THROTTLE = "hipposys:throttle";
+        public static final String HIPPOSYS_DESCRIPTION = "hipposys:description";
+        public static final String HIPPOSYS_PATH = "hipposys:path";
+        public static final String HIPPO_SEQUENCE = "hippo:sequence";
+        public static final String HIPPO_CONTENTRESOURCE = "hippo:contentresource";
+        public static final String HIPPO_CONTENTROOT = "hippo:contentroot";
+        public static final String HIPPO_RELOADONSTARTUP = "hippo:reloadonstartup";
+        public static final String HIPPO_VERSION = "hippo:version";
     }
 
-    interface ValueType {
-        String STRING = "String";
-        String NAME = "Name";
-        String LONG = "Long";
-        String BOOLEAN = "Boolean";
-        String DOUBLE = "Double";
+    public final class NodeType {
+        private NodeType(){
+            //no public construction
+        }
+
+        public static final String HIPPOSYS_UPDATERINFO = "hipposys:updaterinfo";
+        public static final String HIPPO_INITIALIZEITEM = "hippo:initializeitem";
+        public static final String HIPPO_INITIALIZE = "hippo:initialize";
+        public static final String HIPPO_INITIALIZEFOLDER = "hippo:initializefolder";
+    }
+
+    public final class ValueType {
+        private ValueType(){
+            //no public construction
+        }
+
+        public static final String STRING = "String";
+        public static final String NAME = "Name";
+        public static final String LONG = "Long";
+        public static final String BOOLEAN = "Boolean";
+        public static final String DOUBLE = "Double";
     }
 }
