@@ -77,7 +77,7 @@ public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule
     }
 
     @Override
-    protected void doInitialize(final Session session) throws RepositoryException {
+    protected void doInitialize(final Session session) {
         final GlobFileNameMatcher watchedFiles = new GlobFileNameMatcher();
         watchedFiles.includeFiles(config.getIncludedFiles());
         watchedFiles.excludeDirectories(config.getExcludedDirectories());
@@ -95,11 +95,7 @@ public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule
             HippoServiceRegistry.unregisterService(service, GroovyFilesService.class);
         }
         if (watcher != null) {
-            try {
-                watcher.shutdown();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            watcher.shutdown();
         }
     }
 }

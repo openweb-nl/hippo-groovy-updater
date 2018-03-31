@@ -63,7 +63,9 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
     private List<String> getMultipleStringConfig(final Node configNode, final String propertyName, final String[] defaultValue) {
         String[] values = getMultipleStringPropertyOrDefault(configNode, propertyName, defaultValue);
         String[] systemPropertyChecked = getMultipleStringFromSystemProperty(propertyName, values);
-        log.debug("Configuration value for " + propertyName + " = " + StringUtils.join(systemPropertyChecked, ";"));
+        if (log.isDebugEnabled()) {
+            log.debug("Configuration value for {} = {}", propertyName, StringUtils.join(systemPropertyChecked, ";"));
+        }
         return Collections.unmodifiableList(Arrays.asList(systemPropertyChecked));
     }
 

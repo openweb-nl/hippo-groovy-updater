@@ -38,7 +38,7 @@ class SubDirectoriesWatcher implements FileSystemListener {
 
     private static final Logger log = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
 
-    private static final DirectoryStream.Filter<Path> DIRECTORY_FILTER = path -> Files.isDirectory(path);
+    private static final DirectoryStream.Filter<Path> DIRECTORY_FILTER = path -> path.toFile().isDirectory();
 
     private final Path rootDirectory;
     private final PathChangesListener listener;
@@ -172,7 +172,7 @@ class SubDirectoriesWatcher implements FileSystemListener {
             if (log.isDebugEnabled()) {
                 log.warn("Exception by listener '{}' while processing paths {}", listener, changedPaths, e);
             } else {
-                log.warn("Exception by listener '{}' while processing paths {} : {}", listener, changedPaths, e.toString());
+                log.warn("Exception by listener '{}' while processing paths {} : {}", listener, changedPaths, e.getMessage());
             }
         }
     }

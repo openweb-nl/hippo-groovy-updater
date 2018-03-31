@@ -54,8 +54,9 @@ public class ScriptProcessorXML extends ScriptProcessor{
      * @param scriptClassList groovy scripts to parse
      * @return list of valid parsed groovy files
      */
-    public List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClassList) throws MojoExecutionException{
-        List<ScriptClass> scriptClasses = super.processUpdateScripts(scriptClassList);
+    @Override
+    public List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClassList) throws MojoExecutionException {
+        List<ScriptClass> scriptClasses = processGroovyScripts(scriptClassList);
         writeEcmExtensions(scriptClasses);
         return scriptClasses;
     }

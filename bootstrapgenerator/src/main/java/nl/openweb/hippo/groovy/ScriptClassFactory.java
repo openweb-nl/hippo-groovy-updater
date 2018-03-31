@@ -33,6 +33,9 @@ public class ScriptClassFactory {
     private static final String LINE_END_LINUX = "\n";
     private static GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
+    private ScriptClassFactory(){
+        //No instantiating of this class
+    }
     /**
      * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
      *
