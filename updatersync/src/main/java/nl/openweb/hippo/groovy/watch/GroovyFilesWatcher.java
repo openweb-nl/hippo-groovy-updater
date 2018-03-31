@@ -28,7 +28,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +63,10 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         if (projectBaseDir == null) {
             return null;
         }
-        if (config.getWatchedModules().size() > 0) {
+        if (!config.getWatchedModules().isEmpty()) {
             return observeFileSystem(projectBaseDir);
         } else {
-            log.info("Watching groovy files is disabled: no modules configured to watch");
+            log.info("Watching groovy files is disabled: no modules configured to watch in {}", projectBaseDir);
         }
         return null;
     }
@@ -82,11 +81,13 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         }
 
         List<Path> groovyFilesDirectories = WatchFilesUtils.getGroovyFilesDirectories(projectBaseDir, config);
-        log.debug("Observe {} paths: {}", groovyFilesDirectories.size(), groovyFilesDirectories.stream().map(Path::toString)
-                .collect(Collectors.joining(", ")));
+        if(log.isDebugEnabled()) {
+            log.debug("Observe {} paths: {}", groovyFilesDirectories.size(), groovyFilesDirectories.stream().map(Path::toString)
+                    .collect(Collectors.joining(", ")));
+        }
         for (Path groovyFilesDirectory : groovyFilesDirectories) {
             try {
-                log.info("About to listen to directories: " + groovyFilesDirectory.toString());
+                log.info("About to listen to directories: {}", groovyFilesDirectory);
                 SubDirectoriesWatcher.watch(groovyFilesDirectory, fsObserver, this);
             } catch (Exception e) {
                 log.error("Failed to watch or import groovy files in module '{}'", groovyFilesDirectory.toString(), e);
@@ -95,7 +96,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         return fsObserver;
     }
 
-    private FileSystemObserver createFileSystemObserver() throws Exception {
+    private FileSystemObserver createFileSystemObserver() throws IOException {
         final GlobFileNameMatcher watchedFiles = new GlobFileNameMatcher();
         watchedFiles.includeFiles(config.getIncludedFiles());
         watchedFiles.excludeDirectories(config.getExcludedDirectories());
@@ -136,31 +137,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             for (Path changedPath : changedPaths) {
                 final Path relChangedDir = watchedRootDir.relativize(changedPath);
 
-                log.info("Reloading groovyfile '{}'", relChangedDir.toString());
-                try {
-                    if(service.importGroovyFile(session, changedPath.toFile())) {
-                        processedPaths.add(changedPath);
-                    }else{
-                        log.info("** Failed to process '{}' as a groovy updater", relChangedDir.toString());
-                    }
-                } catch (IOException e) {
-                    // we do not have to take action. An IOException is the result of a concurrent change (delete/move)
-                    // during creation or processing of the archive. The change will trigger a new import
-                    log.debug("IOException during importing '{}'. This is typically the result of a file that is deleted" +
-                            "during the import of a directory. This delete will trigger an event shortly after this" +
-                            " exception.", changedPath, e);
-                } catch (NullPointerException e) {
-                    // sigh....because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() returns null
-                    // on a IOException (for example when a file is deleted during processing) I get an NPE I cannot avoid,
-                    // however, it is just similar to the IOException above, typically the result of an event that will
-                    // be processed shortly after this exception. Hence, ignore
-                    log.debug("NullPointerException we cannot avoid because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() " +
-                            "returns null on IOException. We can ignore this event since it is the result of an event that will " +
-                            " be processed shortly after this exception. Hence, ignore change path '{}'", changedPath, e);
-
-                } catch (JAXBException e) {
-                    log.error("JAXBException in import", e);
-                }
+                reloadGroovyFile(processedPaths, changedPath, relChangedDir);
             }
             if (!processedPaths.isEmpty()) {
                 session.save();
@@ -169,9 +146,9 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             if (log.isDebugEnabled()) {
                 log.info("Failed to reload groovy files from '{}', resetting session and trying to reimport whole bundle(s)",
                         changedPaths, e);
-            } else {
+            } else if (log.isInfoEnabled()) {
                 log.info("Failed to reload groovy files from '{}' : '{}', resetting session and trying to reimport whole bundle(s)",
-                        changedPaths, e.toString());
+                        changedPaths, e.getMessage());
             }
             resetSilently(session);
             tryReimportBundles(watchedRootDir, changedPaths);
@@ -180,18 +157,37 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         log.info("Replacing groovy file took {} ms", endTime - startTime);
     }
 
+    private void reloadGroovyFile(final Set<Path> processedPaths, final Path changedPath, final Path relChangedDir) throws RepositoryException {
+        log.info("Reloading groovyfile '{}'", relChangedDir);
+        try {
+            if(service.importGroovyFile(session, changedPath.toFile())) {
+                processedPaths.add(changedPath);
+            }else{
+                log.info("** Failed to process '{}' as a groovy updater", relChangedDir);
+            }
+        } catch (IOException e) {
+            // we do not have to take action. An IOException is the result of a concurrent change (delete/move)
+            // during creation or processing of the archive. The change will trigger a new import
+            log.debug("IOException during importing '{}'. This is typically the result of a file that is deleted" +
+                    "during the import of a directory. This delete will trigger an event shortly after this" +
+                    " exception.", changedPath, e);
+        } catch (NullPointerException e) {
+            // sigh....because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() returns null
+            // on a IOException (for example when a file is deleted during processing) I get an NPE I cannot avoid,
+            // however, it is just similar to the IOException above, typically the result of an event that will
+            // be processed shortly after this exception. Hence, ignore
+            log.debug("NullPointerException we cannot avoid because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() " +
+                    "returns null on IOException. We can ignore this event since it is the result of an event that will " +
+                    " be processed shortly after this exception. Hence, ignore change path '{}'", changedPath, e);
+
+        } catch (JAXBException e) {
+            log.error("JAXBException in import", e);
+        }
+    }
+
     @Override
     public void onStop() {
         // nothing to do, but needed for thread synchronization in tests
-    }
-
-    private String getBundleSubDir(final Path relChangedDir) {
-        if (relChangedDir.getNameCount() == 1) {
-            return StringUtils.EMPTY;
-        }
-        final Path subPath = relChangedDir.subpath(1, relChangedDir.getNameCount());
-        // ensure that we use '/' as the JCR path separator, even if the filesystem path uses something else
-        return StringUtils.join(subPath.iterator(), '/');
     }
 
     private void resetSilently(final Session session) {
@@ -221,7 +217,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         }
     }
 
-    public void shutdown() throws InterruptedException {
+    public void shutdown() {
         if (fileSystemObserver != null) {
             fileSystemObserver.shutdown();
         }

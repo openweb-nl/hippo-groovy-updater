@@ -32,6 +32,8 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.openweb.hippo.groovy.GroovyFileException;
+
 /**
  * File system observer that polls for changes. After a set of observed changes has been reported, the polling
  * thread sleeps a fixed amount of time.
@@ -45,16 +47,22 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     private final FileAlterationMonitor monitor;
     private FileSystemListener listenerForCurrentChange;
 
-    public FileSystemPoller(final FileFilter fileNameFilter, final long pollingDelayMillis) throws Exception {
+    public FileSystemPoller(final FileFilter fileNameFilter, final long pollingDelayMillis) {
         this.fileNameFilter = fileNameFilter;
         listeners = new HashMap<>();
         monitor = new FileAlterationMonitor(pollingDelayMillis);
-        monitor.start();
+        try {
+            monitor.start();
+        } catch (Exception e) {
+            throw new GroovyFileException("Failed to start filemonitor", e);
+        }
     }
 
     @Override
     public synchronized void registerDirectory(final Path directory, final FileSystemListener listener) throws IOException {
-        log.debug("Registering " + directory);
+        if(log.isDebugEnabled()) {
+            log.debug("Registering {}", directory);
+        }
 
         final FileAlterationObserver observer = new FileAlterationObserver(directory.toFile(), this.fileNameFilter);
         try {
@@ -82,7 +90,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
             log.debug("Start collecting changes in {}", observedPath);
             listenerForCurrentChange.fileSystemChangesStarted();
         } else {
-            log.warn("Ignoring file system changes in unknown directory: " + observedPath);
+            log.warn("Ignoring file system changes in unknown directory: {}", observedPath);
         }
 
     }

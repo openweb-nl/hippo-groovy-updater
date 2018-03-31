@@ -56,7 +56,7 @@ public class GlobFileNameMatcher implements FileFilter {
         matchers.add(matcher);
     }
 
-    public void includeFiles(final List<String> fileNameGlobPatterns) throws IllegalArgumentException {
+    public void includeFiles(final List<String> fileNameGlobPatterns) {
         for (String pattern : fileNameGlobPatterns) {
             try {
                 includeFiles(pattern);
@@ -66,11 +66,11 @@ public class GlobFileNameMatcher implements FileFilter {
         }
     }
 
-    public void includeFiles(final String fileNameGlobPattern) throws IllegalArgumentException {
+    public void includeFiles(final String fileNameGlobPattern) {
         addPattern(fileNameGlobPattern, includedFiles);
     }
 
-    public void excludeDirectories(final List<String> fileNameGlobPattern) throws IllegalArgumentException {
+    public void excludeDirectories(final List<String> fileNameGlobPattern) {
         for (String pattern : fileNameGlobPattern) {
             try {
                 excludeDirectories(pattern);
@@ -80,7 +80,7 @@ public class GlobFileNameMatcher implements FileFilter {
         }
     }
 
-    public void excludeDirectories(final String fileNameGlobPattern) throws IllegalArgumentException {
+    public void excludeDirectories(final String fileNameGlobPattern) {
         addPattern(fileNameGlobPattern, excludedDirs);
     }
 

@@ -43,8 +43,9 @@ public class ScriptProcessorYAML extends ScriptProcessor{
      * @param groovyFiles groovy scripts to parse
      * @return list of valid parsed groovy files
      */
+    @Override
     public List<ScriptClass> processUpdateScripts(final List<ScriptClass> groovyFiles) throws MojoExecutionException {
-        List<ScriptClass> scripts = super.processUpdateScripts(groovyFiles);
+        List<ScriptClass> scripts = processGroovyScripts(groovyFiles);
         processReloading(scripts);
         return scripts;
     }

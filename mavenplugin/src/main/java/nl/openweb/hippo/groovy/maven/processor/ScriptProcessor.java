@@ -40,13 +40,15 @@ public abstract class ScriptProcessor {
         return processUpdateScripts(getScriptClasses(sourceDir));
     }
 
-    /**
-     * Generate updater files from groovy scripts
-     *
-     * @param scriptClasses groovy scripts to parse
-     * @return list of valid parsed groovy files
-     */
-    public List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClasses) throws MojoExecutionException {
+    public abstract List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClasses) throws MojoExecutionException;
+
+        /**
+         * Generate updater files from groovy scripts
+         *
+         * @param scriptClasses groovy scripts to parse
+         * @return list of valid parsed groovy files
+         */
+    protected List<ScriptClass> processGroovyScripts(final List<ScriptClass> scriptClasses) {
         getLog().info("Converting " + scriptClasses.size() + " groovy scripts to bootstrap format");
         return scriptClasses.stream().filter(this::processUpdateScript).collect(toList());
     }
@@ -57,7 +59,7 @@ public abstract class ScriptProcessor {
      * @param scriptClass groovy script to parse
      * @return parsing successful
      */
-    abstract protected boolean processUpdateScript(final ScriptClass scriptClass);
+    protected abstract boolean processUpdateScript(final ScriptClass scriptClass);
 
     protected Log getLog(){
         return log;

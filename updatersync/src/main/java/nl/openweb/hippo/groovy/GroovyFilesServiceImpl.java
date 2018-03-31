@@ -91,7 +91,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
      * @return success
      * @throws RepositoryException
      */
-    public static boolean setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
+    private static boolean setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
         ScriptClass scriptClass = getInterpretingClass(file);
         if(!scriptClass.isValid()){
             return false;
@@ -99,6 +99,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         final Updater updater = scriptClass.getUpdater();
         String name = updater.name();
         if(parent.hasNode(name)){
+            info("Updating existing script {}", name);
             parent.getNode(name).remove();
         }
         Node scriptNode = parent.addNode(name, HIPPOSYS_UPDATERINFO);
@@ -116,7 +117,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
     private Node getRegistryNode(Session session) throws RepositoryException {
         final Node scriptRegistry = JcrUtils.getNodeIfExists(SCRIPT_ROOT, session);
         if (scriptRegistry == null) {
-            warnAndThrow("Cannot find files root at '%s'", SCRIPT_ROOT);
+            warnAndThrow("Cannot find files root at '{}'", SCRIPT_ROOT);
         }
         return scriptRegistry;
     }

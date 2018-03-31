@@ -20,6 +20,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
 
+/**
+ * @deprecated since yaml and xml have their own Mojo now
+ */
 @Deprecated
 @Mojo(name = "generate")
 public class GroovyToUpdaterBootstrapDefault extends GroovyToUpdaterBootstrap{
