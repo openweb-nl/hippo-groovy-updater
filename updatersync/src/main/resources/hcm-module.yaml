@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 group:
-  name: updater-sync
+  name: hippo-autosync-updater
   after: hippo-cms
-project: updater-sync
-module: updater-sync-configuration
+project: hippo-autosync-updater
+module: autosync-updater-configuration

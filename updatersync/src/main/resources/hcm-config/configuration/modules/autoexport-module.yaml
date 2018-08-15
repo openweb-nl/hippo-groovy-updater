@@ -1,8 +1,7 @@
 definitions:
   config:
-    /hippo:configuration/hippo:modules/autoexport:
-      /hippo:moduleconfig:
-        autoexport:excluded:
-          operation: add
-          type: string
-          value: ['/hippo:configuration/hippo:update']
+    /hippo:configuration/hippo:modules/autoexport/hippo:moduleconfig:
+      autoexport:excluded:
+        operation: add
+        type: string
+        value: ['/hippo:configuration/hippo:update']
