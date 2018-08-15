@@ -26,10 +26,10 @@ Bootstrap definition is optional
 ```
 To exclude a groovy script from being bootstrapped:
 ```groovy
-@Exclude
+@Exclude 
 ```
 ## Use of the maven plugin
-In the build section of the (new) module containing the groovy updater scripts, define the execution of the plugin \
+In the build section of the (new) module containing the groovy updater scripts, define the execution of the plugin  
 *For Hippo 12 use the *'generate-yaml'* goal.*
 ```xml
   <plugin>
@@ -97,7 +97,7 @@ The updater scripts add changed groovy scripts to the updaters registry.
 the module is registered at:
   `/hippo:configuration/hippo:modules/groovyfiles`
 
-Add this dependency to the cms or a dependency of the cms, like a separate 'updaters' module or 'content', use this for local development only. \
+Add this dependency to the cms or a dependency of the cms, like a separate 'updaters' module or 'content', use this for local development only.  
 It is highly recommended to use a profile for it.
 ```xml
   <dependency>

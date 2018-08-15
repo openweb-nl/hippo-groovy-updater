@@ -13,37 +13,36 @@
 # limitations under the License.
 definitions:
   config:
-    /hippo:configuration/hippo:modules:
-      /groovyfiles-service-module:
-        jcr:primaryType: hipposys:module
-        hipposys:className: nl.openweb.hippo.groovy.GroovyFilesServiceModule
-        /hippo:moduleconfig:
-          jcr:primaryType: hipposys:moduleconfig
-          excludeDirectories: [
-            '.arch-ids',
-            'BitKeeper',
-            '.bzr',
-            'CVS',
-            '_darcs',
-            '.darcsrepo',
-            '.git',
-            '.hg',
-            '.metadata',
-            'RCS',
-            '.svn',
-          ]
-          includedFiles: ['*.groovy']
-          #  Disabled: Windows*
-          #
-          #  Two JDK issues are annoying enough to disable the Watch Service on Windows for now:
-          #  - JDK-7052697: Windows locks watched directories so parents of watched directories can't be renamed
-          #  - JDK-6972833: Windows does not close the file descriptor of a watched directory fast enough, so
-          #                 directories can't be removed as long as they contain child directories
-          #
-          #  Disabled: Mac OS X
-          #
-          #  There is no native implementation of WatchService for Mac OS X yet.
-          useWatchServiceOnOsNames: ['Linux']
-          watchDelayMillis: 500
-          maxFileLengthKb: 256
-          watchedModules: ['updater']
+    /hippo:configuration/hippo:modules/groovyfiles-service-module:
+      jcr:primaryType: hipposys:module
+      hipposys:className: nl.openweb.hippo.groovy.GroovyFilesServiceModule
+      /hippo:moduleconfig:
+        jcr:primaryType: hipposys:moduleconfig
+        excludeDirectories: [
+          '.arch-ids',
+          'BitKeeper',
+          '.bzr',
+          'CVS',
+          '_darcs',
+          '.darcsrepo',
+          '.git',
+          '.hg',
+          '.metadata',
+          'RCS',
+          '.svn',
+        ]
+        includedFiles: ['*.groovy']
+        #  Disabled: Windows*
+        #
+        #  Two JDK issues are annoying enough to disable the Watch Service on Windows for now:
+        #  - JDK-7052697: Windows locks watched directories so parents of watched directories can't be renamed
+        #  - JDK-6972833: Windows does not close the file descriptor of a watched directory fast enough, so
+        #                 directories can't be removed as long as they contain child directories
+        #
+        #  Disabled: Mac OS X
+        #
+        #  There is no native implementation of WatchService for Mac OS X yet.
+        useWatchServiceOnOsNames: ['Linux']
+        watchDelayMillis: 500
+        maxFileLengthKb: 256
+        watchedModules: ['updater']
