@@ -1,4 +1,6 @@
 # Project for Hippo Updaters Maven Plugin
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fopenweb-nl%2Fhippo-groovy-updater.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fopenweb-nl%2Fhippo-groovy-updater?ref=badge_shield)
+
 This project is designed for Hippo developers to have an easy way to create updaters in groovy, without being bothered with the bootstrap xml.
 
 For use the updaters are located in their own submodule. Nicely separated from other bootstrap.
@@ -138,3 +140,7 @@ Add an info logging level for nl.openweb.hippo.groovy to your development log4j 
       <AppenderRef ref="messages"/>
     </Logger>
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fopenweb-nl%2Fhippo-groovy-updater.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fopenweb-nl%2Fhippo-groovy-updater?ref=badge_large)
