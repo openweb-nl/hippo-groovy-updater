@@ -74,27 +74,35 @@
   </licenses>
 
   <properties>
-    <commons-io.version>2.5</commons-io.version>
-    <commons-lang3.version>3.4</commons-lang3.version>
-    <groovy.version>2.4.7</groovy.version>
-    <snakeyaml.version>1.18</snakeyaml.version>
-    <hippo.repository.version>4.2.1</hippo.repository.version>
-    <glassfish.jaxb-runtime.version>2.2.11</glassfish.jaxb-runtime.version>
+    <commons-io.version>2.6</commons-io.version>
+    <commons-lang3.version>3.9</commons-lang3.version>
+    <groovy.version>2.5.6</groovy.version>
+    <snakeyaml.version>1.24</snakeyaml.version>
+    <hippo.repository.version>4.2.8</hippo.repository.version>
+    <glassfish.jaxb-runtime.version>2.4.0-b180830.0438</glassfish.jaxb-runtime.version>
     <javax.jcr.version>2.0</javax.jcr.version>
     <junit.version>4.12</junit.version>
-    <maven.plugin.api.version>3.5.3</maven.plugin.api.version>
+    <maven.plugin.api.version>3.6.1</maven.plugin.api.version>
     <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
     <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
     <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
     <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
     <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-    <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
-    <maven.plugin.annotations.version>3.5.1</maven.plugin.annotations.version>
+    <maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
+    <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
+    <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+    <maven.install.plugin.version>3.0.0-M1</maven.install.plugin.version>
+    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
+    <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+    <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
+    <maven.surefire.plugin.version>3.0.0-M3</maven.surefire.plugin.version>
+    <maven.plugin.annotations.version>3.6.0</maven.plugin.annotations.version>
     <maven.plugin.plugin.version>3.5.1</maven.plugin.plugin.version>
     <maven.plugin.jacoco.version>0.8.0</maven.plugin.jacoco.version>
-    <plexus-utils.version>3.1.0</plexus-utils.version>
+    <plexus-utils.version>3.2.0</plexus-utils.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j.version>1.7.25</slf4j.version>
+    <slf4j.version>1.7.26</slf4j.version>
+    <owasp.depcheck.plugin.version>5.0.0-M2</owasp.depcheck.plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -129,6 +137,7 @@
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
         <version>${groovy.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
@@ -178,6 +187,34 @@
             <source>1.8</source>
             <target>1.8</target>
           </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven.clean.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${maven.install.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven.jar.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven.resources.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven.site.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven.surefire.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${maven.enforcer.plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -254,9 +291,45 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>${owasp.depcheck.plugin.version}</version>
+          <configuration>
+            <skipProvidedScope>true</skipProvidedScope>
+            <skipRuntimeScope>true</skipRuntimeScope>
+            <format>html</format>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.0.5</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <inherited>false</inherited>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
