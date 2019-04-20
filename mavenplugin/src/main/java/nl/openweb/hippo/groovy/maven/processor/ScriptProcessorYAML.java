@@ -78,7 +78,7 @@ public class ScriptProcessorYAML extends ScriptProcessor{
     @Override
     protected boolean processUpdateScript(final ScriptClass scriptClass) {
         getLog().debug("Converting " + scriptClass.getFile().getAbsolutePath() + " to updater yaml");
-        final String updateScript = getYamlString(getUpdateYamlScript(scriptClass));
+        final String updateScript = getYamlString(getUpdateYamlScript(sourceDir, scriptClass));
         if (StringUtils.isBlank(updateScript)) {
             getLog().warn("Skipping file: " + scriptClass.getFile().getAbsolutePath() + ", not a valid updatescript");
             return false;

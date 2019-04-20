@@ -43,6 +43,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.Generator.getContentroot;
 import static nl.openweb.hippo.groovy.Generator.getUpdatePath;
+import static nl.openweb.hippo.groovy.Generator.getValueOrFileContent;
 import static nl.openweb.hippo.groovy.Generator.sanitizeFileName;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
@@ -72,10 +73,12 @@ public abstract class YamlGenerator {
     /**
      * Parse file to updater node
      *
+     *
+     * @param sourceDir
      * @param scriptClass class to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
-    public static Map<String, Map<String, Object>> getUpdateYamlScript(final ScriptClass scriptClass) {
+    public static Map<String, Map<String, Object>> getUpdateYamlScript(final File sourceDir, final ScriptClass scriptClass) {
         final Updater updater = scriptClass.getUpdater();
 
         Map<String, Object> properties = new LinkedHashMap<>();
@@ -84,7 +87,7 @@ public abstract class YamlGenerator {
         addNotEmptyProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), properties);
         addNotEmptyProperty(HIPPOSYS_DESCRIPTION, updater.description(), properties);
         addNotEmptyProperty(HIPPOSYS_DRYRUN, updater.dryRun(), properties);
-        addNotEmptyProperty(HIPPOSYS_PARAMETERS, updater.parameters(), properties);
+        addNotEmptyProperty(HIPPOSYS_PARAMETERS, getValueOrFileContent(scriptClass, sourceDir, updater.parameters()), properties);
         if (StringUtils.isBlank(updater.xpath())) {
             addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
         }

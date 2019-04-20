@@ -1,6 +1,11 @@
 /hippo:configuration/hippo:update/hippo:queue/Test Updater:
   jcr:primaryType: hipposys:updaterinfo
   hipposys:batchsize: 10
+  hipposys:description: |-
+    This script can be used to do anything.
+                (It should allow any notations, for the stripping etc..
+                for example a description on how the XPath query should be like //element(*, hippo:document)[mixin:types='project:example']
+                or the parameters field, describing like: { "foobar": [ "bar", "foo"]}
   hipposys:dryrun: false
   hipposys:query: //element(*, hippo:document)
   hipposys:script: |-

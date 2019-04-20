@@ -51,8 +51,7 @@ public class ScriptClassFactory {
         groovyClassLoader.clearCache();
         String script;
         try {
-            ensureLinuxLineEnding(file);
-            script = FileUtils.fileRead(file);
+            script = readFileEnsuringLinuxLineEnding(file);
 
             String imports = getAnnotationClasses().stream()
                     .map(clazz -> "import " + clazz.getCanonicalName() + ";")
@@ -70,12 +69,13 @@ public class ScriptClassFactory {
         }
     }
 
-    private static void ensureLinuxLineEnding(final File file) throws IOException {
+    public static String readFileEnsuringLinuxLineEnding(final File file) throws IOException {
         String content = FileUtils.fileRead(file);
         if(content.contains(LINE_END_WINDOWS)){
-            FileUtils.fileWrite(file, content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX)
-                    .replaceAll(LINE_END_MAC, LINE_END_LINUX));
+            return content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX)
+                    .replaceAll(LINE_END_MAC, LINE_END_LINUX);
         }
+        return content;
     }
 
     private static String scrubAnnotations(final String interpretCode) {

@@ -6,7 +6,10 @@ import javax.jcr.Node
 
 @Updater(name = "Test Updater",
         xpath = "//element(*, hippo:document)",
- description="", path = "", parameters = " ")
+ description='''This script can be used to do anything.
+            (It should allow any notations, for the stripping etc..
+            for example a description on how the XPath query should be like //element(*, hippo:document)[mixin:types='project:example']
+            or the parameters field, describing like: { "foobar": [ "bar", "foo"]}''', path = "", parameters = " ")
 @Bootstrap(reload = true, sequence = 99999.0d)
 class TestUpdater extends BaseNodeUpdateVisitor {
     boolean doUpdate(Node node) {
