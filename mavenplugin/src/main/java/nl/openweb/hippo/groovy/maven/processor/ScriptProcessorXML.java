@@ -70,7 +70,7 @@ public class ScriptProcessorXML extends ScriptProcessor{
     @Override
     protected boolean processUpdateScript(final ScriptClass script) {
         getLog().debug("Converting " + script.getFile().getAbsolutePath() + " to updater xml");
-        final Node updateScriptNode = getUpdateScriptNode(script);
+        final Node updateScriptNode = getUpdateScriptNode(sourceDir, script);
         if (updateScriptNode == null) {
             getLog().warn("Skipping file: " + script.getFile().getAbsolutePath() + ", not a valid updatescript");
             return false;

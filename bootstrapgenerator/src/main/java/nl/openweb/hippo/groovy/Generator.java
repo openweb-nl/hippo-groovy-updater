@@ -17,6 +17,7 @@
 package nl.openweb.hippo.groovy;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Updater;
+import nl.openweb.hippo.groovy.model.ScriptClass;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
@@ -39,12 +41,23 @@ public abstract class Generator {
     private static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
     private static final String REGEX_WHITESPACE = "\\s*";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
-    private static final String REGEX_ATTR_VALUE = "((\"[^\"]*\")|[^\\)]|true|false)*";
-    private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_WHITESPACE;
+    private static final String REGEX_ATTR_VALUE_QUOTE = "(\"[^\"]*\")";
+    private static final String REGEX_ATTR_VALUE_TRIPQUOTE = "('''([\\s\\S]*)''')";
+    private static final String REGEX_ATTR_VALUE_SIMPLE = "true|false|([^,^\\)]+)";
+    private static final String REGEX_COMMA = "\\s*,*\\s*";
+    private static final String REGEX_ATTR_VALUE = "("
+            + REGEX_ATTR_VALUE_QUOTE
+            + "|"
+            + REGEX_ATTR_VALUE_TRIPQUOTE
+            + "|"
+            + REGEX_ATTR_VALUE_SIMPLE
+            + ")*";
+    private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_COMMA;
 
     protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
 
-    protected Generator(){}
+    protected Generator() {
+    }
 
     public static String stripAnnotations(final String script) {
         String result = script;
@@ -61,7 +74,7 @@ public abstract class Generator {
 
     private static String stripAnnotation(final String script, final String className) {
         final String annotationName = "@" + className;
-        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
+        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")*\\))?"; //seems usefull need to eliminate in-string parentheses
         String s = script.replaceAll(regex, StringUtils.EMPTY);
         s = s.replaceAll("(\n){3,}", "\n\n");
         return s;
@@ -69,7 +82,7 @@ public abstract class Generator {
 
     public static String getAnnotation(final String script, final String className) {
         final String annotationName = "@" + className;
-        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")?\\))?"; //seems usefull need to eliminate in-string parentheses
+        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")+\\))?"; //seems usefull need to eliminate in-string parentheses
         Matcher matcher = Pattern.compile(regex).matcher(script);
         return matcher.find() ? matcher.group() : StringUtils.EMPTY;
     }
@@ -112,7 +125,7 @@ public abstract class Generator {
         return FilenameUtils.removeExtension(FilenameUtils.separatorsToUnix(fileName)).replaceAll("\\s", "_");
     }
 
-    protected static String getUpdatePath(Bootstrap.ContentRoot contentroot){
+    protected static String getUpdatePath(Bootstrap.ContentRoot contentroot) {
         return HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX + contentroot;
     }
 
@@ -126,7 +139,20 @@ public abstract class Generator {
         return ANNOTATED_CLASSES;
     }
 
-    public static void setDefaultContentRoot(Bootstrap.ContentRoot contentRoot){
+    public static void setDefaultContentRoot(Bootstrap.ContentRoot contentRoot) {
         defaultContentRoot = contentRoot;
+    }
+
+    protected static String getValueOrFileContent(final ScriptClass script, final File sourceDir, final String value) {
+        final File parentDir = value.startsWith("/") ? sourceDir : script.getFile().getParentFile();
+        final File file = new File(parentDir, value);
+        if (file.exists()) {
+            try {
+                return ScriptClassFactory.readFileEnsuringLinuxLineEnding(file);
+            } catch (IOException e) {
+                //do nothing, it's fine
+            }
+        }
+        return value;
     }
 }

@@ -53,9 +53,13 @@ import static org.junit.Assert.assertTrue;
 
 
 public class TestUpdaterTransforming {
+    File sourceDir = new File(getClass().getResource("/").toURI());
+
+    public TestUpdaterTransforming() throws URISyntaxException {
+    }
 
     @Before
-    public void setup(){
+    public void setup() {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.QUEUE);
     }
 
@@ -71,6 +75,8 @@ public class TestUpdaterTransforming {
         checkGeneration("updater3");
         checkGeneration("sub/updater2");
         checkGeneration("sub/updater3");
+        checkGeneration("updaterdata/updater4");
+        checkGeneration("updaterdata/updater5");
     }
 
     public static void enforceWindowsFileEndings(File file) throws IOException {
@@ -90,12 +96,12 @@ public class TestUpdaterTransforming {
 
         enforceWindowsFileEndings(file);
 
-        Node updateScriptNode = XmlGenerator.getUpdateScriptNode(getInterpretingClass(file));
+        Node updateScriptNode = XmlGenerator.getUpdateScriptNode(sourceDir, getInterpretingClass(file));
         StringWriter writer = new StringWriter();
 
         getMarshaller().marshal(updateScriptNode, writer);
         final String xml = writer.toString();
-        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(getInterpretingClass(file)));
+        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(sourceDir, getInterpretingClass(file)));
 
         String expectedContent = FileUtils.fileRead(resultFile);
         String expectedContentYaml = FileUtils.fileRead(resultFileYaml);
@@ -111,11 +117,10 @@ public class TestUpdaterTransforming {
         File file = new File(testfileUrl.toURI());
         File resultFile = new File(testfileResultUrl.toURI());
 
-        String content = FileUtils.fileRead(file);
+        String content = ScriptClassFactory.readFileEnsuringLinuxLineEnding(file);
         String expectedContent = FileUtils.fileRead(resultFile);
 
         assertEquals("failed stripping", expectedContent, stripAnnotations(content));
-
     }
 
     @Test
@@ -186,7 +191,7 @@ public class TestUpdaterTransforming {
         assertEquals(expectedContent, yaml);
     }
 
-    private boolean isRegistryOrUnversioned(ScriptClass scriptClass){
+    private boolean isRegistryOrUnversioned(ScriptClass scriptClass) {
         Bootstrap bootstrap = scriptClass.getBootstrap(true);
         return bootstrap.reload() &&
                 (bootstrap.version().isEmpty() || getContentroot(bootstrap).equals(Bootstrap.ContentRoot.REGISTRY));
@@ -197,8 +202,8 @@ public class TestUpdaterTransforming {
         URL testfileUrl = getClass().getResource("updater.groovy");
         URL testfileUrl2 = getClass().getResource("updater-noimport.groovy");
 
-        String content = FileUtils.fileRead(new File(testfileUrl.toURI()));
-        String content2 = FileUtils.fileRead(new File(testfileUrl2.toURI()));
+        String content = ScriptClassFactory.readFileEnsuringLinuxLineEnding(new File(testfileUrl.toURI()));
+        String content2 = ScriptClassFactory.readFileEnsuringLinuxLineEnding(new File(testfileUrl2.toURI()));
 
         String updater = getAnnotation(content, Updater.class.getSimpleName());
         String bootstrap = getAnnotation(content, Bootstrap.class.getSimpleName());
@@ -212,10 +217,13 @@ public class TestUpdaterTransforming {
         String fullUpdater2 = getAnnotation(content2, Updater.class.getName());
         String fullBootstrap2 = getAnnotation(content2, Bootstrap.class.getName());
 
-
+        String descriptionExample = "'''This script can be used to do anything.\n" +
+                "            (It should allow any notations, for the stripping etc..\n" +
+                "            for example a description on how the XPath query should be like //element(*, hippo:document)[mixin:types='project:example']\n" +
+                "            or the parameters field, describing like: { \"foobar\": [ \"bar\", \"foo\"]}'''";
         String updaterExpected = "@Updater(name = \"Test Updater\",\n" +
                 "        xpath = \"//element(*, hippo:document)\",\n" +
-                " description=\"\", path = \"\", parameters = \" \")";
+                " description=" + descriptionExample + ", path = \"\", parameters = \" \")";
         String bootstrapExpected = "@Bootstrap(reload = true, sequence = 99999.0d)";
         String updaterFull = "@nl.openweb.hippo.groovy.annotations.Updater(name = \"Test Updater\",\n" +
                 "        xpath = \"//element(*, hippo:document)\",\n" +
@@ -258,7 +266,7 @@ public class TestUpdaterTransforming {
         File resultFileYaml = new File(testfileResultUrlYaml.toURI());
         TestUpdaterTransforming.enforceWindowsFileEndings(file);
 
-        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(getInterpretingClass(file)));
+        final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(sourceDir, getInterpretingClass(file)));
 
         String unExpectedContentYaml = FileUtils.fileRead(resultFileYaml);
         assertNotEquals("failed yaml parsing of updater", unExpectedContentYaml, yaml);

@@ -69,10 +69,12 @@ public final class XmlGenerator extends Generator{
     /**
      * Parse file to updater node
      *
+     *
+     * @param sourceDir
      * @param script the script to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
-    public static Node getUpdateScriptNode(final ScriptClass script) {
+    public static Node getUpdateScriptNode(final File sourceDir, final ScriptClass script) {
         final Updater updater = script.getUpdater();
         final Node rootnode = XmlGenerator.createNode(updater.name());
         final List<Object> properties = rootnode.getNodeOrProperty();
@@ -80,7 +82,7 @@ public final class XmlGenerator extends Generator{
         properties.add(createProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), ValueType.LONG));
         addStringPropertyIfNotEmpty(properties, HIPPOSYS_DESCRIPTION, updater.description());
         properties.add(createProperty(HIPPOSYS_DRYRUN, updater.dryRun(), ValueType.BOOLEAN));
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, updater.parameters());
+        addStringPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, getValueOrFileContent(script, sourceDir, updater.parameters()));
         if(StringUtils.isBlank(updater.xpath())) {
             addStringPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
         }
