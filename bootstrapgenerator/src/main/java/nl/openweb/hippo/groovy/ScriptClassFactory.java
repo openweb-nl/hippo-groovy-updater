@@ -20,9 +20,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.jackrabbit.spi.NameFactory;
+import org.apache.jackrabbit.spi.commons.conversion.NameParser;
+import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
+import org.apache.jackrabbit.spi.commons.namespace.NamespaceMapping;
+import org.apache.jackrabbit.spi.commons.namespace.NamespaceResolver;
 import org.codehaus.plexus.util.FileUtils;
 
 import groovy.lang.GroovyClassLoader;
+import nl.openweb.hippo.groovy.exception.ScriptParseException;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -33,6 +39,8 @@ public class ScriptClassFactory {
     private static final String LINE_END_LINUX = "\n";
     private static final String LINE_END_MAC = "\r";
     private static GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
+    private static final NamespaceResolver namespaceResolver = new NamespaceMapping();
+    private static final NameFactory nameFactory = NameFactoryImpl.getInstance();
 
     private ScriptClassFactory(){
         //No instantiating of this class
@@ -44,7 +52,22 @@ public class ScriptClassFactory {
      * @return a fake class with the Bootstrap and Updater annotations
      */
     public static ScriptClass getInterpretingClass(final File file) {
-        return  getInterpretingClassStrippingCode(file);
+        final ScriptClass scriptClass = getInterpretingClassStrippingCode(file);
+        validateScriptClass(scriptClass);
+        return scriptClass;
+    }
+
+    private static void validateScriptClass(final ScriptClass scriptClass) {
+        if(scriptClass == null || scriptClass.getUpdater() == null){
+            return;
+        }
+        final String name = scriptClass.getUpdater().name();
+
+        try {
+            NameParser.parse(name, namespaceResolver, nameFactory);
+        } catch (Exception e) {
+            throw new ScriptParseException("Error parsing the updater name: " + name , e);
+        }
     }
 
     public static ScriptClass getInterpretingClassStrippingCode(final File file) {
