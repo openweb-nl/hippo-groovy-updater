@@ -27,8 +27,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import nl.openweb.hippo.groovy.Generator;
 import nl.openweb.hippo.groovy.ScriptClassFactory;
@@ -47,9 +47,9 @@ import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.XmlGenerator.getContentroot;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class TestUpdaterTransforming {
@@ -58,7 +58,7 @@ public class TestUpdaterTransforming {
     public TestUpdaterTransforming() throws URISyntaxException {
     }
 
-    @Before
+    @BeforeAll
     public void setup() {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.QUEUE);
     }
