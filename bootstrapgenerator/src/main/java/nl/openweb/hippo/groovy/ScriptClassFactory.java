@@ -20,11 +20,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.jcr.NamespaceException;
+
 import org.apache.jackrabbit.spi.NameFactory;
 import org.apache.jackrabbit.spi.commons.conversion.NameParser;
 import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
 import org.apache.jackrabbit.spi.commons.namespace.NamespaceMapping;
-import org.apache.jackrabbit.spi.commons.namespace.NamespaceResolver;
 import org.codehaus.plexus.util.FileUtils;
 
 import groovy.lang.GroovyClassLoader;
@@ -38,13 +39,21 @@ public class ScriptClassFactory {
     private static final String LINE_END_WINDOWS = "\r\n";
     private static final String LINE_END_LINUX = "\n";
     private static final String LINE_END_MAC = "\r";
-    private static GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
-    private static final NamespaceResolver namespaceResolver = new NamespaceMapping();
+    private static final NamespaceMapping namespaceResolver = new NamespaceMapping();
     private static final NameFactory nameFactory = NameFactoryImpl.getInstance();
+    private static GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
-    private ScriptClassFactory(){
+    private ScriptClassFactory() {
         //No instantiating of this class
     }
+
+    private static NamespaceMapping getNamespaceResolver() throws NamespaceException {
+        if(!namespaceResolver.hasPrefix("")){
+            namespaceResolver.setMapping("", "");
+        }
+        return namespaceResolver;
+    }
+
     /**
      * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
      *
@@ -58,15 +67,15 @@ public class ScriptClassFactory {
     }
 
     private static void validateScriptClass(final ScriptClass scriptClass) {
-        if(scriptClass == null || scriptClass.getUpdater() == null){
+        if (scriptClass == null || scriptClass.getUpdater() == null) {
             return;
         }
         final String name = scriptClass.getUpdater().name();
 
         try {
-            NameParser.parse(name, namespaceResolver, nameFactory);
+            NameParser.parse(name, getNamespaceResolver(), nameFactory);
         } catch (Exception e) {
-            throw new ScriptParseException("Error parsing the updater name: " + name , e);
+            throw new ScriptParseException("Error parsing the updater name for: " + scriptClass.getFile().getAbsolutePath(), e);
         }
     }
 
@@ -80,7 +89,7 @@ public class ScriptClassFactory {
                     .map(clazz -> "import " + clazz.getCanonicalName() + ";")
                     .collect(joining());
 
-            String interpretCode =  imports + script.replaceAll("import .+\n", "")
+            String interpretCode = imports + script.replaceAll("import .+\n", "")
                     .replaceAll("package\\s.*\n", "")
                     .replaceAll("extends\\s.*\\{[^\\u001a]*", "{}");
 
@@ -94,7 +103,7 @@ public class ScriptClassFactory {
 
     public static String readFileEnsuringLinuxLineEnding(final File file) throws IOException {
         String content = FileUtils.fileRead(file);
-        if(content.contains(LINE_END_WINDOWS)){
+        if (content.contains(LINE_END_WINDOWS)) {
             return content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX)
                     .replaceAll(LINE_END_MAC, LINE_END_LINUX);
         }
@@ -103,12 +112,12 @@ public class ScriptClassFactory {
 
     private static String scrubAnnotations(final String interpretCode) {
         String possibleAnnotationNames = getAnnotationClasses().stream()
-                .map(annotation -> annotation.getCanonicalName().replace(".", "\\.") +"|"+ annotation.getSimpleName())
+                .map(annotation -> annotation.getCanonicalName().replace(".", "\\.") + "|" + annotation.getSimpleName())
                 .collect(joining("|"));
         return interpretCode.replaceAll("@((?!" + possibleAnnotationNames + ")[\\w]+)([\\s]+|(\\([^\\)]*\\)))", "");
     }
 
-    public static List<ScriptClass> getScriptClasses(File sourceDir){
+    public static List<ScriptClass> getScriptClasses(File sourceDir) {
         return Generator.getGroovyFiles(sourceDir).stream().map(ScriptClassFactory::getInterpretingClass)
                 .filter(script -> script.isValid() && !script.isExcluded()).collect(toList());
     }
