@@ -81,7 +81,8 @@
     <hippo.repository.version>4.2.8</hippo.repository.version>
     <glassfish.jaxb-runtime.version>2.4.0-b180830.0438</glassfish.jaxb-runtime.version>
     <javax.jcr.version>2.0</javax.jcr.version>
-    <junit.version>4.12</junit.version>
+    <junit.jupiter.version>5.4.2</junit.jupiter.version>
+    <junit.platform.version>1.4.2</junit.platform.version>
     <jackrabbit.version>2.16.2</jackrabbit.version>
     <maven.plugin.api.version>3.6.1</maven.plugin.api.version>
     <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
@@ -171,15 +172,15 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>${slf4j.version}</version>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.jupiter.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
