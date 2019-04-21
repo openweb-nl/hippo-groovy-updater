@@ -34,6 +34,7 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
+import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 
 public class ScriptClassFactory {
     private static final String LINE_END_WINDOWS = "\r\n";
@@ -54,18 +55,6 @@ public class ScriptClassFactory {
         return namespaceResolver;
     }
 
-    /**
-     * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
-     *
-     * @param file the file to make a class representation of
-     * @return a fake class with the Bootstrap and Updater annotations
-     */
-    public static ScriptClass getInterpretingClass(final File file) {
-        final ScriptClass scriptClass = getInterpretingClassStrippingCode(file);
-        validateScriptClass(scriptClass);
-        return scriptClass;
-    }
-
     private static void validateScriptClass(final ScriptClass scriptClass) {
         if (scriptClass == null || scriptClass.getUpdater() == null) {
             return;
@@ -79,7 +68,14 @@ public class ScriptClassFactory {
         }
     }
 
-    public static ScriptClass getInterpretingClassStrippingCode(final File file) {
+    /**
+     * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
+     *
+     * @param file the file to make a class representation of
+     * @param scrub remove annotations from the groovy updater framework
+     * @return a fake class with the Bootstrap and Updater annotations
+     */
+    public static ScriptClass getInterpretingClass(final File file) {
         groovyClassLoader.clearCache();
         String script;
         try {
@@ -94,8 +90,10 @@ public class ScriptClassFactory {
                     .replaceAll("extends\\s.*\\{[^\\u001a]*", "{}");
 
             interpretCode = scrubAnnotations(interpretCode);
-
-            return new ScriptClass(file, groovyClassLoader.parseClass(interpretCode), script);
+            script = stripAnnotations(script);
+            final ScriptClass scriptClass = new ScriptClass(file, groovyClassLoader.parseClass(interpretCode), script);
+            validateScriptClass(scriptClass);
+            return scriptClass;
         } catch (IOException e) {
             return null;
         }

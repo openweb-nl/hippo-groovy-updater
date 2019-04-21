@@ -21,7 +21,6 @@ import java.io.File;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Updater;
-import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 
 public class ScriptClass {
     private final Class<?> interpretClass;
@@ -34,7 +33,7 @@ public class ScriptClass {
         this.interpretClass = interpretClass;
         this.updater = interpretClass.getAnnotation(Updater.class);
         this.bootstrap = interpretClass.getAnnotation(Bootstrap.class);
-        this.content = stripAnnotations(content);
+        this.content = content;
         this.file = file;
     }
 
