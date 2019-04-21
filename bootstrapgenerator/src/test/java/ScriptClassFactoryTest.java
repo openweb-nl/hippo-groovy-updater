@@ -31,40 +31,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ScriptClassFactoryTest {
 
-    private File getTempFileWithContentReplaced(String sourceFile, String targetString, String replaceString) throws URISyntaxException, IOException {
-        URL testfileUrl = getClass().getResource(sourceFile);
+    private void testWithName(String updaterName) throws IOException, URISyntaxException {
+
+        URL testfileUrl = getClass().getResource("updater.groovy");
         final String content = FileUtils.fileRead(new File(testfileUrl.toURI()));
 
         final File tempFile = File.createTempFile("updater", "mysuffix");
         tempFile.deleteOnExit();
-        FileUtils.fileWrite(tempFile, content.replace(targetString, replaceString));
-        return tempFile;
+        FileUtils.fileWrite(tempFile, content.replace("Test Updater", updaterName));
+
+        ScriptClassFactory.getInterpretingClass(tempFile);
     }
 
     @Test
     public void checkValidUpdater() throws IOException, URISyntaxException {
-        final File colonTempfile = getTempFileWithContentReplaced("updater.groovy",
-                "Test Updater", "Test: updater");
-        final File ColonTempFile2 = getTempFileWithContentReplaced("updater.groovy",
-                "Test Updater", "Test:updater");
-        assertThrows(ScriptParseException.class, () -> ScriptClassFactory.getInterpretingClass(colonTempfile));
-        assertThrows(ScriptParseException.class, () -> ScriptClassFactory.getInterpretingClass(ColonTempFile2));
-
-        final File slashTempFile = getTempFileWithContentReplaced("updater.groovy",
-                "Test Updater", "Test/updater");
-        assertThrows(ScriptParseException.class, () -> ScriptClassFactory.getInterpretingClass(slashTempFile));
-
-        final File bracketTempFile = getTempFileWithContentReplaced("updater.groovy",
-                "Test Updater", "Test[updater");
-        assertThrows(ScriptParseException.class, () -> ScriptClassFactory.getInterpretingClass(bracketTempFile));
-
-        final File bracketTempFile2 = getTempFileWithContentReplaced("updater.groovy",
-                "Test Updater", "Test]updater");
-        assertThrows(ScriptParseException.class, () -> ScriptClassFactory.getInterpretingClass(bracketTempFile2));
-
-        final File wildcardTempFile = getTempFileWithContentReplaced("updater.groovy",
-                "Test Updater", "Test*updater");
-        assertThrows(ScriptParseException.class, () -> ScriptClassFactory.getInterpretingClass(wildcardTempFile));
+        testWithName("Test updater with no other things");
+        assertThrows(ScriptParseException.class, () -> testWithName("Test: updater"));
+        assertThrows(ScriptParseException.class, () -> testWithName("Test:updater"));
+        assertThrows(ScriptParseException.class, () -> testWithName("Test/updater"));
+        assertThrows(ScriptParseException.class, () -> testWithName("Test[updater"));
+        assertThrows(ScriptParseException.class, () -> testWithName("Test]updater"));
+        assertThrows(ScriptParseException.class, () -> testWithName("Test*updater"));
     }
 
     @Test
