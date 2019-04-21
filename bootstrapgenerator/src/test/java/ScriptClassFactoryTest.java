@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import nl.openweb.hippo.groovy.ScriptClassFactory;
 import nl.openweb.hippo.groovy.exception.ScriptParseException;
 import nl.openweb.hippo.groovy.model.ScriptClass;
+import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,4 +70,19 @@ public class ScriptClassFactoryTest {
         assertNotNull(scriptClass);
         assertNull(scriptClass.getUpdater());
     }
+
+    @Test
+    public void testStripAnnotations() throws URISyntaxException, IOException {
+        URL testfileUrl = getClass().getResource("updater.groovy");
+        URL testfileResultUrl = getClass().getResource("updater.groovy.stripped");
+
+        File file = new File(testfileUrl.toURI());
+        File resultFile = new File(testfileResultUrl.toURI());
+
+        String content = ScriptClassFactory.readFileEnsuringLinuxLineEnding(file);
+        String expectedContent = FileUtils.fileRead(resultFile);
+
+        assertEquals("failed stripping", expectedContent, stripAnnotations(content));
+    }
+
 }
