@@ -24,7 +24,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import nl.openweb.hippo.groovy.Generator;
@@ -46,7 +46,7 @@ public class YamlGeneratorTest {
     public YamlGeneratorTest() throws URISyntaxException {
     }
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.QUEUE);
     }
@@ -79,7 +79,7 @@ public class YamlGeneratorTest {
         final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(sourceDir, getInterpretingClass(file)));
 
         String expectedContentYaml = FileUtils.fileRead(resultFileYaml);
-        assertEquals("failed yaml parsing of " + name, expectedContentYaml, yaml);
+        assertEquals(expectedContentYaml, yaml, "failed yaml parsing of " + name);
     }
 
     @Test

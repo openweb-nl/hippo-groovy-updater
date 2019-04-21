@@ -82,7 +82,22 @@ public class ScriptClassFactoryTest {
         String content = ScriptClassFactory.readFileEnsuringLinuxLineEnding(file);
         String expectedContent = FileUtils.fileRead(resultFile);
 
-        assertEquals("failed stripping", expectedContent, stripAnnotations(content));
+        assertEquals(expectedContent, stripAnnotations(content), "failed stripping");
+    }
+
+    @Test
+    public void testInterpreting() throws URISyntaxException, IOException {
+        URL testfileUrl = getClass().getResource("updater.groovy");
+        URL testfileResultUrl = getClass().getResource("updater.groovy.stripped");
+
+        File file = new File(testfileUrl.toURI());
+        File resultFile = new File(testfileResultUrl.toURI());
+
+        final ScriptClass interpretingClassScrubbed = ScriptClassFactory.getInterpretingClass(file);
+
+        String expectedScrubbedContent = FileUtils.fileRead(resultFile);
+
+        assertEquals(expectedScrubbedContent, interpretingClassScrubbed.getContent(), "Content is not scrubbed");
     }
 
 }
