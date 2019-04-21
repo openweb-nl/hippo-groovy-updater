@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class GeneratorTest {
 
     @BeforeAll
-    public void setup() {
+    public static void setup() {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.QUEUE);
     }
 

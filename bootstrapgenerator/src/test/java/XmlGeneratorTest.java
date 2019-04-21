@@ -27,7 +27,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import nl.openweb.hippo.groovy.Generator;
@@ -48,7 +48,7 @@ public class XmlGeneratorTest {
     public XmlGeneratorTest() throws URISyntaxException {
     }
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.QUEUE);
     }
@@ -85,7 +85,7 @@ public class XmlGeneratorTest {
         final String xml = writer.toString();
 
         String expectedContent = FileUtils.fileRead(resultFile);
-        assertEquals("failed xml parsing of " + name, expectedContent, xml);
+        assertEquals(expectedContent, xml, "failed xml parsing of " + name);
     }
 
     @Test
