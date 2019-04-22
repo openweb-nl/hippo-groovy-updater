@@ -70,7 +70,7 @@ public final class XmlGenerator extends Generator{
      * Parse file to updater node
      *
      *
-     * @param sourceDir
+     * @param sourceDir the directory to read the resources from
      * @param script the script to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */

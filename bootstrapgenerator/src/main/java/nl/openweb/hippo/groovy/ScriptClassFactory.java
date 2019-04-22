@@ -72,7 +72,6 @@ public class ScriptClassFactory {
      * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
      *
      * @param file the file to make a class representation of
-     * @param scrub remove annotations from the groovy updater framework
      * @return a fake class with the Bootstrap and Updater annotations
      */
     public static ScriptClass getInterpretingClass(final File file) {

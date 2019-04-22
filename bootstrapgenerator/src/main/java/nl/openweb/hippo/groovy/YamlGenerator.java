@@ -19,7 +19,6 @@ package nl.openweb.hippo.groovy;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,7 +73,7 @@ public abstract class YamlGenerator {
      * Parse file to updater node
      *
      *
-     * @param sourceDir
+     * @param sourceDir the directory to read the resources from
      * @param scriptClass class to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
@@ -132,9 +131,9 @@ public abstract class YamlGenerator {
      * @param targetDir  the target where the ecmExtensions from resources would be
      * @param files      groovy files, need to be relative to the source path
      *
-     * @throws IOException
+     * @throws FileNotFoundException error on reading necessary files
      */
-    public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<ScriptClass> files) throws IOException {
+    public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<ScriptClass> files) throws FileNotFoundException {
         Map<Double, Map<String, String>> collect = files.stream().filter(script ->
         script.getBootstrap() != null)
                 .map(script -> Pair.of(script.getBootstrap().version().isEmpty() ? DEFAULT_ACTION_VERSION : Double.valueOf(script.getBootstrap().version()), getBootstrapPath(script)))
