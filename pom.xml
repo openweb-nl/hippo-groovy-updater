@@ -82,7 +82,7 @@
     <glassfish.jaxb-runtime.version>2.4.0-b180830.0438</glassfish.jaxb-runtime.version>
     <javax.jcr.version>2.0</javax.jcr.version>
     <junit.jupiter.version>5.4.2</junit.jupiter.version>
-    <junit.platform.version>1.4.2</junit.platform.version>
+    <junit.vintage.version>5.4.2</junit.vintage.version>
     <jackrabbit.version>2.16.2</jackrabbit.version>
     <maven.plugin.api.version>3.6.1</maven.plugin.api.version>
     <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
@@ -175,6 +175,12 @@
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
         <version>${junit.jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${junit.vintage.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
