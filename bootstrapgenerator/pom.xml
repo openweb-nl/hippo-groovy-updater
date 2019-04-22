@@ -104,9 +104,6 @@
     </testResources>
     <plugins>
       <plugin>
-        <artifactId>maven-plugin-plugin</artifactId>
-      </plugin>
-      <plugin>
         <artifactId>maven-source-plugin</artifactId>
       </plugin>
     </plugins>
