@@ -85,10 +85,11 @@
     <junit.vintage.version>5.4.2</junit.vintage.version>
     <jackrabbit.version>2.16.2</jackrabbit.version>
     <maven.plugin.api.version>3.6.1</maven.plugin.api.version>
-    <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
+    <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
+    <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
     <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
     <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
-    <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
+    <maven.javadoc.plugin.version>3.1.0</maven.javadoc.plugin.version>
     <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
     <maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
     <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
@@ -99,8 +100,8 @@
     <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
     <maven.surefire.plugin.version>3.0.0-M3</maven.surefire.plugin.version>
     <maven.plugin.annotations.version>3.6.0</maven.plugin.annotations.version>
-    <maven.plugin.plugin.version>3.5.1</maven.plugin.plugin.version>
-    <maven.plugin.jacoco.version>0.8.0</maven.plugin.jacoco.version>
+    <maven.plugin.plugin.version>3.6.0</maven.plugin.plugin.version>
+    <maven.plugin.jacoco.version>0.8.1</maven.plugin.jacoco.version>
     <plexus-utils.version>3.2.0</plexus-utils.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.7.26</slf4j.version>
@@ -263,16 +264,9 @@
           <artifactId>maven-plugin-plugin</artifactId>
           <version>${maven.plugin.plugin.version}</version>
           <configuration>
-            <goalPrefix>groovy-updater-maven-plugin</goalPrefix>
             <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
           </configuration>
           <executions>
-            <execution>
-              <id>mojo-descriptor</id>
-              <goals>
-                <goal>descriptor</goal>
-              </goals>
-            </execution>
             <execution>
               <id>help-goal</id>
               <goals>
@@ -337,6 +331,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven.dependency.plugin.version}</version>
         <inherited>false</inherited>
         <executions>
           <execution>
