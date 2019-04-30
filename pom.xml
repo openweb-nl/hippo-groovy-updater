@@ -138,15 +138,8 @@
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
+        <artifactId>groovy</artifactId>
         <version>${groovy.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>testng</artifactId>
-            <groupId>org.testng</groupId>
-          </exclusion>
-        </exclusions>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
