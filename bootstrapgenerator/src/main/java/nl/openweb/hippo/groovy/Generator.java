@@ -41,17 +41,20 @@ public abstract class Generator {
     private static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
     private static final String REGEX_WHITESPACE = "\\s*";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
-    private static final String REGEX_ATTR_VALUE_QUOTE = "(\"[^\"]*\")";
+    private static final String REGEX_ATTR_VALUE_SINGLEQUOTE = "('.*?(?<!\\\\)('))";
+    private static final String REGEX_ATTR_VALUE_QUOTE = "(\".*?(?<!\\\\)(\"))";
     private static final String REGEX_ATTR_VALUE_TRIPQUOTE = "('''([\\s\\S]*)''')";
     private static final String REGEX_ATTR_VALUE_SIMPLE = "true|false|([^,^\\)]+)";
     private static final String REGEX_COMMA = "\\s*,*\\s*";
     private static final String REGEX_ATTR_VALUE = "("
+            + REGEX_ATTR_VALUE_SINGLEQUOTE
+            + "|"
             + REGEX_ATTR_VALUE_QUOTE
             + "|"
             + REGEX_ATTR_VALUE_TRIPQUOTE
             + "|"
             + REGEX_ATTR_VALUE_SIMPLE
-            + ")*";
+            + ")?";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_COMMA;
 
     protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
