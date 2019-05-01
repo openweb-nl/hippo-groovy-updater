@@ -1,22 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sv:node sv:name="Cleanup 'permanent' formdata" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
-  <sv:property sv:name="jcr:primaryType" sv:type="Name">
-    <sv:value>hipposys:updaterinfo</sv:value>
-  </sv:property>
-  <sv:property sv:name="hipposys:batchsize" sv:type="Long">
-    <sv:value>100</sv:value>
-  </sv:property>
-  <sv:property sv:name="hipposys:description" sv:type="String">
-    <sv:value>Permanently removes formdata! All formdata that matches the query will be deleted. Empty formdatacontainers will be removed.</sv:value>
-  </sv:property>
-  <sv:property sv:name="hipposys:dryrun" sv:type="Boolean">
-    <sv:value>false</sv:value>
-  </sv:property>
-  <sv:property sv:name="hipposys:query" sv:type="String">
-    <sv:value>//formdata/permanent/*//element(*,hst:formdata)[@hst:creationtime&lt;xs:dateTime("2016-06-01T00:00:00.000+02:00")] order by @hst:creationtime descending</sv:value>
-  </sv:property>
-  <sv:property sv:name="hipposys:script" sv:type="String">
-    <sv:value><![CDATA[
 /*
  * Copyright 2019 Open Web IT B.V. (https://www.openweb.nl/)
  *
@@ -35,11 +16,17 @@
 
 package maintenance
 
+import nl.openweb.hippo.groovy.annotations.Bootstrap
+import nl.openweb.hippo.groovy.annotations.Updater
 import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
 import javax.jcr.RepositoryException
 
+@Bootstrap(sequence = 32000d, contentroot = Bootstrap.ContentRoot.REGISTRY)
+@Updater(name = 'Cleanup \'permanent\' formdata', xpath = "//formdata/permanent/*//element(*,hst:formdata)[@hst:creationtime<xs:dateTime(\"2016-06-01T00:00:00.000+02:00\")] order by @hst:creationtime descending",
+  description = "Permanently removes formdata! All formdata that matches the query will be deleted. Empty formdatacontainers will be removed.",
+  batchSize = 100L)
 class CleanupPermanentFormdata extends BaseNodeUpdateVisitor {
 
   boolean doUpdate(Node node) {
@@ -63,9 +50,3 @@ class CleanupPermanentFormdata extends BaseNodeUpdateVisitor {
     return false
   }
 }
-]]></sv:value>
-  </sv:property>
-  <sv:property sv:name="hipposys:throttle" sv:type="Long">
-    <sv:value>1000</sv:value>
-  </sv:property>
-</sv:node>
