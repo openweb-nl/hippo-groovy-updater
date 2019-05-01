@@ -21,6 +21,8 @@ import java.net.URL;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import nl.openweb.hippo.groovy.ScriptClassFactory;
 import nl.openweb.hippo.groovy.exception.ScriptParseException;
@@ -85,10 +87,11 @@ public class ScriptClassFactoryTest {
         assertEquals(expectedContent, stripAnnotations(content), "failed stripping");
     }
 
-    @Test
-    public void testInterpreting() throws URISyntaxException, IOException {
-        URL testfileUrl = getClass().getResource("updater.groovy");
-        URL testfileResultUrl = getClass().getResource("updater.groovy.stripped");
+    @ParameterizedTest
+    @ValueSource(strings = {"updater.groovy", "edge-cases/CleanupPermanentFormdata.groovy.content"})
+    public void testInterpreting(String source) throws URISyntaxException, IOException {
+        URL testfileUrl = getClass().getResource(source);
+        URL testfileResultUrl = getClass().getResource(source + ".stripped");
 
         File file = new File(testfileUrl.toURI());
         File resultFile = new File(testfileResultUrl.toURI());
@@ -97,7 +100,7 @@ public class ScriptClassFactoryTest {
 
         String expectedScrubbedContent = FileUtils.fileRead(resultFile);
 
-        assertEquals(expectedScrubbedContent, interpretingClassScrubbed.getContent(), "Content is not scrubbed");
+        assertEquals(expectedScrubbedContent, interpretingClassScrubbed.getContent(), "Content is not well scrubbed");
     }
 
 }
