@@ -63,10 +63,10 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         if (projectBaseDir == null) {
             return null;
         }
-        if (!config.getWatchedModules().isEmpty()) {
-            return observeFileSystem(projectBaseDir);
-        } else {
+        if (config.getWatchedModules().isEmpty()) {
             log.info("Watching groovy files is disabled: no modules configured to watch in {}", projectBaseDir);
+        } else {
+            return observeFileSystem(projectBaseDir);
         }
         return null;
     }
