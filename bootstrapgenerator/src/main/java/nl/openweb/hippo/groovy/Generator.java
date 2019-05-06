@@ -56,6 +56,7 @@ public abstract class Generator {
             + REGEX_ATTR_VALUE_SIMPLE
             + ")?";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_COMMA;
+    private static final String ANNOTATION_PAYLOAD = REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")*\\))?";
 
     protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
 
@@ -77,7 +78,7 @@ public abstract class Generator {
 
     private static String stripAnnotation(final String script, final String className) {
         final String annotationName = "@" + className;
-        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")*\\))?"; //seems usefull need to eliminate in-string parentheses
+        final String regex = annotationName + ANNOTATION_PAYLOAD; //seems usefull need to eliminate in-string parentheses
         String s = script.replaceAll(regex, StringUtils.EMPTY);
         s = s.replaceAll("(\n){3,}", "\n\n");
         return s;
@@ -85,7 +86,7 @@ public abstract class Generator {
 
     public static String getAnnotation(final String script, final String className) {
         final String annotationName = "@" + className;
-        final String regex = annotationName + REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")+\\))?"; //seems usefull need to eliminate in-string parentheses
+        final String regex = annotationName + ANNOTATION_PAYLOAD; //seems usefull need to eliminate in-string parentheses
         Matcher matcher = Pattern.compile(regex).matcher(script);
         return matcher.find() ? matcher.group() : StringUtils.EMPTY;
     }
