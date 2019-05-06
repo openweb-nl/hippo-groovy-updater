@@ -100,7 +100,7 @@ public class ScriptClassFactory {
 
     public static String readFileEnsuringLinuxLineEnding(final File file) throws IOException {
         String content = FileUtils.fileRead(file);
-        if (content.contains(LINE_END_WINDOWS)) {
+        if (content.contains(LINE_END_MAC)) {
             return content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX)
                     .replaceAll(LINE_END_MAC, LINE_END_LINUX);
         }
