@@ -1,5 +1,5 @@
 /*
- * Modifications Copyright 2017 Open Web IT B.V. (https://www.openweb.nl/)
+ * Modifications Copyright 2019 Open Web IT B.V. (https://www.openweb.nl/)
  *
  * This file is Copyrighted to Hippo B.V. but there has been modification done to
  * via Open Web IT B.V. these modification (See the modification via version control history)
