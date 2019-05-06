@@ -100,7 +100,7 @@ public abstract class Generator {
     }
 
     public static Bootstrap.ContentRoot getContentroot(final Bootstrap bootstrap) {
-        return bootstrap.contentroot().equals(Bootstrap.ContentRoot.DEFAULT) ? defaultContentRoot : bootstrap.contentroot();
+        return Bootstrap.ContentRoot.DEFAULT.equals(bootstrap.contentroot()) ? defaultContentRoot : bootstrap.contentroot();
     }
 
     /**
