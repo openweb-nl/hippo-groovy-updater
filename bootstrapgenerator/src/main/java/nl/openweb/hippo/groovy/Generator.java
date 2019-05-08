@@ -77,18 +77,21 @@ public abstract class Generator {
     }
 
     private static String stripAnnotation(final String script, final String className) {
-        final String annotationName = "@" + className;
-        final String regex = annotationName + ANNOTATION_PAYLOAD; //seems usefull need to eliminate in-string parentheses
+        final String regex = getAnnotationRegex(className);
         String s = script.replaceAll(regex, StringUtils.EMPTY);
         s = s.replaceAll("(\n){3,}", "\n\n");
         return s;
     }
 
     public static String getAnnotation(final String script, final String className) {
-        final String annotationName = "@" + className;
-        final String regex = annotationName + ANNOTATION_PAYLOAD; //seems usefull need to eliminate in-string parentheses
+        final String regex = getAnnotationRegex(className);
         Matcher matcher = Pattern.compile(regex).matcher(script);
         return matcher.find() ? matcher.group() : StringUtils.EMPTY;
+    }
+
+    private static String getAnnotationRegex(final String className) {
+        final String annotationName = "@" + className;
+        return annotationName + ANNOTATION_PAYLOAD;
     }
 
     public static String getAnnotation(final String script, final Class clazz) {
