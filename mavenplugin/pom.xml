@@ -32,12 +32,6 @@
       <groupId>nl.openweb.hippo.updater</groupId>
       <artifactId>groovy-updater-bootstrap-generator</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>junit</artifactId>
-          <groupId>junit</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
