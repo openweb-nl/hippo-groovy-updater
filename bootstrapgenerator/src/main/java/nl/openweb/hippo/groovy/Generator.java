@@ -16,8 +16,10 @@
 
 package nl.openweb.hippo.groovy;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,7 +65,11 @@ public abstract class Generator {
     protected Generator() {
     }
 
-    public static String stripAnnotations(final String script) {
+    public static String stripAnnotations(final String script){
+        return stripAnnotations(script, false);
+    }
+
+    public static String stripAnnotations(final String script, final boolean keepSpaces) {
         String result = script;
         for (final Class<?> aClass : getAnnotationClasses()) {
             if (result.contains(aClass.getPackage().getName()) &&
@@ -73,7 +79,25 @@ public abstract class Generator {
                 result = result.replaceAll("import\\s*" + aClass.getCanonicalName() + "\\s*[;]?\n", "");
             }
         }
+        if(keepSpaces) {
+            int scriptClassStartLine = getClassStartLineNr(script);
+            int strippedClassStartLine = getClassStartLineNr(result);
+            String addition = StringUtils.repeat(NEWLINE, scriptClassStartLine - strippedClassStartLine);
+            result = result.replaceFirst("\nclass ", addition + "\nclass ");
+        }
         return result;
+    }
+
+    private static int getClassStartLineNr(final String script) {
+        int lineNr = 0;
+        try (BufferedReader reader = new BufferedReader(new StringReader(script))) {
+            for (String line = reader.readLine(); !line.startsWith("class"); line = reader.readLine()) {
+                lineNr++;
+            }
+        } catch (IOException e) {
+            //not happening
+        }
+        return lineNr;
     }
 
     private static String stripAnnotation(final String script, final String className) {
