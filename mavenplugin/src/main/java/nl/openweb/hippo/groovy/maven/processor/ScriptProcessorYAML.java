@@ -56,7 +56,7 @@ public class ScriptProcessorYAML extends ScriptProcessor{
             List<ScriptClass> reloadByActionList = files.stream()
                     .filter(scriptClass -> scriptClass.getBootstrap() != null &&
                             scriptClass.getBootstrap().reload() &&
-                            (Generator.getContentroot(scriptClass.getBootstrap()).equals(Bootstrap.ContentRoot.REGISTRY) ||
+                            (Bootstrap.ContentRoot.REGISTRY.equals(Generator.getContentroot(scriptClass.getBootstrap())) ||
                                     scriptClass.getBootstrap().version().isEmpty()))
                     .collect(toList());
 
