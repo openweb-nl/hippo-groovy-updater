@@ -75,6 +75,17 @@ public class ScriptClassFactory {
      * @return a fake class with the Bootstrap and Updater annotations
      */
     public static ScriptClass getInterpretingClass(final File file) {
+        return getInterpretingClass(file, false);
+    }
+
+    /**
+     * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
+     *
+     * @param file the file to make a class representation of
+     * @param keepLineCount keep linecount when stripping the annotations in the scriptcontent
+     * @return a fake class with the Bootstrap and Updater annotations
+     */
+    public static ScriptClass getInterpretingClass(final File file, final boolean keepLineCount) {
         groovyClassLoader.clearCache();
         String script;
         try {
@@ -89,7 +100,7 @@ public class ScriptClassFactory {
                     .replaceAll("extends\\s.*\\{[^\\u001a]*", "{}");
 
             interpretCode = scrubAnnotations(interpretCode);
-            script = stripAnnotations(script);
+            script = stripAnnotations(script, keepLineCount);
             final ScriptClass scriptClass = new ScriptClass(file, groovyClassLoader.parseClass(interpretCode), script);
             validateScriptClass(scriptClass);
             return scriptClass;
