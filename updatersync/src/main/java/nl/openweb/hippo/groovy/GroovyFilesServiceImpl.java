@@ -92,7 +92,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
      * @throws RepositoryException
      */
     private static boolean setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
-        ScriptClass scriptClass = getInterpretingClass(file);
+        ScriptClass scriptClass = getInterpretingClass(file, true);
         if(!scriptClass.isValid()){
             return false;
         }

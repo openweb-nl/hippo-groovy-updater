@@ -92,15 +92,20 @@ public class ScriptClassFactoryTest {
     public void testInterpreting(String source) throws URISyntaxException, IOException {
         URL testfileUrl = getClass().getResource(source);
         URL testfileResultUrl = getClass().getResource(source + ".stripped");
+        URL testfileSpacedResultUrl = getClass().getResource(source + ".spaced.stripped");
 
         File file = new File(testfileUrl.toURI());
         File resultFile = new File(testfileResultUrl.toURI());
+        File spacedResultFile = new File(testfileSpacedResultUrl.toURI());
 
         final ScriptClass interpretingClassScrubbed = ScriptClassFactory.getInterpretingClass(file);
+        final ScriptClass interpretingClassUnscrubbed = ScriptClassFactory.getInterpretingClass(file, true);
 
         String expectedScrubbedContent = FileUtils.fileRead(resultFile);
+        String expectedUnscrubbedContent = FileUtils.fileRead(spacedResultFile);
 
         assertEquals(expectedScrubbedContent, interpretingClassScrubbed.getContent(), "Content is not well scrubbed");
+        assertEquals(expectedUnscrubbedContent, interpretingClassUnscrubbed.getContent(), "Content is not correct");
     }
 
 }
