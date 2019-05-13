@@ -39,22 +39,10 @@ import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.groupingBy;
-import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.Generator.getContentroot;
 import static nl.openweb.hippo.groovy.Generator.getUpdatePath;
-import static nl.openweb.hippo.groovy.Generator.getValueOrFileContent;
 import static nl.openweb.hippo.groovy.Generator.sanitizeFileName;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
-import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DRYRUN;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 
 /**
  * Generator to parse a groovy file to the bootstrap xmls
@@ -80,30 +68,10 @@ public abstract class YamlGenerator {
     public static Map<String, Map<String, Object>> getUpdateYamlScript(final File sourceDir, final ScriptClass scriptClass) {
         final Updater updater = scriptClass.getUpdater();
 
-        Map<String, Object> properties = new LinkedHashMap<>();
-        addNotEmptyProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, properties);
 
-        addNotEmptyProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), properties);
-        addNotEmptyProperty(HIPPOSYS_DESCRIPTION, updater.description(), properties);
-        addNotEmptyProperty(HIPPOSYS_DRYRUN, updater.dryRun(), properties);
-        addNotEmptyProperty(HIPPOSYS_PARAMETERS, getValueOrFileContent(scriptClass, sourceDir, updater.parameters()), properties);
-        if (StringUtils.isBlank(updater.xpath())) {
-            addNotEmptyProperty(HIPPOSYS_PATH, updater.path(), properties);
-        }
-        addNotEmptyProperty(HIPPOSYS_QUERY, updater.xpath(), properties);
-        addNotEmptyProperty(HIPPOSYS_SCRIPT, removeEmptyIndents(scriptClass.getContent()), properties);
-        addNotEmptyProperty(HIPPOSYS_THROTTLE, updater.throttle(), properties);
+        Map<String, Object> properties = PropertyCollector.getPropertiesForUpdater(scriptClass, sourceDir);
+
         return Collections.singletonMap(getBootstrapPath(scriptClass), properties);
-    }
-
-    private static String removeEmptyIndents(String content) {
-        return content.replaceAll(NEWLINE + "\\s+" + NEWLINE, NEWLINE + NEWLINE);
-    }
-
-    private static void addNotEmptyProperty(final String name, final Object value, final Map<String, Object> properties) {
-        if (value != null && (!(value instanceof String) || StringUtils.isNotBlank((String) value))) {
-            properties.put(name, value);
-        }
     }
 
     /**
@@ -156,7 +124,7 @@ public abstract class YamlGenerator {
         final File extensions = new File(sourcePath, HCM_ACTIONS_NAME);
         if (extensions.exists()) {
             Yaml yaml = new Yaml();
-            Map<String, List<Map<Double, Object>>> load = (Map<String, List<Map<Double, Object>>>) yaml.load(new FileInputStream(extensions));
+            Map<String, List<Map<Double, Object>>> load = yaml.load(new FileInputStream(extensions));
             return load.get("action-lists");
         }
         return Collections.emptyList();

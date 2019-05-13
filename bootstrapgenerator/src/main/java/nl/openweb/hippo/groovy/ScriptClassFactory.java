@@ -33,6 +33,7 @@ import nl.openweb.hippo.groovy.exception.ScriptParseException;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.Generator.getAnnotationClasses;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
 
@@ -112,10 +113,10 @@ public class ScriptClassFactory {
     public static String readFileEnsuringLinuxLineEnding(final File file) throws IOException {
         String content = FileUtils.fileRead(file);
         if (content.contains(LINE_END_MAC)) {
-            return content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX)
+            content = content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX)
                     .replaceAll(LINE_END_MAC, LINE_END_LINUX);
         }
-        return content;
+        return content.replaceAll("[\\t ]+" + NEWLINE, NEWLINE);
     }
 
     private static String scrubAnnotations(final String interpretCode) {

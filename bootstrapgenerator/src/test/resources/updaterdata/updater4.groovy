@@ -15,7 +15,7 @@
  */
 
 package updaterdata
-
+   
 
 import nl.openweb.hippo.groovy.annotations.Bootstrap
 import nl.openweb.hippo.groovy.annotations.Updater

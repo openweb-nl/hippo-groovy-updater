@@ -38,12 +38,19 @@ package nl.openweb.hippo.groovy;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
 import javax.xml.bind.JAXBException;
 
+import org.apache.jackrabbit.value.BooleanValue;
+import org.apache.jackrabbit.value.LongValue;
+import org.apache.jackrabbit.value.NameValue;
+import org.apache.jackrabbit.value.StringValue;
 import org.hippoecm.repository.util.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,13 +60,7 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 
 public class GroovyFilesServiceImpl implements GroovyFilesService {
@@ -99,25 +100,34 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         final Updater updater = scriptClass.getUpdater();
         String name = updater.name();
         if(parent.hasNode(name)){
-            info("Updating existing script {}", name);
+            info("Updating existing script %s", name);
             parent.getNode(name).remove();
         }
         Node scriptNode = parent.addNode(name, HIPPOSYS_UPDATERINFO);
-
-        scriptNode.setProperty(HIPPOSYS_BATCHSIZE, updater.batchSize());
-        scriptNode.setProperty(HIPPOSYS_DESCRIPTION, updater.description());
-        scriptNode.setProperty(HIPPOSYS_PARAMETERS, updater.parameters());
-        scriptNode.setProperty(updater.xpath().isEmpty() ? HIPPOSYS_PATH : HIPPOSYS_QUERY,
-                updater.xpath().isEmpty() ? updater.path() : updater.xpath());
-        scriptNode.setProperty(HIPPOSYS_SCRIPT, scriptClass.getContent());
-        scriptNode.setProperty(HIPPOSYS_THROTTLE, updater.throttle());
+        final Map<String, Object> properties = PropertyCollector.getPropertiesForUpdater(scriptClass, file.getParentFile());
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            if(!JCR_PRIMARY_TYPE.equals(entry.getKey())){
+                scriptNode.setProperty(entry.getKey(), getValue(entry));
+            }
+        }
         return true;
+    }
+
+    private static Value getValue(final Map.Entry<String, Object> entry) throws ValueFormatException {
+        if (JCR_PRIMARY_TYPE.equals(entry.getKey())) {
+            return NameValue.valueOf(entry.getValue().toString());
+        } else if (entry.getValue() instanceof Long) {
+            return LongValue.valueOf(entry.getValue().toString());
+        } else if (entry.getValue() instanceof Boolean) {
+            return BooleanValue.valueOf(entry.getValue().toString());
+        }
+        return new StringValue(entry.getValue().toString());
     }
 
     private Node getRegistryNode(Session session) throws RepositoryException {
         final Node scriptRegistry = JcrUtils.getNodeIfExists(SCRIPT_ROOT, session);
         if (scriptRegistry == null) {
-            warnAndThrow("Cannot find files root at '{}'", SCRIPT_ROOT);
+            warnAndThrow("Cannot find files root at '%s'", SCRIPT_ROOT);
         }
         return scriptRegistry;
     }
