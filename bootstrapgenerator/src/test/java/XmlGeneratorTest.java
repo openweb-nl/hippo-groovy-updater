@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +37,7 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import static nl.openweb.hippo.groovy.Marshal.getMarshaller;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.readFileEnsuringLinuxLineEnding;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -84,7 +84,7 @@ public class XmlGeneratorTest {
         getMarshaller().marshal(updateScriptNode, writer);
         final String xml = writer.toString();
 
-        String expectedContent = FileUtils.fileRead(resultFile);
+        String expectedContent = readFileEnsuringLinuxLineEnding(resultFile);
         assertEquals(expectedContent, xml, "failed xml parsing of " + name);
     }
 
@@ -102,7 +102,7 @@ public class XmlGeneratorTest {
         URL testfileResultUrl = getClass().getResource("resulting-hippoecm-extension.xml");
         File resultFile = new File(testfileResultUrl.toURI());
 
-        String expectedContent = FileUtils.fileRead(resultFile);
+        String expectedContent = readFileEnsuringLinuxLineEnding(resultFile);
         assertEquals(expectedContent, xml);
     }
 
@@ -120,7 +120,7 @@ public class XmlGeneratorTest {
         URL testfileResultUrl = getClass().getResource("sub-hippoecm-extension.xml");
         File resultFile = new File(testfileResultUrl.toURI());
 
-        String expectedContent = FileUtils.fileRead(resultFile);
+        String expectedContent = readFileEnsuringLinuxLineEnding(resultFile);
         assertEquals(expectedContent, xml);
 
         // Do it again, multiple runs shouldn't generate duplicates
@@ -152,7 +152,7 @@ public class XmlGeneratorTest {
         URL testfileResultUrl = getClass().getResource("sub-hippoecm-extension.xml");
         File resultFile = new File(testfileResultUrl.toURI());
 
-        String unExpectedContent = FileUtils.fileRead(resultFile);
+        String unExpectedContent = readFileEnsuringLinuxLineEnding(resultFile);
         assertNotEquals(unExpectedContent, xml);
     }
 }
