@@ -35,6 +35,7 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import static java.util.stream.Collectors.toList;
 import static nl.openweb.hippo.groovy.Generator.getContentroot;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.readFileEnsuringLinuxLineEnding;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -78,7 +79,7 @@ public class YamlGeneratorTest {
 
         final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(sourceDir, getInterpretingClass(file)));
 
-        String expectedContentYaml = FileUtils.fileRead(resultFileYaml);
+        String expectedContentYaml = readFileEnsuringLinuxLineEnding(resultFileYaml);
         assertEquals(expectedContentYaml, yaml, "failed yaml parsing of " + name);
     }
 
@@ -97,7 +98,7 @@ public class YamlGeneratorTest {
 
         URL testfileResultUrl = getClass().getResource("resulting-hcm-actions.yaml");
         File resultFile = new File(testfileResultUrl.toURI());
-        String expectedContent = FileUtils.fileRead(resultFile);
+        String expectedContent = readFileEnsuringLinuxLineEnding(resultFile);
         assertEquals(expectedContent, yaml);
     }
 
