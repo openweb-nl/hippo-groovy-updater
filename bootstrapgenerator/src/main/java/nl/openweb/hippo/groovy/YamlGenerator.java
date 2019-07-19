@@ -20,9 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ import static nl.openweb.hippo.groovy.Generator.sanitizeFileName;
 import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
 
 /**
- * Generator to parse a groovy file to the bootstrap xmls
+ * Generator to parse a groovy file into repository-data YAML
  */
 public abstract class YamlGenerator {
 
@@ -60,25 +60,20 @@ public abstract class YamlGenerator {
     /**
      * Parse file to updater node
      *
-     *
-     * @param sourceDir the directory to read the resources from
+     * @param sourceDir   the directory to read the resources from
      * @param scriptClass class to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
     public static Map<String, Map<String, Object>> getUpdateYamlScript(final File sourceDir, final ScriptClass scriptClass) {
-        final Updater updater = scriptClass.getUpdater();
-
-
         Map<String, Object> properties = PropertyCollector.getPropertiesForUpdater(scriptClass, sourceDir);
-
         return Collections.singletonMap(getBootstrapPath(scriptClass), properties);
     }
 
     /**
      * Get update script yaml filename
      *
-     * @param basePath      path to make returning path relative to
-     * @param scriptClass   File object for the groovy script
+     * @param basePath    path to make returning path relative to
+     * @param scriptClass File object for the groovy script
      * @return the path, relative to the basePath, converted \ to /, with yaml extension
      */
     public static String getUpdateScriptYamlFilename(final File basePath, final ScriptClass scriptClass) {
@@ -86,27 +81,26 @@ public abstract class YamlGenerator {
         final Bootstrap bootstrap = scriptClass.getBootstrap();
 
         String versionString = bootstrap != null && getContentroot(bootstrap).equals(Bootstrap.ContentRoot.QUEUE) &&
-                bootstrap.reload() && !bootstrap.version().isEmpty() ?
-            "-v" + bootstrap.version() :
-                StringUtils.EMPTY;
+            bootstrap.reload() && !bootstrap.version().isEmpty() ?
+            "-v" + bootstrap.version() : StringUtils.EMPTY;
 
         return sanitizeFileName(fileName) + versionString + YAML_EXTENSION;
     }
 
     /**
      * Generate hcm-action.yaml to reload updaters
+     *
      * @param sourcePath sourcepath of groovy files
      * @param targetDir  the target where the ecmExtensions from resources would be
      * @param files      groovy files, need to be relative to the source path
-     *
      * @throws FileNotFoundException error on reading necessary files
      */
     public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<ScriptClass> files) throws FileNotFoundException {
         Map<Double, Map<String, String>> collect = files.stream().filter(script ->
-        script.getBootstrap() != null)
-                .map(script -> Pair.of(script.getBootstrap().version().isEmpty() ? DEFAULT_ACTION_VERSION : Double.valueOf(script.getBootstrap().version()), getBootstrapPath(script)))
-                .filter(pair -> Objects.nonNull(pair.getValue()))
-                .collect(groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toMap(item -> item, item -> RELOAD))));
+            script.getBootstrap() != null)
+            .map(script -> Pair.of(script.getBootstrap().version().isEmpty() ? DEFAULT_ACTION_VERSION : Double.valueOf(script.getBootstrap().version()), getBootstrapPath(script)))
+            .filter(pair -> Objects.nonNull(pair.getValue()))
+            .collect(groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toMap(item -> item, item -> RELOAD))));
 
         final List<Map<Double, Object>> hcmHcmActionsSource = getExistingHcmActionsSequence(sourcePath);
 
@@ -134,29 +128,27 @@ public abstract class YamlGenerator {
     private static String getHcmActionsYaml(final List<Map<Double, Object>>... sequences) {
         //collect all maps on a key
         Map<Double, Map<String, String>> collectMap = new TreeMap<>();
-        for (List<Map<Double, Object>> list : sequences) {
-            for (Map<Double, Object> map : list) {
-                //seems all maps have just one entry
-                Iterator<Map.Entry<Double, Object>> iterator = map.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<Double, Object> entry = iterator.next();
-                    Double key = entry.getKey();
-                    if (collectMap.containsKey(key)) {
-                        Map<String, String> objects = collectMap.get(key);
-                        objects.putAll((Map<String, String>) map.get(key));
-                    } else {
-                        Map<String, String> objects = new LinkedHashMap<>();
-                        objects.putAll((Map<String, String>) map.get(key));
-                        collectMap.put(key, objects);
+        Arrays.stream(sequences).forEach(
+            list -> list.forEach(
+                map -> map.forEach(
+                    (key, value) -> {
+                        if (collectMap.containsKey(key)) {
+                            collectMap.get(key).putAll((Map<String, String>) value);
+                        } else {
+                            Map<String, String> objects = new LinkedHashMap<>((Map<String, String>) value);
+                            collectMap.put(key, objects);
+                        }
                     }
-                }
-            }
-        }
+                )
+            )
+        );
 
         List<Map<Double, Object>> collect = new ArrayList<>();
-        for (Map.Entry<Double, Map<String, String>> entry : collectMap.entrySet()) {
-            collect.add(Collections.singletonMap(entry.getKey(), entry.getValue()));
-        }
+        collectMap.forEach(
+            (key, value) ->
+                collect.add(Collections.singletonMap(key, value))
+        );
+
         Map<String, Object> out = new HashMap<>();
         out.put("action-lists", collect);
 
