@@ -34,7 +34,7 @@ import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateScriptYamlFilename;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateYamlScript;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 
-public class ScriptProcessorYAML extends ScriptProcessor{
+public class ScriptProcessorYAML extends ScriptProcessor {
     protected String yamlPath;
 
     /**
@@ -54,18 +54,18 @@ public class ScriptProcessorYAML extends ScriptProcessor{
         try {
             //registry or unversioned scripts, versioned queue scripts already have versioned filenames
             List<ScriptClass> reloadByActionList = files.stream()
-                    .filter(scriptClass -> scriptClass.getBootstrap() != null &&
-                            scriptClass.getBootstrap().reload() &&
-                            (Bootstrap.ContentRoot.REGISTRY.equals(Generator.getContentroot(scriptClass.getBootstrap())) ||
-                                    scriptClass.getBootstrap().version().isEmpty()))
-                    .collect(toList());
+                .filter(scriptClass -> scriptClass.getBootstrap() != null &&
+                    scriptClass.getBootstrap().reload() &&
+                    (Bootstrap.ContentRoot.REGISTRY.equals(Generator.getContentroot(scriptClass.getBootstrap())) ||
+                        scriptClass.getBootstrap().version().isEmpty()))
+                .collect(toList());
 
             String hcmActionsList = YamlGenerator.getHcmActionsList(sourceDir, targetDir, reloadByActionList);
-            if(StringUtils.isNotBlank(hcmActionsList)){
+            if (StringUtils.isNotBlank(hcmActionsList)) {
                 marshal(hcmActionsList, new File(targetDir, HCM_ACTIONS_NAME));
             }
         } catch (IOException e) {
-            throw new MojoExecutionException("failed to generate hcm-actions.yaml",e);
+            throw new MojoExecutionException("failed to generate hcm-actions.yaml", e);
         }
     }
 
