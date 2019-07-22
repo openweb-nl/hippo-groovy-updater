@@ -1,23 +1,25 @@
-/hippo:configuration/hippo:update/hippo:registry/Test Updater 2:
-  jcr:primaryType: hipposys:updaterinfo
-  hipposys:batchsize: 1
-  hipposys:description: Test thing
-  hipposys:dryrun: true
-  hipposys:parameters: '{prop: val}'
-  hipposys:path: /content
-  hipposys:script: |-
-    import org.onehippo.repository.update.BaseNodeUpdateVisitor
+definitions:
+  config:
+    /hippo:configuration/hippo:update/hippo:registry/Test Updater 2:
+      jcr:primaryType: hipposys:updaterinfo
+      hipposys:batchsize: 1
+      hipposys:description: Test thing
+      hipposys:dryrun: true
+      hipposys:parameters: '{prop: val}'
+      hipposys:path: /content
+      hipposys:script: |-
+        import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
-    import javax.jcr.Node
+        import javax.jcr.Node
 
-    class TestUpdater2 extends BaseNodeUpdateVisitor {
-        boolean doUpdate(Node node) {
-            log.info "manipulate node < > & an %^&* /> {}", node.path
-            return true
+        class TestUpdater2 extends BaseNodeUpdateVisitor {
+            boolean doUpdate(Node node) {
+                log.info "manipulate node < > & an %^&* /> {}", node.path
+                return true
+            }
+
+            boolean undoUpdate(Node node) {
+                throw new UnsupportedOperationException('Updater does not implement undoUpdate method')
+            }
         }
-
-        boolean undoUpdate(Node node) {
-            throw new UnsupportedOperationException('Updater does not implement undoUpdate method')
-        }
-    }
-  hipposys:throttle: 200
+      hipposys:throttle: 200

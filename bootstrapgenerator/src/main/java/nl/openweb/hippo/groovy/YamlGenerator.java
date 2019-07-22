@@ -50,7 +50,13 @@ public abstract class YamlGenerator {
      */
     public static Map<String, Map<String, Object>> getUpdateYamlScript(final File sourceDir, final ScriptClass scriptClass) {
         Map<String, Object> properties = PropertyCollector.getPropertiesForUpdater(scriptClass, sourceDir);
-        return Collections.singletonMap(getBootstrapPath(scriptClass), properties);
+
+        final Map<String, Map<String, Object>> scriptYaml = Collections.singletonMap(getBootstrapPath(scriptClass), properties);
+        if(Bootstrap.ContentRoot.REGISTRY.equals(scriptClass.getBootstrap(true).contentroot())){
+            Map<String, Object> config = Collections.singletonMap("config", scriptYaml);
+            return Collections.singletonMap("definitions", config);
+        }
+        return scriptYaml;
     }
 
     /**
