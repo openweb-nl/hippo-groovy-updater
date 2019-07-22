@@ -24,18 +24,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
-import nl.openweb.hippo.groovy.Generator;
-import nl.openweb.hippo.groovy.YamlGenerator;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.model.ScriptClass;
-import static java.util.stream.Collectors.toList;
-import static nl.openweb.hippo.groovy.YamlGenerator.HCM_ACTIONS_NAME;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateScriptYamlFilename;
 import static nl.openweb.hippo.groovy.YamlGenerator.getUpdateYamlScript;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 
 public class ScriptProcessorYAML extends ScriptProcessor {
-    protected String yamlPath;
+    protected String yamlContentPath;
+    protected String yamlConfigurationPath;
 
     /**
      * Generate updater xml files from groovy scripts
@@ -45,28 +42,7 @@ public class ScriptProcessorYAML extends ScriptProcessor {
      */
     @Override
     public List<ScriptClass> processUpdateScripts(final List<ScriptClass> groovyFiles) throws MojoExecutionException {
-        List<ScriptClass> scripts = processGroovyScripts(groovyFiles);
-        processReloading(scripts);
-        return scripts;
-    }
-
-    private void processReloading(final List<ScriptClass> files) throws MojoExecutionException {
-        try {
-            //registry or unversioned scripts, versioned queue scripts already have versioned filenames
-            List<ScriptClass> reloadByActionList = files.stream()
-                .filter(scriptClass -> scriptClass.getBootstrap() != null &&
-                    scriptClass.getBootstrap().reload() &&
-                    (Bootstrap.ContentRoot.REGISTRY.equals(Generator.getContentroot(scriptClass.getBootstrap())) ||
-                        scriptClass.getBootstrap().version().isEmpty()))
-                .collect(toList());
-
-            String hcmActionsList = YamlGenerator.getHcmActionsList(sourceDir, targetDir, reloadByActionList);
-            if (StringUtils.isNotBlank(hcmActionsList)) {
-                marshal(hcmActionsList, new File(targetDir, HCM_ACTIONS_NAME));
-            }
-        } catch (IOException e) {
-            throw new MojoExecutionException("failed to generate hcm-actions.yaml", e);
-        }
+        return processGroovyScripts(groovyFiles);
     }
 
     /**
@@ -83,7 +59,10 @@ public class ScriptProcessorYAML extends ScriptProcessor {
             getLog().warn("Skipping file: " + scriptClass.getFile().getAbsolutePath() + ", not a valid updatescript");
             return false;
         }
-        final File targetFile = new File(new File(targetDir, yamlPath), getUpdateScriptYamlFilename(sourceDir, scriptClass));
+        final String targetPath =
+                Bootstrap.ContentRoot.REGISTRY.equals(scriptClass.getBootstrap(true).contentroot()) ?
+                        yamlConfigurationPath : yamlContentPath;
+        final File targetFile = new File(new File(targetDir, targetPath), getUpdateScriptYamlFilename(sourceDir, scriptClass));
         targetFile.getParentFile().mkdirs();
         return marshal(updateScript, targetFile);
     }
@@ -99,8 +78,11 @@ public class ScriptProcessorYAML extends ScriptProcessor {
         }
     }
 
-    public void setYamlPath(final String yamlPath) {
-        this.yamlPath = yamlPath;
+    public void setYamlContentPath(final String yamlPath) {
+        this.yamlContentPath = yamlPath;
     }
 
+    public void setYamlConfigurationPath(final String yamlPath) {
+        this.yamlConfigurationPath = yamlPath;
+    }
 }

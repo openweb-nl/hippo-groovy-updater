@@ -87,7 +87,8 @@ public class ScriptProcessorTest {
         }
         processor.setSourceDir(input);
         processor.setTargetDir(yaml_output);
-        ((ScriptProcessorYAML)processor).setYamlPath("hcm-content/configuration/update");
+        ((ScriptProcessorYAML)processor).setYamlContentPath("hcm-content/configuration/update");
+        ((ScriptProcessorYAML)processor).setYamlConfigurationPath("hcm-config/configuration/update");
 
         if(yaml_output.exists()){
             FileUtils.deleteDirectory(yaml_output);
