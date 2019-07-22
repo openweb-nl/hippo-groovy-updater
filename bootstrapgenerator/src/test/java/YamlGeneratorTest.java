@@ -16,10 +16,8 @@
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -28,12 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import nl.openweb.hippo.groovy.Generator;
-import nl.openweb.hippo.groovy.ScriptClassFactory;
 import nl.openweb.hippo.groovy.YamlGenerator;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
-import nl.openweb.hippo.groovy.model.ScriptClass;
-import static java.util.stream.Collectors.toList;
-import static nl.openweb.hippo.groovy.Generator.getContentroot;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.readFileEnsuringLinuxLineEnding;
 import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
@@ -81,31 +75,6 @@ public class YamlGeneratorTest {
 
         String expectedContentYaml = readFileEnsuringLinuxLineEnding(resultFileYaml);
         assertEquals(expectedContentYaml, yaml, "failed yaml parsing of " + name);
-    }
-
-    @Test
-    public void generateHcmActions() throws URISyntaxException, IOException {
-        URI resourceURI = getClass().getResource("").toURI();
-        File root = new File(resourceURI);
-        List<File> groovyFiles = Generator.getGroovyFiles(root);
-
-        //registry or unversioned scripts
-        List<ScriptClass> scriptClassesToReload = groovyFiles.stream().map(ScriptClassFactory::getInterpretingClass)
-                .filter(this::isRegistryOrUnversioned)
-                .collect(toList());
-
-        String yaml = YamlGenerator.getHcmActionsList(root, new File(root, "target"), scriptClassesToReload);
-
-        URL testfileResultUrl = getClass().getResource("resulting-hcm-actions.yaml");
-        File resultFile = new File(testfileResultUrl.toURI());
-        String expectedContent = readFileEnsuringLinuxLineEnding(resultFile);
-        assertEquals(expectedContent, yaml);
-    }
-
-    private boolean isRegistryOrUnversioned(ScriptClass scriptClass) {
-        Bootstrap bootstrap = scriptClass.getBootstrap(true);
-        return bootstrap.reload() &&
-                (bootstrap.version().isEmpty() || getContentroot(bootstrap).equals(Bootstrap.ContentRoot.REGISTRY));
     }
 
     @Test

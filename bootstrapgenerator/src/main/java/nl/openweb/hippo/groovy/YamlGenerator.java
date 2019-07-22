@@ -17,28 +17,16 @@
 package nl.openweb.hippo.groovy;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
-import static java.util.stream.Collectors.groupingBy;
 import static nl.openweb.hippo.groovy.Generator.getContentroot;
 import static nl.openweb.hippo.groovy.Generator.getUpdatePath;
 import static nl.openweb.hippo.groovy.Generator.sanitizeFileName;
@@ -48,10 +36,6 @@ import static nl.openweb.hippo.groovy.model.Constants.Files.YAML_EXTENSION;
  * Generator to parse a groovy file into repository-data YAML
  */
 public abstract class YamlGenerator {
-
-    public static final String HCM_ACTIONS_NAME = "hcm-actions.yaml";
-    private static final String RELOAD = "reload";
-    private static final double DEFAULT_ACTION_VERSION = 0.1;
 
     protected YamlGenerator() {
         super();
@@ -85,74 +69,6 @@ public abstract class YamlGenerator {
             "-v" + bootstrap.version() : StringUtils.EMPTY;
 
         return sanitizeFileName(fileName) + versionString + YAML_EXTENSION;
-    }
-
-    /**
-     * Generate hcm-action.yaml to reload updaters
-     *
-     * @param sourcePath sourcepath of groovy files
-     * @param targetDir  the target where the ecmExtensions from resources would be
-     * @param files      groovy files, need to be relative to the source path
-     * @throws FileNotFoundException error on reading necessary files
-     */
-    public static String getHcmActionsList(final File sourcePath, final File targetDir, final List<ScriptClass> files) throws FileNotFoundException {
-        Map<Double, Map<String, String>> collect = files.stream().filter(script ->
-            script.getBootstrap() != null)
-            .map(script -> Pair.of(script.getBootstrap().version().isEmpty() ? DEFAULT_ACTION_VERSION : Double.valueOf(script.getBootstrap().version()), getBootstrapPath(script)))
-            .filter(pair -> Objects.nonNull(pair.getValue()))
-            .collect(groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toMap(item -> item, item -> RELOAD))));
-
-        final List<Map<Double, Object>> hcmHcmActionsSource = getExistingHcmActionsSequence(sourcePath);
-
-        if (hcmHcmActionsSource.isEmpty() && collect.isEmpty()) {
-            return null; // target will remain as is
-        }
-
-        final List<Map<Double, Object>> hcmActionsTarget = getExistingHcmActionsSequence(targetDir);
-        Map<Double, Object> collected = new HashMap<>(collect);
-
-        return getHcmActionsYaml(Collections.singletonList(collected), hcmActionsTarget, hcmHcmActionsSource);
-    }
-
-    private static List<Map<Double, Object>> getExistingHcmActionsSequence(final File sourcePath) throws FileNotFoundException {
-        final File extensions = new File(sourcePath, HCM_ACTIONS_NAME);
-        if (extensions.exists()) {
-            Yaml yaml = new Yaml();
-            Map<String, List<Map<Double, Object>>> load = yaml.load(new FileInputStream(extensions));
-            return load.get("action-lists");
-        }
-        return Collections.emptyList();
-    }
-
-    @SafeVarargs
-    private static String getHcmActionsYaml(final List<Map<Double, Object>>... sequences) {
-        //collect all maps on a key
-        Map<Double, Map<String, String>> collectMap = new TreeMap<>();
-        Arrays.stream(sequences).forEach(
-            list -> list.forEach(
-                map -> map.forEach(
-                    (key, value) -> {
-                        if (collectMap.containsKey(key)) {
-                            collectMap.get(key).putAll((Map<String, String>) value);
-                        } else {
-                            Map<String, String> objects = new LinkedHashMap<>((Map<String, String>) value);
-                            collectMap.put(key, objects);
-                        }
-                    }
-                )
-            )
-        );
-
-        List<Map<Double, Object>> collect = new ArrayList<>();
-        collectMap.forEach(
-            (key, value) ->
-                collect.add(Collections.singletonMap(key, value))
-        );
-
-        Map<String, Object> out = new HashMap<>();
-        out.put("action-lists", collect);
-
-        return getYamlString(out);
     }
 
     private static String getBootstrapPath(final ScriptClass scriptClass) {
