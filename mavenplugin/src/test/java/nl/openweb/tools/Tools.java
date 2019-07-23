@@ -86,7 +86,6 @@ public final class Tools {
 
     private static void assertContentCompares(final List<Path> expectedPaths, final List<Path> resultPaths) throws IOException {
         assertEquals(expectedPaths.size(), resultPaths.size());
-//        expectedPaths.sort((left, right) -> left.toUri().getPath().compareTo(right.toUri().getPath()));
         expectedPaths.sort(Comparator.naturalOrder());
         resultPaths.sort(Comparator.naturalOrder());
         for(int i = 0; i < expectedPaths.size(); i++){
