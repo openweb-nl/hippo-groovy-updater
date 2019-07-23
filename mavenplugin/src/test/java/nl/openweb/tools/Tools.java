@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -85,6 +86,8 @@ public final class Tools {
 
     private static void assertContentCompares(final List<Path> expectedPaths, final List<Path> resultPaths) throws IOException {
         assertEquals(expectedPaths.size(), resultPaths.size());
+        expectedPaths.sort(Comparator.naturalOrder());
+        resultPaths.sort(Comparator.naturalOrder());
         for(int i = 0; i < expectedPaths.size(); i++){
             Path expectedPath = expectedPaths.get(i);
             Path resultPath = resultPaths.get(i);

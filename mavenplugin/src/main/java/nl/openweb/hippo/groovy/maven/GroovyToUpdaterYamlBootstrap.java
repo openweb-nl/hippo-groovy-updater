@@ -23,19 +23,24 @@ import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorYAML;
 
 @Mojo(name = "generate-yaml")
 public class GroovyToUpdaterYamlBootstrap extends GroovyToUpdaterBootstrap{
-    @Parameter(defaultValue = "hcm-content/configuration/update", property = "yamlPath")
-    private String yamlPath;
+    @Parameter(defaultValue = "hcm-content/configuration/update", property = "yamlContentPath")
+    private String yamlContentPath;
+
+    @Parameter(defaultValue = "hcm-config/configuration/update", property = "yamlConfigurationPath")
+    private String yamlConfigurationPath;
 
     @Override
     protected void logPluginConfigurationItems() {
         super.logPluginConfigurationItems();
-        getLog().info("yamlPath: " + yamlPath);
+        getLog().info("yamlContentPath: " + yamlContentPath);
+        getLog().info("yamlConfigPath: " + yamlConfigurationPath);
     }
 
     @Override
     protected ScriptProcessor getProcessorBase(){
         ScriptProcessorYAML processor = new ScriptProcessorYAML();
-        processor.setYamlPath(yamlPath);
+        processor.setYamlContentPath(yamlContentPath);
+        processor.setYamlConfigurationPath(yamlConfigurationPath);
         return processor;
     }
 }

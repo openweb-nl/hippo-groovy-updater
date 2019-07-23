@@ -1,16 +1,6 @@
 action-lists:
-- 0.1:
-    /hippo:configuration/hippo:update/hippo:queue/Test Updater: reload
-    /hippo:configuration/hippo:update/hippo:queue/Spaces are not supposed to be in a filename: reload
-- 1.0:
-    /content/documents/my-site/new: reload
-    /content/gallery/my-site/cleaned: reload
-- 1.1:
-    /content/documents/my-site/new/obsolete: delete
-- 1.6:
-    /hippo:configuration/hippo:update/hippo:registry/Test Updater 2: reload
-- 2.0:
-    /content/documents/my-site/new: reload
-    /content/gallery/my-site/cleaned: reload
-- 2.1:
-    /content/documents/my-site/new/obsolete: delete
+  - 1.0:
+      /content/documents/my-site/new: reload
+      /content/gallery/my-site/cleaned: reload
+  - 1.1:
+      /content/documents/my-site/new/obsolete: delete
