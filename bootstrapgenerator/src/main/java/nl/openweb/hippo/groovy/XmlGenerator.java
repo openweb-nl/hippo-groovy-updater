@@ -19,6 +19,7 @@ package nl.openweb.hippo.groovy;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -36,17 +37,9 @@ import nl.openweb.hippo.groovy.model.jaxb.Property;
 import static nl.openweb.hippo.groovy.Marshal.CDATA_START;
 import static nl.openweb.hippo.groovy.model.Constants.Files.ECM_EXTENSIONS_NAME;
 import static nl.openweb.hippo.groovy.model.Constants.Files.XML_EXTENSION;
-import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEFOLDER;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPO_INITIALIZEITEM;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DRYRUN;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
-import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTRESOURCE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENTROOT;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_RELOADONSTARTUP;
@@ -57,7 +50,7 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_T
 /**
  * Generator to parse a groovy file to the bootstrap xmls
  */
-public final class XmlGenerator extends Generator{
+public final class XmlGenerator extends Generator {
 
     public static final String CDATA_END = "]]>";
     public static final String SEPARATOR = "/";
@@ -69,27 +62,35 @@ public final class XmlGenerator extends Generator{
     /**
      * Parse file to updater node
      *
-     *
      * @param sourceDir the directory to read the resources from
-     * @param script the script to use for source
+     * @param script    the script to use for source
      * @return Node object representing the groovy updater to marshall to xml
      */
     public static Node getUpdateScriptNode(final File sourceDir, final ScriptClass script) {
         final Updater updater = script.getUpdater();
         final Node rootnode = XmlGenerator.createNode(updater.name());
         final List<Object> properties = rootnode.getNodeOrProperty();
-        properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPOSYS_UPDATERINFO, ValueType.NAME));
-        properties.add(createProperty(HIPPOSYS_BATCHSIZE, updater.batchSize(), ValueType.LONG));
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_DESCRIPTION, updater.description());
-        properties.add(createProperty(HIPPOSYS_DRYRUN, updater.dryRun(), ValueType.BOOLEAN));
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, getValueOrFileContent(script, sourceDir, updater.parameters()));
-        if(StringUtils.isBlank(updater.xpath())) {
-            addStringPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
+        final Map<String, Object> propertiesForUpdater = PropertyCollector.getPropertiesForUpdater(script, sourceDir);
+        for (Map.Entry<String, Object> entry : propertiesForUpdater.entrySet()) {
+            String valueType = getValueType(entry);
+            Object value = entry.getValue();
+            if (HIPPOSYS_SCRIPT.equals(entry.getKey())) {
+                value = wrap(value.toString());
+            }
+            properties.add(createProperty(entry.getKey(), value, valueType));
         }
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_QUERY, updater.xpath());
-        addStringPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, wrap(script.getContent()));
-        properties.add(createProperty(HIPPOSYS_THROTTLE, updater.throttle(), ValueType.LONG));
         return rootnode;
+    }
+
+    private static String getValueType(final Map.Entry<String, Object> entry) {
+        if (JCR_PRIMARY_TYPE.equals(entry.getKey())) {
+            return ValueType.NAME;
+        } else if (entry.getValue() instanceof Long) {
+            return ValueType.LONG;
+        } else if (entry.getValue() instanceof Boolean) {
+            return ValueType.BOOLEAN;
+        }
+        return ValueType.STRING;
     }
 
     private static void addStringPropertyIfNotEmpty(final List<Object> properties, final String name, final String value) {
@@ -123,9 +124,8 @@ public final class XmlGenerator extends Generator{
      *
      * @param sourcePath        sourcepath of groovy files
      * @param targetDir         the target where the ecmExtensions from resources would be
-     * @param scriptClasses             groovy files, need to be relative to the source path
+     * @param scriptClasses     groovy files, need to be relative to the source path
      * @param updaterNamePrefix prefix for the initialize items nodes   @return Node object representing the hippoecm-extension to marshall to xml
-     *
      * @return the Node object for the ecm-extensions
      */
     public static Node getEcmExtensionNode(final File sourcePath, final File targetDir, final List<ScriptClass> scriptClasses, final String updaterNamePrefix) {
@@ -159,9 +159,9 @@ public final class XmlGenerator extends Generator{
     /**
      * Create initialize item for the given file
      *
-     * @param sourcePath sourcepath of groovy files
-     * @param scriptClass       groovy files, need to be relative to the source path
-     * @param namePrefix prefix for the initialize items nodes
+     * @param sourcePath  sourcepath of groovy files
+     * @param scriptClass groovy files, need to be relative to the source path
+     * @param namePrefix  prefix for the initialize items nodes
      * @return Node object representing the initializeitem node for the hippoecm-extension to marshall to xml
      */
     private static Node createInitializeItem(final File sourcePath, final ScriptClass scriptClass, final String namePrefix) {

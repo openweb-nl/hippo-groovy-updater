@@ -1,6 +1,6 @@
 action-lists:
-- 1.0:
-    /content/documents/my-site/new: reload
-    /content/gallery/my-site/cleaned: reload
-- 1.1:
-    /content/documents/my-site/new/obsolete: delete
+  - 1.0:
+      /content/documents/my-site/new: reload
+      /content/gallery/my-site/cleaned: reload
+  - 1.1:
+      /content/documents/my-site/new/obsolete: delete

@@ -20,7 +20,7 @@
 
   <groupId>nl.openweb.hippo.updater</groupId>
   <artifactId>groovy-updater</artifactId>
-  <version>1.12-SNAPSHOT</version>
+  <version>1.13-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Groovy updater</name>

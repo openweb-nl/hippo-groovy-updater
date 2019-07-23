@@ -173,17 +173,4 @@ public abstract class Generator {
     public static void setDefaultContentRoot(Bootstrap.ContentRoot contentRoot) {
         defaultContentRoot = contentRoot;
     }
-
-    protected static String getValueOrFileContent(final ScriptClass script, final File sourceDir, final String value) {
-        final File parentDir = value.startsWith("/") ? sourceDir : script.getFile().getParentFile();
-        final File file = new File(parentDir, value);
-        if (file.exists()) {
-            try {
-                return ScriptClassFactory.readFileEnsuringLinuxLineEnding(file);
-            } catch (IOException e) {
-                //do nothing, it's fine
-            }
-        }
-        return value;
-    }
 }

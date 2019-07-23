@@ -28,6 +28,7 @@ import nl.openweb.hippo.groovy.ScriptClassFactory;
 import nl.openweb.hippo.groovy.exception.ScriptParseException;
 import nl.openweb.hippo.groovy.model.ScriptClass;
 import static nl.openweb.hippo.groovy.Generator.stripAnnotations;
+import static nl.openweb.hippo.groovy.ScriptClassFactory.readFileEnsuringLinuxLineEnding;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -38,7 +39,7 @@ public class ScriptClassFactoryTest {
     private void testWithName(String updaterName) throws IOException, URISyntaxException {
 
         URL testfileUrl = getClass().getResource("updater.groovy");
-        final String content = FileUtils.fileRead(new File(testfileUrl.toURI()));
+        final String content = readFileEnsuringLinuxLineEnding(new File(testfileUrl.toURI()));
 
         final File tempFile = File.createTempFile("updater", "mysuffix");
         tempFile.deleteOnExit();
@@ -81,8 +82,8 @@ public class ScriptClassFactoryTest {
         File file = new File(testfileUrl.toURI());
         File resultFile = new File(testfileResultUrl.toURI());
 
-        String content = ScriptClassFactory.readFileEnsuringLinuxLineEnding(file);
-        String expectedContent = FileUtils.fileRead(resultFile);
+        String content = readFileEnsuringLinuxLineEnding(file);
+        String expectedContent = readFileEnsuringLinuxLineEnding(resultFile);
 
         assertEquals(expectedContent, stripAnnotations(content), "failed stripping");
     }
@@ -101,8 +102,8 @@ public class ScriptClassFactoryTest {
         final ScriptClass interpretingClassScrubbed = ScriptClassFactory.getInterpretingClass(file);
         final ScriptClass interpretingClassUnscrubbed = ScriptClassFactory.getInterpretingClass(file, true);
 
-        String expectedScrubbedContent = FileUtils.fileRead(resultFile);
-        String expectedUnscrubbedContent = FileUtils.fileRead(spacedResultFile);
+        String expectedScrubbedContent = readFileEnsuringLinuxLineEnding(resultFile);
+        String expectedUnscrubbedContent = readFileEnsuringLinuxLineEnding(spacedResultFile);
 
         assertEquals(expectedScrubbedContent, interpretingClassScrubbed.getContent(), "Content is not well scrubbed");
         assertEquals(expectedUnscrubbedContent, interpretingClassUnscrubbed.getContent(), "Content is not correct");

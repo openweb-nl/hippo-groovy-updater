@@ -4,4 +4,4 @@ definitions:
       autoexport:excluded:
         operation: add
         type: string
-        value: ['/hippo:configuration/hippo:update']
+        value: ['/hippo:configuration/hippo:update/**']
