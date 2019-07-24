@@ -61,9 +61,12 @@ In the build section of the (new) module containing the groovy updater scripts, 
 * **initializeNamePrefix** 
   *  prefix in the ecm-extension.xml nodenames   
      ```(default:hippo-updater-) ``` 
-* **yamlPath** 
-  *  relative path for the yaml bootstrap files  
+* **yamlContentPath** (since 1.13)
+  *  relative path for the yaml queue bootstrap files
      ```(default: hcm-content/configuration/update)```
+* **yamlConfigurationPath** (since 1.13)
+  *  relative path for the yaml registry bootstrap files
+     ```(default: hcm-config/configuration/update)```
 
 
 When using a separate module in Hippo 12, don't forget to place an hcm-module.yaml in the project.
@@ -86,7 +89,7 @@ module:
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-core</artifactId>
-      <version>${jackrabbit.version}</version>
+      <version>${hippo.jackrabbit.version}</version>
       <scope>provided</scope>
     </dependency>
 ```
