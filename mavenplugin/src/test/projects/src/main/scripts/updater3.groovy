@@ -3,7 +3,7 @@ import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
 
-@Updater(name = "Test Updater 3", xpath = "//element(*, hippo:document)")
+@Updater(name = "Test Updater 3")
 class TestUpdater3 extends BaseNodeUpdateVisitor {
     boolean doUpdate(Node node) {
         log.info "manipulate node < > & an %^&* /> {}", node.path
