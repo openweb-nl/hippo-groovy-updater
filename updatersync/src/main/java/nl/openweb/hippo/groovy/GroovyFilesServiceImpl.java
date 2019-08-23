@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -98,12 +100,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
             return false;
         }
         final Updater updater = scriptClass.getUpdater();
-        String name = updater.name();
-        if(parent.hasNode(name)){
-            info("Updating existing script %s", name);
-            parent.getNode(name).remove();
-        }
-        Node scriptNode = parent.addNode(name, HIPPOSYS_UPDATERINFO);
+        Node scriptNode = getScriptNode(parent, updater.name());
         final Map<String, Object> properties = PropertyCollector.getPropertiesForUpdater(scriptClass, file.getParentFile());
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             if(!JCR_PRIMARY_TYPE.equals(entry.getKey())){
@@ -111,6 +108,27 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
             }
         }
         return true;
+    }
+
+    private static Node getScriptNode(final Node parent, final String name) throws RepositoryException {
+        if(parent.hasNode(name)){
+            info("Updating existing script %s", name);
+            final Node node = parent.getNode(name);
+            final PropertyIterator iterator = node.getProperties();
+            String[] deleteProperties = new String[(int)iterator.getSize()];
+            while(iterator.hasNext()){
+                Property prop = iterator.nextProperty();
+                deleteProperties[(int)iterator.getPosition() - 1] = prop.getName();
+            }
+
+            for (String deleteProperty : deleteProperties) {
+                if(!JCR_PRIMARY_TYPE.equals(deleteProperty)) {
+                    node.getProperty(deleteProperty).remove();
+                }
+            }
+            return node;
+        }
+        return parent.addNode(name, HIPPOSYS_UPDATERINFO);
     }
 
     private static Value getValue(final Map.Entry<String, Object> entry) throws ValueFormatException {

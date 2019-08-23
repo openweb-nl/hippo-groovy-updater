@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
+import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -52,6 +53,21 @@ class GroovyFilesServiceImplTest {
             node = node.addNode(name);
         }
         scriptRoot = session.getNode(SCRIPT_ROOT);
+    }
+
+    @Test
+    void importGroovyFileReimport() throws URISyntaxException, RepositoryException, JAXBException, IOException {
+        URL testfileUrl = getClass().getResource("/updater.groovy");
+        URL testfileProperties = getClass().getResource("/updater.properties");
+
+        File file = new File(testfileUrl.toURI());
+        final Node existingNode = scriptRoot.addNode("Test Updater", HIPPOSYS_UPDATERINFO);
+        scriptRoot.addNode("Updater Test bogus", HIPPOSYS_UPDATERINFO);
+        service.importGroovyFile(session, file);
+
+        Properties testProperties = new Properties();
+        testProperties.load(new FileReader(testfileProperties.getFile()));
+        assertProps(testProperties, existingNode);
     }
 
     @Test
