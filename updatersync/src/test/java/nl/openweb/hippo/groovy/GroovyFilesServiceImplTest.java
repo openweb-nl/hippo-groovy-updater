@@ -62,10 +62,24 @@ class GroovyFilesServiceImplTest {
         File file = new File(testfileUrl.toURI());
 
         service.importGroovyFile(session, file);
-
         final Node updaterNode = scriptRoot.getNodes().nextNode();
         Properties testProperties = new Properties();
         testProperties.load(new FileReader(testfileProperties.getFile()));
+        assertProps(testProperties, updaterNode);
+    }
+
+    @Test
+    void importGroovyFileScript() throws URISyntaxException, RepositoryException, JAXBException, IOException {
+        URL testfileUrl = getClass().getResource("/updater-script.groovy");
+        URL testfileProperties = getClass().getResource("/updater.properties");
+        File file = new File(testfileUrl.toURI());
+
+        service.importGroovyFile(session, file);
+        final Node updaterNode = scriptRoot.getNodes().nextNode();
+        Properties testProperties = new Properties();
+        testProperties.load(new FileReader(testfileProperties.getFile()));
+        //just not the xpath
+        testProperties.remove("hipposys:query");
         assertProps(testProperties, updaterNode);
     }
 

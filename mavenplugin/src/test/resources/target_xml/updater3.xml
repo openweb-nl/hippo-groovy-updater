@@ -9,9 +9,6 @@
   <sv:property sv:name="hipposys:dryrun" sv:type="Boolean">
     <sv:value>false</sv:value>
   </sv:property>
-  <sv:property sv:name="hipposys:query" sv:type="String">
-    <sv:value>//element(*, hippo:document)</sv:value>
-  </sv:property>
   <sv:property sv:name="hipposys:script" sv:type="String">
     <sv:value><![CDATA[
 import org.onehippo.repository.update.BaseNodeUpdateVisitor
