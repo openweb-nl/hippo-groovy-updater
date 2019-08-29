@@ -41,8 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -62,6 +60,10 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 
@@ -114,15 +116,11 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         if(parent.hasNode(name)){
             info("Updating existing script %s", name);
             final Node node = parent.getNode(name);
-            final PropertyIterator iterator = node.getProperties();
-            String[] deleteProperties = new String[(int)iterator.getSize()];
-            while(iterator.hasNext()){
-                Property prop = iterator.nextProperty();
-                deleteProperties[(int)iterator.getPosition() - 1] = prop.getName();
-            }
+
+            String[] deleteProperties = new String[]{HIPPOSYS_DESCRIPTION, HIPPOSYS_PARAMETERS, HIPPOSYS_PATH,HIPPOSYS_QUERY};
 
             for (String deleteProperty : deleteProperties) {
-                if(!JCR_PRIMARY_TYPE.equals(deleteProperty)) {
+                if(node.hasProperty(deleteProperty)) {
                     node.getProperty(deleteProperty).remove();
                 }
             }
