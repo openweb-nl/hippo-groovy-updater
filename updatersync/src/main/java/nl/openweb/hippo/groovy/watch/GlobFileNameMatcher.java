@@ -30,9 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * File filter that includes files and excludes directories whose name matches certain globbing patterns.
- * The supported pattern language is the one used by {@link FileSystem#getPathMatcher(String)},
- * except that the path separator '/' should not be used.
+ * File filter that includes files and excludes directories whose name matches certain globbing patterns. The supported
+ * pattern language is the one used by {@link FileSystem#getPathMatcher(String)}, except that the path separator '/'
+ * should not be used.
  */
 public class GlobFileNameMatcher implements FileFilter {
 
@@ -117,5 +117,4 @@ public class GlobFileNameMatcher implements FileFilter {
         includedFiles.clear();
         excludedDirs.clear();
     }
-
 }

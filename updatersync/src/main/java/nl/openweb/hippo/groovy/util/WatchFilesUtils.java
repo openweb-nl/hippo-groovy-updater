@@ -17,7 +17,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Copyright 2015 Hippo B.V. (http://www.onehippo.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherConfig;
 
-
 public class WatchFilesUtils {
 
     public static final String PROJECT_BASEDIR_PROPERTY = "project.basedir";
@@ -61,7 +60,7 @@ public class WatchFilesUtils {
     public static final Long DEFAULT_MAX_FILE_LENGTH_KB = 256L;
     private static final Logger log = LoggerFactory.getLogger(WatchFilesUtils.class);
 
-    private WatchFilesUtils(){
+    private WatchFilesUtils() {
         //no creation of the instance
     }
 
@@ -70,7 +69,7 @@ public class WatchFilesUtils {
         if (projectBaseDir != null && !projectBaseDir.isEmpty()) {
             final Path baseDir = FileSystems.getDefault().getPath(projectBaseDir);
             if (baseDir.toFile().isDirectory()) {
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Basedir found: {}", baseDir);
                 }
                 return baseDir;
@@ -87,7 +86,7 @@ public class WatchFilesUtils {
                                                        final GroovyFilesWatcherConfig config) {
 
         List<Path> filesDirectories = new ArrayList<>(config.getWatchedModules().size());
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("getting groovy file directories");
         }
         for (String watchedModule : config.getWatchedModules()) {
@@ -97,13 +96,13 @@ public class WatchFilesUtils {
             paths.add(modulePath.resolve(RESOURCE_FILES_LOCATION_IN_MODULE));
             List<Path> pathList = paths.stream().filter(Files::isDirectory).collect(Collectors.toList());
             filesDirectories.addAll(pathList);
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Found {} paths to add for watching. {}", pathList.size(), pathList.stream().map(Path::toString)
-                        .collect(Collectors.joining(", ")));
+                    .collect(Collectors.joining(", ")));
             }
             if (pathList.isEmpty()) {
                 log.warn("Cannot watch groovy files in module '{}': it does not contain directory '{}' or {}",
-                        watchedModule, SCRIPT_FILES_LOCATION_IN_MODULE, RESOURCE_FILES_LOCATION_IN_MODULE);
+                    watchedModule, SCRIPT_FILES_LOCATION_IN_MODULE, RESOURCE_FILES_LOCATION_IN_MODULE);
             }
         }
         return filesDirectories;

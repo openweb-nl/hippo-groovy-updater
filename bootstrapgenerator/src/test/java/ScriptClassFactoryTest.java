@@ -108,5 +108,4 @@ public class ScriptClassFactoryTest {
         assertEquals(expectedScrubbedContent, interpretingClassScrubbed.getContent(), "Content is not well scrubbed");
         assertEquals(expectedUnscrubbedContent, interpretingClassUnscrubbed.getContent(), "Content is not correct");
     }
-
 }

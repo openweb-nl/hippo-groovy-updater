@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import nl.openweb.hippo.groovy.annotations.Updater;
 import nl.openweb.hippo.groovy.model.ScriptClass;
-import static nl.openweb.hippo.groovy.Generator.NEWLINE;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
@@ -74,14 +73,8 @@ public class PropertyCollector {
             addPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
         }
         addPropertyIfNotEmpty(properties, HIPPOSYS_QUERY, updater.xpath());
-        addPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, removeEmptyIndents(script.getContent()));
         addPropertyIfNotEmpty(properties, HIPPOSYS_SCRIPT, script.getContent());
         properties.put(HIPPOSYS_THROTTLE, updater.throttle());
         return properties;
     }
-
-    private static String removeEmptyIndents(String content) {
-        return content.replaceAll(NEWLINE + "\\s+" + NEWLINE, NEWLINE + NEWLINE);
-    }
-
 }

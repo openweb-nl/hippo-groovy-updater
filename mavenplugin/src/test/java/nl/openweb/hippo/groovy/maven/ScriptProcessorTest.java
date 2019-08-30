@@ -51,9 +51,9 @@ public class ScriptProcessorTest {
         File xml_output = new File(new File(getClass().getResource("/").toURI()), "xml_output");
 
         File resource = new File(getClass()
-                .getResource("/src/main/resources/hippoecm-extension.xml").toURI());
+            .getResource("/src/main/resources/hippoecm-extension.xml").toURI());
         File targetResource = new File(xml_output, "hippoecm-extension.xml");
-        if(xml_output.exists()){
+        if (xml_output.exists()) {
             FileUtils.deleteDirectory(xml_output);
             assertFalse(xml_output.exists());
         }
@@ -79,18 +79,18 @@ public class ScriptProcessorTest {
         File yaml_output = new File(new File(getClass().getResource("/").toURI()), "yaml_output");
 
         File resource = new File(getClass()
-                .getResource("/src/main/resources/hcm-actions.yaml").toURI());
+            .getResource("/src/main/resources/hcm-actions.yaml").toURI());
         File targetResource = new File(yaml_output, "hcm-actions.yaml");
-        if(yaml_output.exists()){
+        if (yaml_output.exists()) {
             FileUtils.deleteDirectory(yaml_output);
             assertFalse(yaml_output.exists());
         }
         processor.setSourceDir(input);
         processor.setTargetDir(yaml_output);
-        ((ScriptProcessorYAML)processor).setYamlContentPath("hcm-content/configuration/update");
-        ((ScriptProcessorYAML)processor).setYamlConfigurationPath("hcm-config/configuration/update");
+        ((ScriptProcessorYAML) processor).setYamlContentPath("hcm-content/configuration/update");
+        ((ScriptProcessorYAML) processor).setYamlConfigurationPath("hcm-config/configuration/update");
 
-        if(yaml_output.exists()){
+        if (yaml_output.exists()) {
             FileUtils.deleteDirectory(yaml_output);
             assertFalse(yaml_output.exists());
         }
@@ -101,6 +101,4 @@ public class ScriptProcessorTest {
 
         compareFolders(yaml_expected, yaml_output);
     }
-
-
 }

@@ -50,7 +50,7 @@ public class ScriptClassFactory {
     }
 
     private static NamespaceMapping getNamespaceResolver() throws NamespaceException {
-        if(!namespaceResolver.hasPrefix("")){
+        if (!namespaceResolver.hasPrefix("")) {
             namespaceResolver.setMapping("", "");
         }
         return namespaceResolver;
@@ -82,7 +82,7 @@ public class ScriptClassFactory {
     /**
      * Returns a class that has actually nothing but the Bootstrap and Updater Annotations
      *
-     * @param file the file to make a class representation of
+     * @param file          the file to make a class representation of
      * @param keepLineCount keep linecount when stripping the annotations in the scriptcontent
      * @return a fake class with the Bootstrap and Updater annotations
      */
@@ -93,12 +93,12 @@ public class ScriptClassFactory {
             script = readFileEnsuringLinuxLineEnding(file);
 
             String imports = getAnnotationClasses().stream()
-                    .map(clazz -> "import " + clazz.getCanonicalName() + ";")
-                    .collect(joining());
+                .map(clazz -> "import " + clazz.getCanonicalName() + ";")
+                .collect(joining());
 
             String interpretCode = imports + script.replaceAll("import .+\n", "")
-                    .replaceAll("package\\s.*\n", "")
-                    .replaceAll("extends\\s.*\\{[^\\u001a]*", "{}");
+                .replaceAll("package\\s.*\n", "")
+                .replaceAll("extends\\s.*\\{[^\\u001a]*", "{}");
 
             interpretCode = scrubAnnotations(interpretCode);
             script = stripAnnotations(script, keepLineCount);
@@ -114,20 +114,20 @@ public class ScriptClassFactory {
         String content = FileUtils.fileRead(file);
         if (content.contains(LINE_END_MAC)) {
             content = content.replaceAll(LINE_END_WINDOWS, LINE_END_LINUX)
-                    .replaceAll(LINE_END_MAC, LINE_END_LINUX);
+                .replaceAll(LINE_END_MAC, LINE_END_LINUX);
         }
         return content.replaceAll("[\\t ]+" + NEWLINE, NEWLINE);
     }
 
     private static String scrubAnnotations(final String interpretCode) {
         String possibleAnnotationNames = getAnnotationClasses().stream()
-                .map(annotation -> annotation.getCanonicalName().replace(".", "\\.") + "|" + annotation.getSimpleName())
-                .collect(joining("|"));
+            .map(annotation -> annotation.getCanonicalName().replace(".", "\\.") + "|" + annotation.getSimpleName())
+            .collect(joining("|"));
         return interpretCode.replaceAll("@((?!" + possibleAnnotationNames + ")[\\w]+)([\\s]+|(\\([^\\)]*\\)))", "");
     }
 
     public static List<ScriptClass> getScriptClasses(File sourceDir) {
         return Generator.getGroovyFiles(sourceDir).stream().map(ScriptClassFactory::getInterpretingClass)
-                .filter(script -> script.isValid() && !script.isExcluded()).collect(toList());
+            .filter(script -> script.isValid() && !script.isExcluded()).collect(toList());
     }
 }

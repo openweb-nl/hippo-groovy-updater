@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.annotations.Exclude;
 import nl.openweb.hippo.groovy.annotations.Updater;
-import nl.openweb.hippo.groovy.model.ScriptClass;
 import static nl.openweb.hippo.groovy.model.Constants.Files.GROOVY_EXTENSION;
 
 public abstract class Generator {
@@ -49,14 +48,14 @@ public abstract class Generator {
     private static final String REGEX_ATTR_VALUE_SIMPLE = "true|false|([^,^\\)]+)";
     private static final String REGEX_COMMA = "\\s*,*\\s*";
     private static final String REGEX_ATTR_VALUE = "("
-            + REGEX_ATTR_VALUE_SINGLEQUOTE
-            + "|"
-            + REGEX_ATTR_VALUE_QUOTE
-            + "|"
-            + REGEX_ATTR_VALUE_TRIPQUOTE
-            + "|"
-            + REGEX_ATTR_VALUE_SIMPLE
-            + ")?";
+        + REGEX_ATTR_VALUE_SINGLEQUOTE
+        + "|"
+        + REGEX_ATTR_VALUE_QUOTE
+        + "|"
+        + REGEX_ATTR_VALUE_TRIPQUOTE
+        + "|"
+        + REGEX_ATTR_VALUE_SIMPLE
+        + ")?";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_COMMA;
     private static final String ANNOTATION_PAYLOAD = REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")*\\))?";
 
@@ -65,7 +64,7 @@ public abstract class Generator {
     protected Generator() {
     }
 
-    public static String stripAnnotations(final String script){
+    public static String stripAnnotations(final String script) {
         return stripAnnotations(script, false);
     }
 
@@ -73,13 +72,13 @@ public abstract class Generator {
         String result = script;
         for (final Class<?> aClass : getAnnotationClasses()) {
             if (result.contains(aClass.getPackage().getName()) &&
-                    result.contains(aClass.getSimpleName())) {
+                result.contains(aClass.getSimpleName())) {
                 result = stripAnnotation(result, aClass.getSimpleName());
                 result = stripAnnotation(result, aClass.getCanonicalName());
                 result = result.replaceAll("import\\s*" + aClass.getCanonicalName() + "\\s*[;]?\n", "");
             }
         }
-        if(keepSpaces) {
+        if (keepSpaces) {
             int scriptClassStartLine = getClassStartLineNr(script);
             int strippedClassStartLine = getClassStartLineNr(result);
             String addition = StringUtils.repeat(NEWLINE, scriptClassStartLine - strippedClassStartLine);
@@ -122,8 +121,8 @@ public abstract class Generator {
         String simple = getAnnotation(script, clazz.getSimpleName());
 
         return StringUtils.isNotBlank(simple) ?
-                simple :
-                getAnnotation(script, clazz.getCanonicalName());
+            simple :
+            getAnnotation(script, clazz.getCanonicalName());
     }
 
     public static Bootstrap.ContentRoot getContentroot(final Bootstrap bootstrap) {
@@ -146,8 +145,8 @@ public abstract class Generator {
         }
         if (directories != null) {
             Arrays.stream(directories)
-                    .sorted(Comparator.comparing(File::getName))
-                    .map(Generator::getGroovyFiles).forEach(allFiles::addAll);
+                .sorted(Comparator.comparing(File::getName))
+                .map(Generator::getGroovyFiles).forEach(allFiles::addAll);
         }
         return Collections.unmodifiableList(allFiles);
     }
@@ -161,8 +160,8 @@ public abstract class Generator {
     }
 
     /**
-     * Technically it's not just Annotations, it's all classes from the Annotations library
-     * This is a convenience method.
+     * Technically it's not just Annotations, it's all classes from the Annotations library This is a convenience
+     * method.
      *
      * @return a list of the annotation classes
      */

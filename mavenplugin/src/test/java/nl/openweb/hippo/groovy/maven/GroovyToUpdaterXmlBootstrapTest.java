@@ -46,23 +46,23 @@ import static org.junit.Assert.assertTrue;
 
 public class GroovyToUpdaterXmlBootstrapTest {
     private static Logger logger = LoggerFactory.getLogger(GroovyToUpdaterXmlBootstrapTest.class);
-@Rule
-public MojoRule rule = new MojoRule(){
-    @Override
-    protected void before() throws Throwable {
-        super.before();
-    }
+    @Rule
+    public MojoRule rule = new MojoRule() {
+        @Override
+        protected void before() throws Throwable {
+            super.before();
+        }
 
-    @Override
-    protected void after() {
-        super.after();
-    }
-};
+        @Override
+        protected void after() {
+            super.after();
+        }
+    };
 
-@Rule
-public TestResources resources = new TestResources();
+    @Rule
+    public TestResources resources = new TestResources();
 
-//    @Test
+    //    @Test
     public void noottest() throws URISyntaxException, IOException, MojoFailureException, MojoExecutionException {
         GroovyToUpdaterXmlBootstrap gtuxb = new GroovyToUpdaterXmlBootstrap();
         Map<String, Object> pluginContext = new HashMap<>();
@@ -73,7 +73,7 @@ public TestResources resources = new TestResources();
         pluginContext.put("targetDir", output);
         gtuxb.setPluginContext(pluginContext);
         gtuxb.logPluginConfigurationItems();
-        if(output.exists()){
+        if (output.exists()) {
             FileUtils.deleteDirectory(output);
             assertFalse(output.exists());
         }
@@ -82,19 +82,18 @@ public TestResources resources = new TestResources();
         File xml_expected = new File(getClass().getResource("/target_xml").toURI());
 
         compareFolders(xml_expected, output);
-
     }
 
     private Mojo getMojo(String goal, File pomFile) {
         MavenExecutionRequest executionRequest = new DefaultMavenExecutionRequest();
         ProjectBuildingRequest buildingRequest = executionRequest.getProjectBuildingRequest();
 
-        buildingRequest.setRepositorySession( new DefaultRepositorySystemSession() );
+        buildingRequest.setRepositorySession(new DefaultRepositorySystemSession());
         try {
             ProjectBuilder projectBuilder = rule.lookup(ProjectBuilder.class);
             MavenProject project = projectBuilder.build(pomFile, buildingRequest).getProject();
             return rule.lookupConfiguredMojo(project, goal);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error getting mojo: ");
             e.printStackTrace();
         }
@@ -105,10 +104,10 @@ public TestResources resources = new TestResources();
     public void testXml() throws Exception {
         File basedir = resources.getBasedir("");
         File target = new File(basedir, "target/classes");
-        File pom = new File(basedir, "pom-to-test-xml.xml" );
+        File pom = new File(basedir, "pom-to-test-xml.xml");
         target.mkdirs();
 
-        FileUtils.copyFile(new File(basedir,"src/main/resources/hippoecm-extension.xml"), new File(target,"hippoecm-extension.xml"));
+        FileUtils.copyFile(new File(basedir, "src/main/resources/hippoecm-extension.xml"), new File(target, "hippoecm-extension.xml"));
 
         runMojo(pom, "generate-xml");
 
@@ -120,16 +119,16 @@ public TestResources resources = new TestResources();
     public void testXml2() throws Exception {
         File basedir = resources.getBasedir("");
         File target = new File(basedir, "target/classes2");
-        File pom = new File(basedir, "pom-to-test-xml-2.xml" );
+        File pom = new File(basedir, "pom-to-test-xml-2.xml");
         target.mkdirs();
 
-        FileUtils.copyFile(new File(basedir,"src/main/resources/hippoecm-extension.xml"), new File(target,"hippoecm-extension.xml"));
+        FileUtils.copyFile(new File(basedir, "src/main/resources/hippoecm-extension.xml"), new File(target, "hippoecm-extension.xml"));
 
         runMojo(pom, "generate-xml");
 
         File xml_expected_original = new File(getClass().getResource("/target_xml").toURI());
         File xml_expected_overlay = new File(getClass().getResource("/target_xml2_overlay").toURI());
-        File xml_expected = new File(basedir,"target_xml");
+        File xml_expected = new File(basedir, "target_xml");
         xml_expected.mkdirs();
         FileUtils.copyDirectory(xml_expected_original, xml_expected);
         FileUtils.copyDirectory(xml_expected_overlay, xml_expected);
@@ -143,7 +142,7 @@ public TestResources resources = new TestResources();
         File pom = new File(basedir, "pom-to-test-yaml.xml");
         target.mkdirs();
 
-        FileUtils.copyFile(new File(basedir,"src/main/resources/hcm-actions.yaml"), new File(target,"hcm-actions.yaml"));
+        FileUtils.copyFile(new File(basedir, "src/main/resources/hcm-actions.yaml"), new File(target, "hcm-actions.yaml"));
 
         runMojo(pom, "generate-yaml");
 
@@ -158,7 +157,7 @@ public TestResources resources = new TestResources();
         File pom = new File(basedir, "pom-to-test-yaml-2.xml");
         target.mkdirs();
 
-        FileUtils.copyFile(new File(basedir,"src/main/resources/hcm-actions.yaml"), new File(target,"hcm-actions.yaml"));
+        FileUtils.copyFile(new File(basedir, "src/main/resources/hcm-actions.yaml"), new File(target, "hcm-actions.yaml"));
 
         runMojo(pom, "generate-yaml");
 
@@ -167,11 +166,11 @@ public TestResources resources = new TestResources();
     }
 
     private void runMojo(File pom, String goal) throws MojoFailureException, MojoExecutionException {
-        assertNotNull( pom );
-        assertTrue( pom.exists() );
+        assertNotNull(pom);
+        assertTrue(pom.exists());
 
-        GroovyToUpdaterBootstrap myMojo = (GroovyToUpdaterBootstrap) getMojo(goal, pom );
-        assertNotNull( myMojo );
+        GroovyToUpdaterBootstrap myMojo = (GroovyToUpdaterBootstrap) getMojo(goal, pom);
+        assertNotNull(myMojo);
         myMojo.execute();
     }
 }

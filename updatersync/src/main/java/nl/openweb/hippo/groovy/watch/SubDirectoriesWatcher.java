@@ -47,7 +47,6 @@ class SubDirectoriesWatcher implements FileSystemListener {
     private final SortedSet<Path> modifiedPaths;
     private final Set<Path> deletedPaths;
 
-
     private SubDirectoriesWatcher(final Path directory, final FileSystemObserver fsObserver, final PathChangesListener listener) throws IOException {
         this.rootDirectory = directory;
         this.listener = listener;
@@ -206,7 +205,5 @@ class SubDirectoriesWatcher implements FileSystemListener {
          * Called when one or more directories in one of the watched subdirectories have stopped changing.
          */
         void onStop();
-
     }
-
 }

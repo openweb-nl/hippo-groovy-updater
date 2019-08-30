@@ -50,5 +50,4 @@ public class Marshal {
         });
         return marshaller;
     }
-
 }

@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 import nl.openweb.hippo.groovy.GroovyFileException;
 
 /**
- * File system observer that polls for changes. After a set of observed changes has been reported, the polling
- * thread sleeps a fixed amount of time.
+ * File system observer that polls for changes. After a set of observed changes has been reported, the polling thread
+ * sleeps a fixed amount of time.
  */
 public class FileSystemPoller implements FileSystemObserver, FileAlterationListener {
 
@@ -60,7 +60,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
 
     @Override
     public synchronized void registerDirectory(final Path directory, final FileSystemListener listener) throws IOException {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Registering {}", directory);
         }
 
@@ -92,7 +92,6 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
         } else {
             log.warn("Ignoring file system changes in unknown directory: {}", observedPath);
         }
-
     }
 
     @Override

@@ -125,7 +125,8 @@ public final class XmlGenerator extends Generator {
      * @param sourcePath        sourcepath of groovy files
      * @param targetDir         the target where the ecmExtensions from resources would be
      * @param scriptClasses     groovy files, need to be relative to the source path
-     * @param updaterNamePrefix prefix for the initialize items nodes   @return Node object representing the hippoecm-extension to marshall to xml
+     * @param updaterNamePrefix prefix for the initialize items nodes   @return Node object representing the
+     *                          hippoecm-extension to marshall to xml
      * @return the Node object for the ecm-extensions
      */
     public static Node getEcmExtensionNode(final File sourcePath, final File targetDir, final List<ScriptClass> scriptClasses, final String updaterNamePrefix) {
@@ -139,12 +140,12 @@ public final class XmlGenerator extends Generator {
         properties.add(createProperty(JCR_PRIMARY_TYPE, HIPPO_INITIALIZEFOLDER, ValueType.STRING));
 
         final Stream<Node> sourceStream = Stream.concat(ecmExtensionsScriptNode == null ? Stream.empty() : ecmExtensionsScriptNode.getSubnodes().stream(),
-                ecmExtensionTargetNode == null ? Stream.empty() : ecmExtensionTargetNode.getSubnodes().stream());
+            ecmExtensionTargetNode == null ? Stream.empty() : ecmExtensionTargetNode.getSubnodes().stream());
 
         Stream.concat(sourceStream, scriptClasses.stream().map(script -> createInitializeItem(sourcePath, script, updaterNamePrefix)).filter(Objects::nonNull))
-                .sorted(Comparator.comparingDouble(node -> Double.valueOf(node.getPropertyByName(HIPPO_SEQUENCE).getSingleValue())))
-                .distinct()
-                .forEach(properties::add);
+            .sorted(Comparator.comparingDouble(node -> Double.valueOf(node.getPropertyByName(HIPPO_SEQUENCE).getSingleValue())))
+            .distinct()
+            .forEach(properties::add);
         return rootnode;
     }
 
@@ -212,6 +213,4 @@ public final class XmlGenerator extends Generator {
         node.setName(initName);
         return node;
     }
-
-
 }

@@ -34,7 +34,6 @@
  */
 package nl.openweb.hippo.groovy;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -60,6 +59,10 @@ import nl.openweb.hippo.groovy.model.ScriptClass;
 import static nl.openweb.hippo.groovy.Generator.getGroovyFiles;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getInterpretingClass;
 import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERINFO;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 
@@ -84,33 +87,44 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
     }
 
     /**
-     * do the update or create a node of the groovy file
-     * this will not save the session
+     * do the update or create a node of the groovy file this will not save the session
      *
      * @param parent parentnode of the Node te be
-     * @param file file to transform into a Node
+     * @param file   file to transform into a Node
      * @return success
      * @throws RepositoryException
      */
     private static boolean setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
         ScriptClass scriptClass = getInterpretingClass(file, true);
-        if(!scriptClass.isValid()){
+        if (!scriptClass.isValid()) {
             return false;
         }
         final Updater updater = scriptClass.getUpdater();
-        String name = updater.name();
-        if(parent.hasNode(name)){
-            info("Updating existing script %s", name);
-            parent.getNode(name).remove();
-        }
-        Node scriptNode = parent.addNode(name, HIPPOSYS_UPDATERINFO);
+        Node scriptNode = getScriptNode(parent, updater.name());
         final Map<String, Object> properties = PropertyCollector.getPropertiesForUpdater(scriptClass, file.getParentFile());
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
-            if(!JCR_PRIMARY_TYPE.equals(entry.getKey())){
+            if (!JCR_PRIMARY_TYPE.equals(entry.getKey())) {
                 scriptNode.setProperty(entry.getKey(), getValue(entry));
             }
         }
         return true;
+    }
+
+    private static Node getScriptNode(final Node parent, final String name) throws RepositoryException {
+        if (parent.hasNode(name)) {
+            info("Updating existing script %s", name);
+            final Node node = parent.getNode(name);
+
+            String[] deleteProperties = new String[]{HIPPOSYS_DESCRIPTION, HIPPOSYS_PARAMETERS, HIPPOSYS_PATH, HIPPOSYS_QUERY};
+
+            for (String deleteProperty : deleteProperties) {
+                if (node.hasProperty(deleteProperty)) {
+                    node.getProperty(deleteProperty).remove();
+                }
+            }
+            return node;
+        }
+        return parent.addNode(name, HIPPOSYS_UPDATERINFO);
     }
 
     private static Value getValue(final Map.Entry<String, Object> entry) throws ValueFormatException {
@@ -143,7 +157,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
      * This method will take care of updating the node in the repository
      *
      * @param session jcr session tu use
-     * @param file file to transform
+     * @param file    file to transform
      * @return success
      * @throws IOException
      * @throws RepositoryException

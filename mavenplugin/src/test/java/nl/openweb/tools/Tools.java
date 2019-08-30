@@ -41,10 +41,10 @@ public final class Tools {
     public static String getEnvironmentInfo() {
         final StringBuilder output = new StringBuilder();
         System.getenv().forEach((key, value) -> output.append(
-                key)
-                .append(": ")
-                .append(value)
-                .append("\n"));
+            key)
+            .append(": ")
+            .append(value)
+            .append("\n"));
         return output.toString();
     }
 
@@ -68,19 +68,18 @@ public final class Tools {
         assertContentCompares(expectedFilePaths, resultFilesPaths);
         assertNameCompares(expectedFilePaths, resultFilesPaths, expected.getAbsolutePath(), result.getAbsolutePath());
         assertNameCompares(expectedFolderPaths, resultFoldersPaths, expected.getAbsolutePath(), result.getAbsolutePath());
-
     }
 
     private static void assertNameCompares(final List<Path> expectedFolderPaths, final List<Path> resultFoldersPaths, final String expectedSourcePath, final String resultSourcePath) {
         assertEquals(expectedFolderPaths.size(), resultFoldersPaths.size());
-        for(int i = 1; i < expectedFolderPaths.size(); i++) {
+        for (int i = 1; i < expectedFolderPaths.size(); i++) {
             Path expectedPath = expectedFolderPaths.get(i);
             Path resultPath = resultFoldersPaths.get(i);
             logger.info("Comparing {} and {}", expectedPath.toString(), resultPath.toString());
             assertEquals(expectedPath.getName(expectedPath.getNameCount() - 1),
-                    resultPath.getName(resultPath.getNameCount() - 1));
+                resultPath.getName(resultPath.getNameCount() - 1));
             assertEquals(expectedPath.toString().substring(expectedSourcePath.length()),
-                    resultPath.toString().substring(resultSourcePath.length()));
+                resultPath.toString().substring(resultSourcePath.length()));
         }
     }
 
@@ -88,12 +87,12 @@ public final class Tools {
         assertEquals(expectedPaths.size(), resultPaths.size());
         expectedPaths.sort(Comparator.naturalOrder());
         resultPaths.sort(Comparator.naturalOrder());
-        for(int i = 0; i < expectedPaths.size(); i++){
+        for (int i = 0; i < expectedPaths.size(); i++) {
             Path expectedPath = expectedPaths.get(i);
             Path resultPath = resultPaths.get(i);
             logger.info("Comparing {} and {}", expectedPath.toString(), resultPath.toString());
             assertEquals("Filecount is wrong", expectedPath.getName(expectedPath.getNameCount() - 1),
-                    resultPath.getName(resultPath.getNameCount() - 1));
+                resultPath.getName(resultPath.getNameCount() - 1));
             assertEquals("Files differ! Incorrect tranform!", Files.readAllLines(expectedPath), Files.readAllLines(resultPath));
         }
     }
@@ -113,7 +112,7 @@ public final class Tools {
         @Override
         public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
             collectedFilesList.add(file);
-            return super.visitFile(file, attrs) ;
+            return super.visitFile(file, attrs);
         }
 
         @Override

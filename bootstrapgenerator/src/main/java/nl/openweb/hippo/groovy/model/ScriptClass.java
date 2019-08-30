@@ -51,8 +51,8 @@ public class ScriptClass {
 
     public final Bootstrap getBootstrap(boolean defaultToDefault) {
         return interpretClass.isAnnotationPresent(Bootstrap.class) || !defaultToDefault ?
-                getBootstrap() :
-                DefaultBootstrap.getBootstrap();
+            getBootstrap() :
+            DefaultBootstrap.getBootstrap();
     }
 
     public String getContent() {
@@ -63,5 +63,7 @@ public class ScriptClass {
         return interpretClass.isAnnotationPresent(Updater.class);
     }
 
-    public boolean isExcluded() {return interpretClass.isAnnotationPresent(Exclude.class); }
+    public boolean isExcluded() {
+        return interpretClass.isAnnotationPresent(Exclude.class);
+    }
 }

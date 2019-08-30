@@ -36,8 +36,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Java class for anonymous complex type.
  * <p>
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
  * &lt;complexType&gt;
@@ -75,9 +74,8 @@ public class Property {
      * Gets the value of the value property.
      * <p>
      * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to
+     * the returned list will be present inside the JAXB object. This is why there is not a
      * <CODE>set</CODE> method for the value property.
      * <p>
      * <p>
@@ -174,20 +172,20 @@ public class Property {
         final Property property = (Property) o;
 
         return new EqualsBuilder()
-                .append(value, property.value)
-                .append(multiple, property.multiple)
-                .append(name, property.name)
-                .append(type, property.type)
-                .isEquals();
+            .append(value, property.value)
+            .append(multiple, property.multiple)
+            .append(name, property.name)
+            .append(type, property.type)
+            .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(value)
-                .append(multiple)
-                .append(name)
-                .append(type)
-                .toHashCode();
+            .append(value)
+            .append(multiple)
+            .append(name)
+            .append(type)
+            .toHashCode();
     }
 }

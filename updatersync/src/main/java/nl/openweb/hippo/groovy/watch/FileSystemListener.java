@@ -20,9 +20,8 @@ package nl.openweb.hippo.groovy.watch;
 import java.nio.file.Path;
 
 /**
- * Callbacks of a {@link FileSystemObserver}.
- * Each set of changes always starts with {@link #fileSystemChangesStarted()} and ends with
- * {@link #fileSystemChangesStopped()}.
+ * Callbacks of a {@link FileSystemObserver}. Each set of changes always starts with {@link #fileSystemChangesStarted()}
+ * and ends with {@link #fileSystemChangesStopped()}.
  */
 public interface FileSystemListener {
 
@@ -41,5 +40,4 @@ public interface FileSystemListener {
     void fileDeleted(final Path file);
 
     void fileSystemChangesStopped();
-
 }

@@ -30,7 +30,7 @@ import static nl.openweb.hippo.groovy.XmlGenerator.getUpdateScriptNode;
 import static nl.openweb.hippo.groovy.XmlGenerator.getUpdateScriptXmlFilename;
 import static nl.openweb.hippo.groovy.model.Constants.Files.ECM_EXTENSIONS_NAME;
 
-public class ScriptProcessorXML extends ScriptProcessor{
+public class ScriptProcessorXML extends ScriptProcessor {
 
     /**
      * Write hippoecm-extension.xml file
@@ -83,6 +83,7 @@ public class ScriptProcessorXML extends ScriptProcessor{
 
     /**
      * Write the node in XML style to the file
+     *
      * @param node
      * @param file
      * @return result of writing to the file
