@@ -22,8 +22,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Observes registered directories for changes (created, modified en deleted files and directories)
- * and notifies listeners of the observed changes.
+ * Observes registered directories for changes (created, modified en deleted files and directories) and notifies
+ * listeners of the observed changes.
  */
 public interface FileSystemObserver {
 
@@ -46,5 +46,4 @@ public interface FileSystemObserver {
      * Closes resources used by this observer.
      */
     void shutdown();
-
 }

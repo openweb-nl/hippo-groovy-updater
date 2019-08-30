@@ -69,7 +69,7 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
         return Collections.unmodifiableList(Arrays.asList(systemPropertyChecked));
     }
 
-    private String[] getMultipleStringFromSystemProperty(final String propertyName, final String[] defaultValue){
+    private String[] getMultipleStringFromSystemProperty(final String propertyName, final String[] defaultValue) {
         String propValue = System.getProperty(PARAM_PREFIX + propertyName);
         return StringUtils.isNotBlank(propValue) ? propValue.split(";") : defaultValue;
     }
@@ -79,7 +79,7 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
             return getMultipleStringProperty(configNode, propertyName, defaultValue);
         } catch (RepositoryException e) {
             log.warn("Error reading configuration property '{}' at {}, using default value instead: {}",
-                    propertyName, JcrUtils.getNodePathQuietly(configNode), Arrays.asList(defaultValue), e);
+                propertyName, JcrUtils.getNodePathQuietly(configNode), Arrays.asList(defaultValue), e);
             return defaultValue;
         }
     }

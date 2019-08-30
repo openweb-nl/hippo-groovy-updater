@@ -116,10 +116,10 @@ class GroovyFilesServiceImplTest {
 
     void assertProps(Properties expected, Node node) throws RepositoryException {
         final PropertyIterator properties = node.getProperties();
-        if(expected.size() != properties.getSize()){
+        if (expected.size() != properties.getSize()) {
             throw new AssertionFailedError("Amount of properties varies", expected.size(), properties.getSize());
         }
-        while(properties.hasNext()){
+        while (properties.hasNext()) {
             final Property property = properties.nextProperty();
             assertEquals(expected.getProperty(property.getName()), property.getString(), "Mismatch of property: " + property.getName());
         }

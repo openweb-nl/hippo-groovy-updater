@@ -17,7 +17,6 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
-
 import java.util.List;
 
 /**

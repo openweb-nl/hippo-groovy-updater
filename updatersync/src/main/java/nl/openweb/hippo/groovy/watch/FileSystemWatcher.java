@@ -52,12 +52,12 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     static final int POLLING_TIME_MILLIS = 100;
     private static final Logger log = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
     private static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER =
-            (exceptionThread, exception) -> log.warn("FileSystemWatcher '{}' crashed", exceptionThread.getName(), exception);
+        (exceptionThread, exception) -> log.warn("FileSystemWatcher '{}' crashed", exceptionThread.getName(), exception);
     private static int instanceCounter = 0;
     /**
-     * The {@link WatchService} used by this class has a percularity: when a directory is moved,
-     * the associated watch key's watchable() still returns the old path. This map is therefore used to
-     * keep track of which watch key actually matches to which path.
+     * The {@link WatchService} used by this class has a percularity: when a directory is moved, the associated watch
+     * key's watchable() still returns the old path. This map is therefore used to keep track of which watch key
+     * actually matches to which path.
      */
     final Map<WatchKey, Path> watchedPaths;
     private final GlobFileNameMatcher watchedFiles;
@@ -102,11 +102,10 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
                     return FileVisitResult.SKIP_SUBTREE;
                 }
 
-
                 final WatchKey key = visitedDirectory.register(watcher,
-                        ENTRY_CREATE,
-                        ENTRY_MODIFY,
-                        ENTRY_DELETE);
+                    ENTRY_CREATE,
+                    ENTRY_MODIFY,
+                    ENTRY_DELETE);
 
                 watchedPaths.put(key, visitedDirectory);
 
@@ -149,8 +148,8 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     }
 
     /**
-     * Keep polling for a short time: when (multiple) directories get deleted the watch keys might
-     * arrive just a bit later
+     * Keep polling for a short time: when (multiple) directories get deleted the watch keys might arrive just a bit
+     * later
      */
     private void pollForMoreChanges() throws InterruptedException {
         boolean keepPolling = true;
@@ -166,7 +165,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
                 polledKeys.add(key);
             }
         }
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Polled '{}' more changes during '{}' ms", polledKeys.size(), String.valueOf(System.currentTimeMillis() - startPolling));
         }
         for (WatchKey polledKey : polledKeys) {
@@ -202,13 +201,13 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
             final WatchEvent.Kind<?> kind = event.kind();
             final Object eventContext = event.context();
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Processing {} {} in {}", kind.name(), eventContext, watchedDirectory);
             }
 
             if (kind == StandardWatchEventKinds.OVERFLOW) {
                 log.info("event overflow in {}. Reimporting and registering watchedDirectory '{}' to avoid half synced state",
-                        watchedDirectory, watchedDirectory);
+                    watchedDirectory, watchedDirectory);
                 if (watchedDirectory.toFile().exists()) {
                     registerQuietly(watchedDirectory);
                 }
@@ -314,11 +313,11 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
             } else if (kind == StandardWatchEventKinds.OVERFLOW) {
                 if (changedAbsPath.toFile().exists()) {
                     log.info("Having an event overflow for '{}'. Entire directory '{}' will be recreated",
-                            changedAbsPath, changedAbsPath);
+                        changedAbsPath, changedAbsPath);
                     listener.directoryCreated(changedAbsPath);
                 } else {
                     log.info("Having an event overflow for non existing directory '{}'. Directory '{}' will be removed",
-                            changedAbsPath, changedAbsPath);
+                        changedAbsPath, changedAbsPath);
                     listener.directoryDeleted(changedAbsPath);
                 }
             }
@@ -333,7 +332,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
                 listener.fileDeleted(changedAbsPath);
             } else if (kind == StandardWatchEventKinds.OVERFLOW) {
                 throw new IllegalStateException("Only a directory should even possibly overflow in events, for example" +
-                        " by saving 1000 new files in one go.");
+                    " by saving 1000 new files in one go.");
             }
         }
 
@@ -343,7 +342,5 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
                 started = false;
             }
         }
-
     }
-
 }

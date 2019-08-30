@@ -27,19 +27,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Bootstrap {
-    enum ContentRoot{
+    enum ContentRoot {
         DEFAULT(""),
         QUEUE("queue"),
         REGISTRY("registry");
 
         private String value;
 
-        ContentRoot(String value){
+        ContentRoot(String value) {
             this.value = value;
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return value;
         }
     }

@@ -42,12 +42,12 @@ public abstract class ScriptProcessor {
 
     public abstract List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClasses) throws MojoExecutionException;
 
-        /**
-         * Generate updater files from groovy scripts
-         *
-         * @param scriptClasses groovy scripts to parse
-         * @return list of valid parsed groovy files
-         */
+    /**
+     * Generate updater files from groovy scripts
+     *
+     * @param scriptClasses groovy scripts to parse
+     * @return list of valid parsed groovy files
+     */
     protected List<ScriptClass> processGroovyScripts(final List<ScriptClass> scriptClasses) {
         getLog().info("Converting " + scriptClasses.size() + " groovy scripts to bootstrap format");
         return scriptClasses.stream().filter(this::processUpdateScript).collect(toList());
@@ -61,7 +61,7 @@ public abstract class ScriptProcessor {
      */
     protected abstract boolean processUpdateScript(final ScriptClass scriptClass);
 
-    protected Log getLog(){
+    protected Log getLog() {
         return log;
     }
 
@@ -80,5 +80,4 @@ public abstract class ScriptProcessor {
     public void setInitializeNamePrefix(final String initializeNamePrefix) {
         this.initializeNamePrefix = initializeNamePrefix;
     }
-
 }

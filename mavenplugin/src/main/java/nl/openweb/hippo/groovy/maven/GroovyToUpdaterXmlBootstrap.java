@@ -21,9 +21,9 @@ import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
 
 @Mojo(name = "generate-xml")
-public class GroovyToUpdaterXmlBootstrap extends GroovyToUpdaterBootstrap{
+public class GroovyToUpdaterXmlBootstrap extends GroovyToUpdaterBootstrap {
     @Override
-    protected ScriptProcessor getProcessorBase(){
+    protected ScriptProcessor getProcessorBase() {
         return new ScriptProcessorXML();
     }
 }

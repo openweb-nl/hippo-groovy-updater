@@ -24,13 +24,13 @@ import nl.openweb.hippo.groovy.annotations.Bootstrap;
 @Bootstrap
 public class DefaultBootstrap {
 
-    private DefaultBootstrap(){
+    private DefaultBootstrap() {
         //no instantiating
     }
 
     private static final Bootstrap bootstrap = DefaultBootstrap.class.getAnnotation(Bootstrap.class);
 
-    public static Bootstrap getBootstrap(){
+    public static Bootstrap getBootstrap() {
         return bootstrap;
     }
 }

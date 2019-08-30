@@ -36,9 +36,9 @@ import nl.openweb.hippo.groovy.GroovyFilesService;
 import nl.openweb.hippo.groovy.util.WatchFilesUtils;
 
 /**
- * Watches a directory with groovy files for changes, and applies the observed changes to the
- * provided groovyfile service. The provided directory should contain a child directories.
- * Only existing child directories are watched for changes.
+ * Watches a directory with groovy files for changes, and applies the observed changes to the provided groovyfile
+ * service. The provided directory should contain a child directories. Only existing child directories are watched for
+ * changes.
  */
 public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesListener {
 
@@ -81,9 +81,9 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         }
 
         List<Path> groovyFilesDirectories = WatchFilesUtils.getGroovyFilesDirectories(projectBaseDir, config);
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Observe {} paths: {}", groovyFilesDirectories.size(), groovyFilesDirectories.stream().map(Path::toString)
-                    .collect(Collectors.joining(", ")));
+                .collect(Collectors.joining(", ")));
         }
         for (Path groovyFilesDirectory : groovyFilesDirectories) {
             try {
@@ -118,7 +118,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
                 matcher.include(pattern);
             } catch (IllegalArgumentException e) {
                 log.warn("Ignoring OS name '{}': {}. On this OS files will be watched using file system polling.",
-                        pattern, e.getMessage());
+                    pattern, e.getMessage());
             }
         }
         return matcher.matchesCurrentOs();
@@ -145,10 +145,10 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         } catch (RepositoryException e) {
             if (log.isDebugEnabled()) {
                 log.info("Failed to reload groovy files from '{}', resetting session and trying to reimport whole bundle(s)",
-                        changedPaths, e);
+                    changedPaths, e);
             } else if (log.isInfoEnabled()) {
                 log.info("Failed to reload groovy files from '{}' : '{}', resetting session and trying to reimport whole bundle(s)",
-                        changedPaths, e.getMessage());
+                    changedPaths, e.getMessage());
             }
             resetSilently(session);
             tryReimportBundles(watchedRootDir, changedPaths);
@@ -160,26 +160,25 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
     private void reloadGroovyFile(final Set<Path> processedPaths, final Path changedPath, final Path relChangedDir) throws RepositoryException {
         log.info("Reloading groovyfile '{}'", relChangedDir);
         try {
-            if(service.importGroovyFile(session, changedPath.toFile())) {
+            if (service.importGroovyFile(session, changedPath.toFile())) {
                 processedPaths.add(changedPath);
-            }else{
+            } else {
                 log.info("** Failed to process '{}' as a groovy updater", relChangedDir);
             }
         } catch (IOException e) {
             // we do not have to take action. An IOException is the result of a concurrent change (delete/move)
             // during creation or processing of the archive. The change will trigger a new import
             log.debug("IOException during importing '{}'. This is typically the result of a file that is deleted" +
-                    "during the import of a directory. This delete will trigger an event shortly after this" +
-                    " exception.", changedPath, e);
+                "during the import of a directory. This delete will trigger an event shortly after this" +
+                " exception.", changedPath, e);
         } catch (NullPointerException e) {
             // sigh....because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() returns null
             // on a IOException (for example when a file is deleted during processing) I get an NPE I cannot avoid,
             // however, it is just similar to the IOException above, typically the result of an event that will
             // be processed shortly after this exception. Hence, ignore
             log.debug("NullPointerException we cannot avoid because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() " +
-                    "returns null on IOException. We can ignore this event since it is the result of an event that will " +
-                    " be processed shortly after this exception. Hence, ignore change path '{}'", changedPath, e);
-
+                "returns null on IOException. We can ignore this event since it is the result of an event that will " +
+                " be processed shortly after this exception. Hence, ignore change path '{}'", changedPath, e);
         } catch (JAXBException e) {
             log.error("JAXBException in import", e);
         }
@@ -222,5 +221,4 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             fileSystemObserver.shutdown();
         }
     }
-
 }

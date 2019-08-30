@@ -48,22 +48,21 @@ public abstract class GroovyToUpdaterBootstrap extends AbstractMojo {
         getProcessor().processUpdateScripts();
     }
 
-    protected void logPluginConfigurationItems(){
+    protected void logPluginConfigurationItems() {
         final Log log = getLog();
         log.info("sourceDir: " + sourceDir.getAbsolutePath());
         log.info("targetDir: " + targetDir.getAbsolutePath());
         log.info("initializeNamePrefix: " + initializeNamePrefix);
-
     }
 
-    private ScriptProcessor getProcessor(){
+    private ScriptProcessor getProcessor() {
         ScriptProcessor processor = getProcessorBase();
         processor.setLog(getLog());
         processor.setTargetDir(targetDir);
         processor.setSourceDir(sourceDir);
         processor.setInitializeNamePrefix(initializeNamePrefix);
         Generator.setDefaultContentRoot(defaultContentRoot.equalsIgnoreCase("registry") ?
-                Bootstrap.ContentRoot.REGISTRY : Bootstrap.ContentRoot.QUEUE);
+            Bootstrap.ContentRoot.REGISTRY : Bootstrap.ContentRoot.QUEUE);
         return processor;
     }
 

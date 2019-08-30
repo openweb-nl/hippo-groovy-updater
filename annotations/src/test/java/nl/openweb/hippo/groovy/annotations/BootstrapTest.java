@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BootstrapTest {
     @Test
-    public void testBootstrapAnnotation(){
+    public void testBootstrapAnnotation() {
         assertEquals("", Bootstrap.ContentRoot.DEFAULT.toString());
         assertEquals("registry", Bootstrap.ContentRoot.REGISTRY.toString());
         assertEquals("queue", Bootstrap.ContentRoot.QUEUE.toString());

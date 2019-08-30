@@ -20,12 +20,12 @@ package nl.openweb.hippo.groovy.model;
  * Constants for generating bootstrap xml
  */
 public final class Constants {
-    private Constants(){
+    private Constants() {
         //no public construction
     }
 
     public final class Files {
-        private Files(){
+        private Files() {
             //no public construction
         }
 
@@ -36,7 +36,7 @@ public final class Constants {
     }
 
     public final class PropertyName {
-        private PropertyName(){
+        private PropertyName() {
             //no public construction
         }
 
@@ -57,7 +57,7 @@ public final class Constants {
     }
 
     public final class NodeType {
-        private NodeType(){
+        private NodeType() {
             //no public construction
         }
 
@@ -68,7 +68,7 @@ public final class Constants {
     }
 
     public final class ValueType {
-        private ValueType(){
+        private ValueType() {
             //no public construction
         }
 

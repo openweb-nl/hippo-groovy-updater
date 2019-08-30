@@ -25,9 +25,9 @@ import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
  */
 @Deprecated
 @Mojo(name = "generate")
-public class GroovyToUpdaterBootstrapDefault extends GroovyToUpdaterBootstrap{
+public class GroovyToUpdaterBootstrapDefault extends GroovyToUpdaterBootstrap {
     @Override
-    protected ScriptProcessor getProcessorBase(){
+    protected ScriptProcessor getProcessorBase() {
         getLog().warn("The goal \"generate\" is deprecated, move to \"generate-xml\" or \"generate-yaml\"");
         return new ScriptProcessorXML();
     }

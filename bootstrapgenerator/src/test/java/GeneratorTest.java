@@ -61,18 +61,17 @@ public class GeneratorTest {
         String fullBootstrap2 = getAnnotation(content2, Bootstrap.class.getName());
 
         String descriptionExample = "'''This script can be used to do anything.\n" +
-                "            (It should allow any notations, for the stripping etc..\n" +
-                "            for example a description on how the XPath query should be like //element(*, hippo:document)[mixin:types='project:example']\n" +
-                "            or the parameters field, describing like: { \"foobar\": [ \"bar\", \"foo\"]}'''";
+            "            (It should allow any notations, for the stripping etc..\n" +
+            "            for example a description on how the XPath query should be like //element(*, hippo:document)[mixin:types='project:example']\n" +
+            "            or the parameters field, describing like: { \"foobar\": [ \"bar\", \"foo\"]}'''";
         String updaterExpected = "@Updater(name = \"Test Updater\",\n" +
-                "        xpath = \"//element(*, hippo:document)\",\n" +
-                " description=" + descriptionExample + ", path = \"\", parameters = \" \")";
+            "        xpath = \"//element(*, hippo:document)\",\n" +
+            " description=" + descriptionExample + ", path = \"\", parameters = \" \")";
         String bootstrapExpected = "@Bootstrap(reload = true, sequence = 99999.0d)";
         String bootstrapFull2 = "@nl.openweb.hippo.groovy.annotations.Bootstrap(sequence = 99999.0d)";
         String updaterFull2 = "@nl.openweb.hippo.groovy.annotations.Updater(name = \"Test Updater noimport\",\n" +
-                "        xpath = \"//element(*, hippo:document)\",\n" +
-                " description=\"\", path = \"\", parameters = \" \")";
-
+            "        xpath = \"//element(*, hippo:document)\",\n" +
+            " description=\"\", path = \"\", parameters = \" \")";
 
         assertEquals(updaterExpected, updater);
         assertEquals(bootstrapExpected, bootstrap);

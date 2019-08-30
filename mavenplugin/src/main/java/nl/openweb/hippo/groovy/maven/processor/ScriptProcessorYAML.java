@@ -60,8 +60,8 @@ public class ScriptProcessorYAML extends ScriptProcessor {
             return false;
         }
         final String targetPath =
-                Bootstrap.ContentRoot.REGISTRY.equals(scriptClass.getBootstrap(true).contentroot()) ?
-                        yamlConfigurationPath : yamlContentPath;
+            Bootstrap.ContentRoot.REGISTRY.equals(scriptClass.getBootstrap(true).contentroot()) ?
+                yamlConfigurationPath : yamlContentPath;
         final File targetFile = new File(new File(targetDir, targetPath), getUpdateScriptYamlFilename(sourceDir, scriptClass));
         targetFile.getParentFile().mkdirs();
         return marshal(updateScript, targetFile);

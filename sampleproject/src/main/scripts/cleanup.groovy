@@ -26,7 +26,7 @@ import javax.jcr.RepositoryException
 
 @Bootstrap(sequence = 50000d, reload = true, version = "1")
 @Updater(name = "Cleanup Nodes no longer needed", xpath = "/jcr:root")
-class Cleanup extends BaseNodeUpdateVisitor{
+class Cleanup extends BaseNodeUpdateVisitor {
 
     String[] removeNodes = [
             "hippo:configuration/hippo:update/hippo:history/Cleanup Nodes no longer needed",
@@ -40,11 +40,11 @@ class Cleanup extends BaseNodeUpdateVisitor{
 
         for (String nodePath : removeNodes) {
             Node deleteNode = JcrUtils.getNodeIfExists(node, nodePath)
-            if(deleteNode != null){
+            if (deleteNode != null) {
                 log.debug "Removing node at '${nodePath}'"
                 deleteNode.remove()
                 visitorContext.reportUpdated(nodePath)
-            }else{
+            } else {
                 log.debug "Could not find a node at '${nodePath}', skipping"
                 visitorContext.reportSkipped(nodePath)
             }

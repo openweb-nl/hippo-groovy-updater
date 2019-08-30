@@ -62,5 +62,4 @@ public class OsNameMatcher {
         }
         return false;
     }
-
 }

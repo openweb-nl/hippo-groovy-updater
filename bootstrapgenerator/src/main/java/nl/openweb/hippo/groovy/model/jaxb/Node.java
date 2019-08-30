@@ -41,8 +41,7 @@ import nl.openweb.hippo.groovy.model.Constants;
  * Java class for anonymous complex type.
  * <p>
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
  * &lt;complexType&gt;
@@ -79,9 +78,8 @@ public class Node {
     /**
      * Gets the value of the nodeOrProperty property.
      * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to
+     * the returned list will be present inside the JAXB object. This is why there is not a
      * <CODE>set</CODE> method for the nodeOrProperty property.
      * </p>
      * <p>
@@ -91,8 +89,7 @@ public class Node {
      * getNodeOrProperty().add(newItem);
      * </pre>
      * <p>
-     * Objects of the following type(s) are allowed in the list {@link Node }
-     * {@link Property }
+     * Objects of the following type(s) are allowed in the list {@link Node } {@link Property }
      * </p>
      *
      * @return List of nodes and properties
@@ -213,20 +210,20 @@ public class Node {
         final Node node = (Node) o;
 
         return new EqualsBuilder()
-                .append(nodeOrProperty, node.nodeOrProperty)
-                .append(subnodes, node.subnodes)
-                .append(properties, node.properties)
-                .append(name, node.name)
-                .isEquals();
+            .append(nodeOrProperty, node.nodeOrProperty)
+            .append(subnodes, node.subnodes)
+            .append(properties, node.properties)
+            .append(name, node.name)
+            .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(nodeOrProperty)
-                .append(subnodes)
-                .append(properties)
-                .append(name)
-                .toHashCode();
+            .append(nodeOrProperty)
+            .append(subnodes)
+            .append(properties)
+            .append(name)
+            .toHashCode();
     }
 }
