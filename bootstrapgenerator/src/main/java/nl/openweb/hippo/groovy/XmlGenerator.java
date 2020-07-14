@@ -45,6 +45,7 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_CONTENT
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_RELOADONSTARTUP;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_SEQUENCE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPO_VERSION;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_MIXIN_TYPES;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 
 /**
@@ -83,7 +84,7 @@ public final class XmlGenerator extends Generator {
     }
 
     private static String getValueType(final Map.Entry<String, Object> entry) {
-        if (JCR_PRIMARY_TYPE.equals(entry.getKey())) {
+        if (JCR_PRIMARY_TYPE.equals(entry.getKey()) || JCR_MIXIN_TYPES.equals(entry.getKey())) {
             return ValueType.NAME;
         } else if (entry.getValue() instanceof Long) {
             return ValueType.LONG;

@@ -34,6 +34,7 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_MIXIN_TYPES;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 
 public class PropertyCollector {
@@ -68,6 +69,7 @@ public class PropertyCollector {
         properties.put(HIPPOSYS_BATCHSIZE, updater.batchSize());
         addPropertyIfNotEmpty(properties, HIPPOSYS_DESCRIPTION, updater.description());
         properties.put(HIPPOSYS_DRYRUN, updater.dryRun());
+        addPropertyIfNotEmpty(properties, JCR_MIXIN_TYPES, updater.mixin());
         addPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, getValueOrFileContent(script, sourceDir, updater.parameters()));
         if (StringUtils.isBlank(updater.xpath())) {
             addPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());
