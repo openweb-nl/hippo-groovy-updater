@@ -63,9 +63,8 @@ public class PropertyCollector {
         return value;
     }
 
-    private static Object createMultiValueProperty(final String mixin) {
-        List<String> values = Arrays.asList(mixin.split("\\s*,\\s*"));
-        return values;
+    private static List<String> createMultiValueProperty(final String mixin) {
+        return Arrays.asList(mixin.split("\\s*,\\s*"));
     }
 
     public static Map<String, Object> getPropertiesForUpdater(ScriptClass script, File sourceDir) {

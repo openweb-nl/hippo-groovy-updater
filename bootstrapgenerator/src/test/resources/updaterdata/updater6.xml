@@ -44,7 +44,6 @@ package updaterdata
 import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
-
 class TestUpdater6 extends BaseNodeUpdateVisitor {
     boolean doUpdate(Node node) {
         log.info "manipulate node < > & an %^&* /> {}", node.path
