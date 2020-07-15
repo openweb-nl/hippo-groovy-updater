@@ -116,6 +116,19 @@ public final class XmlGenerator extends Generator {
         final Property property = new Property();
         property.setName(name);
         property.setType(type);
+        addValueToProperty(property, value);
+      return property;
+    }
+
+    public static Property addValueToProperty(final Property property, final Object value) {
+        if(value instanceof List) {
+            List list = (List) value;
+            for (Object objectValue : list) {
+                property.getValue().add(objectValue.toString());
+            }
+            property.setMultiple(true);
+            return property;
+        }
         property.getValue().add(value.toString());
         return property;
     }
