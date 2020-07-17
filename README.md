@@ -28,6 +28,10 @@ To exclude a groovy script from being bootstrapped:
 ```groovy
 @Exclude 
 ```
+To add mixin(s) (since 1.14):
+```groovy
+@Updater(name = "Name", mixin = "hippo:named, mix:referenceable")
+```
 ## Use of the maven plugin
 In the build section of the (new) module containing the groovy updater scripts, define the execution of the plugin  
 *For Hippo 12 use the *'generate-yaml'* goal.*
