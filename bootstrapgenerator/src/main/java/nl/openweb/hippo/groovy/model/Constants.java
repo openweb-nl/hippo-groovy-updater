@@ -41,6 +41,7 @@ public final class Constants {
         }
 
         public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
+        public static final String JCR_MIXIN_TYPES = "jcr:mixinTypes";
         public static final String HIPPOSYS_BATCHSIZE = "hipposys:batchsize";
         public static final String HIPPOSYS_DRYRUN = "hipposys:dryrun";
         public static final String HIPPOSYS_PARAMETERS = "hipposys:parameters";

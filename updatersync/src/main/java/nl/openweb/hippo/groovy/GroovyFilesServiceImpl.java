@@ -63,6 +63,7 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESC
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_MIXIN_TYPES;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 
@@ -128,7 +129,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
     }
 
     private static Value getValue(final Map.Entry<String, Object> entry) throws ValueFormatException {
-        if (JCR_PRIMARY_TYPE.equals(entry.getKey())) {
+        if (JCR_PRIMARY_TYPE.equals(entry.getKey()) || JCR_MIXIN_TYPES.equals(entry.getKey())) {
             return NameValue.valueOf(entry.getValue().toString());
         } else if (entry.getValue() instanceof Long) {
             return LongValue.valueOf(entry.getValue().toString());

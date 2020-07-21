@@ -42,4 +42,6 @@ public @interface Updater {
     String parameters() default "";
 
     long throttle() default 1000L;
+
+    String mixin() default "";
 }

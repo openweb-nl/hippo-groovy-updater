@@ -18,7 +18,9 @@ package nl.openweb.hippo.groovy;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,7 @@ import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_SCRIPT;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_THROTTLE;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_MIXIN_TYPES;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.JCR_PRIMARY_TYPE;
 
 public class PropertyCollector {
@@ -60,6 +63,10 @@ public class PropertyCollector {
         return value;
     }
 
+    private static List<String> createMultiValueProperty(final String mixin) {
+        return Arrays.asList(mixin.split("\\s*,\\s*"));
+    }
+
     public static Map<String, Object> getPropertiesForUpdater(ScriptClass script, File sourceDir) {
         Updater updater = script.getUpdater();
 
@@ -68,6 +75,9 @@ public class PropertyCollector {
         properties.put(HIPPOSYS_BATCHSIZE, updater.batchSize());
         addPropertyIfNotEmpty(properties, HIPPOSYS_DESCRIPTION, updater.description());
         properties.put(HIPPOSYS_DRYRUN, updater.dryRun());
+        if (StringUtils.isNotBlank(updater.mixin())) {
+            addPropertyIfNotEmpty(properties, JCR_MIXIN_TYPES, createMultiValueProperty(updater.mixin()));
+        }
         addPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, getValueOrFileContent(script, sourceDir, updater.parameters()));
         if (StringUtils.isBlank(updater.xpath())) {
             addPropertyIfNotEmpty(properties, HIPPOSYS_PATH, updater.path());

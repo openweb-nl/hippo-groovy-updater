@@ -67,6 +67,8 @@ public class XmlGeneratorTest {
         checkGeneration("sub/updater3");
         checkGeneration("updaterdata/updater4");
         checkGeneration("updaterdata/updater5");
+        checkGeneration("updaterdata/updater6");
+        checkGeneration("updaterdata/updater7");
     }
 
     private void checkGeneration(String name) throws URISyntaxException, IOException, JAXBException {
