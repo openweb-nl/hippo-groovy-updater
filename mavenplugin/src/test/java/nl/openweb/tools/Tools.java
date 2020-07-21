@@ -64,6 +64,11 @@ public final class Tools {
         Files.walkFileTree(result.toPath(), visitor);
         Files.walkFileTree(expected.toPath(), visitor2);
 
+        expectedFilePaths.sort(Comparator.naturalOrder());
+        expectedFolderPaths.sort(Comparator.naturalOrder());
+        resultFilesPaths.sort(Comparator.naturalOrder());
+        resultFoldersPaths.sort(Comparator.naturalOrder());
+
         logger.info("comparing {} paths", expectedFilePaths.size());
         assertContentCompares(expectedFilePaths, resultFilesPaths);
         assertNameCompares(expectedFilePaths, resultFilesPaths, expected.getAbsolutePath(), result.getAbsolutePath());
