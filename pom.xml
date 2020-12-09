@@ -76,7 +76,7 @@
   <properties>
     <commons-io.version>2.6</commons-io.version>
     <commons-lang3.version>3.9</commons-lang3.version>
-    <groovy.version>2.5.6</groovy.version>
+    <groovy.version>2.5.14</groovy.version>
     <snakeyaml.version>1.24</snakeyaml.version>
     <hippo.repository.version>4.2.8</hippo.repository.version>
     <glassfish.jaxb-runtime.version>2.4.0-b180830.0438</glassfish.jaxb-runtime.version>
