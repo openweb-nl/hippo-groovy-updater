@@ -60,7 +60,6 @@ public abstract class Generator {
         + ")?";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_COMMA;
     private static final String ANNOTATION_PAYLOAD = REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")*\\))?";
-    public static final String OPTIONAL_LINE_END = "[;]?[\\n]?[\\s]*";
 
     protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
 
