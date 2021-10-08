@@ -15,13 +15,13 @@
     /*
     Also, there is some other annotation
      * you never know if there is another thing working it
-     * Of course, maybe it could break using:( in a comment
+     * Of course, maybe it could break using:@Updater( in a comment
      */
     @XmlElement
     @XmlAccessorOrder(
             value = XmlAccessOrder.ALPHABETICAL
     )
-    //
+    //@Exclude
     class TestSubUpdater3 extends BaseNodeUpdateVisitor {
         boolean doUpdate(Node node) {
             log.info "manipulate node < > & an %^&* /> {}", node.path
