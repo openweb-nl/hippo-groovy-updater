@@ -41,7 +41,7 @@ public abstract class Generator {
     protected static final String NEWLINE = "\n";
     private static final List<Class<?>> ANNOTATED_CLASSES = Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
     private static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
-    private static final String REGEX_ANNOTATIONS_SNIPPET = "(?:[\\w\\W]+[\\n|;]\\s*import [\\w\\.]+[;|\\n]+)(?=[\\w\\W]*@Updater)(?:([\\w\\W]*)(?=(?:(?:public )?class \\w+ extends \\w+\\s*\\{)))";
+    private static final String REGEX_ANNOTATIONS_SNIPPET = "(?:[\\w\\W]+[\\n|;]\\s*import [\\w\\.]+[;|\\n]+)?(?=[\\w\\W]*@[\\w\\.]*Updater)(?:([\\w\\W]*)(?=(?:(?:public )?class \\w+ extends [\\w\\W]+\\s*\\{)))";
     private static final String REGEX_WHITESPACE = "\\s*";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
     private static final String REGEX_ATTR_VALUE_SINGLEQUOTE = "('.*?(?<!\\\\)('))";
@@ -70,6 +70,9 @@ public abstract class Generator {
     public static List<String> getAnnotations(final String script){
         //Strip comments
         String codeBlock = script.replaceAll("\\s\\/\\*[\\w\\W]*\\*\\/", StringUtils.EMPTY);
+        if(codeBlock.startsWith("/*")) {
+            codeBlock = StringUtils.substringAfter(codeBlock, "*/");
+        }
         codeBlock = codeBlock.replaceAll("\\n\\/\\/.*", StringUtils.EMPTY);
         final Matcher matcher = Pattern.compile(REGEX_ANNOTATIONS_SNIPPET).matcher(codeBlock);
         final List<String> annotationStrings = new ArrayList<>();
