@@ -20,8 +20,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import com.sun.xml.bind.marshaller.CharacterEscapeHandler;
-import com.sun.xml.bind.marshaller.MinimumEscapeHandler;
+
+import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
+import org.glassfish.jaxb.core.marshaller.MinimumEscapeHandler;
 
 import nl.openweb.hippo.groovy.model.jaxb.Node;
 import nl.openweb.hippo.groovy.model.jaxb.Property;
@@ -29,7 +30,7 @@ import nl.openweb.hippo.groovy.model.jaxb.Property;
 public class Marshal {
 
     public static final String CDATA_START = "<![CDATA[";
-    public static final String INDENT_STRING = "com.sun.xml.bind.indentString";
+    public static final String INDENT_STRING = "com.sun.xml.internal.bind.indentString";
     public static final String INDENTATION = "  ";
 
     private Marshal() {
