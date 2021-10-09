@@ -24,7 +24,7 @@ import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
  * @deprecated since yaml and xml have their own Mojo now
  */
 @Deprecated
-@Mojo(name = "generate")
+@Mojo(name = "generate", threadSafe = true)
 public class GroovyToUpdaterBootstrapDefault extends GroovyToUpdaterBootstrap {
     @Override
     protected ScriptProcessor getProcessorBase() {
