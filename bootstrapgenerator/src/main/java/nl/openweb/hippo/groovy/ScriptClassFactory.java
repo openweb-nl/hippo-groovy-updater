@@ -96,7 +96,7 @@ public class ScriptClassFactory {
             String imports = getAnnotationClasses().stream()
                 .map(clazz -> "import " + clazz.getCanonicalName() + ";" + LINE_END_LINUX)
                 .collect(joining());
-            String interpretCode = imports + getAnnotations(script).stream().collect(joining(LINE_END_LINUX)) + LINE_END_LINUX + "class InterpretClass {}";
+            String interpretCode = imports + String.join(LINE_END_LINUX, getAnnotations(script)) + LINE_END_LINUX + "class InterpretClass {}";
             script = stripAnnotations(script, keepLineCount);
             final ScriptClass scriptClass = new ScriptClass(file, GROOVY_CLASS_LOADER.parseClass(interpretCode), script);
             validateScriptClass(scriptClass);

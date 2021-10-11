@@ -24,7 +24,7 @@ public final class Constants {
         //no public construction
     }
 
-    public final class Files {
+    public static final class Files {
         private Files() {
             //no public construction
         }
@@ -33,7 +33,7 @@ public final class Constants {
         public static final String YAML_EXTENSION = ".yaml";
     }
 
-    public final class PropertyName {
+    public static final class PropertyName {
         private PropertyName() {
             //no public construction
         }
@@ -50,7 +50,7 @@ public final class Constants {
         public static final String HIPPOSYS_PATH = "hipposys:path";
     }
 
-    public final class NodeType {
+    public static final class NodeType {
         private NodeType() {
             //no public construction
         }

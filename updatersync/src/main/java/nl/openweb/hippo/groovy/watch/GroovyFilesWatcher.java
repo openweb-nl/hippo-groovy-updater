@@ -228,7 +228,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
                 }
             }
             session.save();
-        } catch (GroovyFileException | RepositoryException | IOException e) {
+        } catch (GroovyFileException | RepositoryException e) {
             LOGGER.warn("Failed to reimport groovy file bundles {}, resetting session", reimportedBundleRoots, e);
             resetSilently(session);
         }

@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class GlobFileNameMatcher implements FileFilter {
 
     private static final String GLOB_SYNTAX = "glob:";
-    static Logger log = LoggerFactory.getLogger(GlobFileNameMatcher.class);
+    static final Logger log = LoggerFactory.getLogger(GlobFileNameMatcher.class);
 
     private final List<PathMatcher> includedFiles;
     private final List<PathMatcher> excludedDirs;

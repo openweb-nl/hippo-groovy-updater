@@ -50,7 +50,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 public class FileSystemWatcher implements FileSystemObserver, Runnable {
 
     static final int POLLING_TIME_MILLIS = 100;
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemWatcher.class);
     private static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER =
         (exceptionThread, exception) -> LOGGER.warn("FileSystemWatcher '{}' crashed", exceptionThread.getName(), exception);
     private static int instanceCounter = 0;
@@ -219,8 +219,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     }
 
     private void processEvent(final Path watchedDirectory, final ChangesProcessor processor, final WatchEvent.Kind<?> kind, final Path eventContext) {
-        final Path changedRelPath = eventContext;
-        final Path changedAbsPath = watchedDirectory.resolve(changedRelPath);
+        final Path changedAbsPath = watchedDirectory.resolve(eventContext);
         final boolean isDirectory = isDirectory(changedAbsPath, kind);
         if (watchedFiles.matches(changedAbsPath, isDirectory)) {
             if (isDirectory && kind == StandardWatchEventKinds.ENTRY_CREATE) {
