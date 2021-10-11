@@ -1,7 +1,7 @@
 /hippo:configuration/hippo:update/hippo:queue/Test Updater 3:
   jcr:primaryType: hipposys:updaterinfo
   hipposys:batchsize: 1
-  hipposys:description: Test thing
+  hipposys:description: Test things, like reserved words as import or others
   hipposys:dryrun: true
   hipposys:parameters: '{prop: val}'
   hipposys:query: //element(*, hippo:document)

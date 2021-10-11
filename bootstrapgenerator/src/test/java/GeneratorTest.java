@@ -84,6 +84,21 @@ public class GeneratorTest {
     }
 
     @Test
+    public void getAnnotations() throws URISyntaxException, IOException {
+        URL testfileUrl = getClass().getResource("updater.groovy");
+        URL testfileUrl2 = getClass().getResource("updater-noimport.groovy");
+
+        String content = ScriptClassFactory.readFileEnsuringLinuxLineEnding(new File(testfileUrl.toURI()));
+        String content2 = ScriptClassFactory.readFileEnsuringLinuxLineEnding(new File(testfileUrl2.toURI()));
+
+        final List<String> annotations = Generator.getAnnotations(content);
+        final List<String> annotations2 = Generator.getAnnotations(content2);
+
+        assertEquals(2, annotations.size(), "Not correct count of annotations found");
+        assertEquals(2, annotations2.size(), "Not correct count of annotations found");
+    }
+
+    @Test
     public void getAnnotationClassesTest() throws Exception {
         List<Class<?>> classes = getAnnotationClasses();
 
