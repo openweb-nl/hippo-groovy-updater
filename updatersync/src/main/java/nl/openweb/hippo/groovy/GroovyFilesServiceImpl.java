@@ -44,7 +44,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
-import javax.xml.bind.JAXBException;
 
 import org.apache.jackrabbit.value.BooleanValue;
 import org.apache.jackrabbit.value.LongValue;
@@ -160,11 +159,9 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
      * @param session jcr session tu use
      * @param file    file to transform
      * @return success
-     * @throws IOException
      * @throws RepositoryException
-     * @throws JAXBException
      */
-    public boolean importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException {
+    public boolean importGroovyFile(Session session, File file) throws RepositoryException {
         return setUpdateScriptJcrNode(getRegistryNode(session), file);
     }
 }

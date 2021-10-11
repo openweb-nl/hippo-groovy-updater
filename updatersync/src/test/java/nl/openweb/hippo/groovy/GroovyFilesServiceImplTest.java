@@ -28,7 +28,6 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.xml.bind.JAXBException;
 
 import org.apache.sling.testing.mock.jcr.MockJcr;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +55,7 @@ class GroovyFilesServiceImplTest {
     }
 
     @Test
-    void importGroovyFileReimport() throws URISyntaxException, RepositoryException, JAXBException, IOException {
+    void importGroovyFileReimport() throws URISyntaxException, RepositoryException, IOException {
         URL testfileUrl = getClass().getResource("/updater.groovy");
         URL testfileProperties = getClass().getResource("/updater.properties");
 
@@ -71,7 +70,7 @@ class GroovyFilesServiceImplTest {
     }
 
     @Test
-    void importGroovyFile() throws URISyntaxException, RepositoryException, JAXBException, IOException {
+    void importGroovyFile() throws URISyntaxException, RepositoryException, IOException {
         URL testfileUrl = getClass().getResource("/updater.groovy");
         URL testfileProperties = getClass().getResource("/updater.properties");
 
@@ -85,7 +84,7 @@ class GroovyFilesServiceImplTest {
     }
 
     @Test
-    void importGroovyFileScript() throws URISyntaxException, RepositoryException, JAXBException, IOException {
+    void importGroovyFileScript() throws URISyntaxException, RepositoryException, IOException {
         URL testfileUrl = getClass().getResource("/updater-script.groovy");
         URL testfileProperties = getClass().getResource("/updater.properties");
         File file = new File(testfileUrl.toURI());
@@ -100,7 +99,7 @@ class GroovyFilesServiceImplTest {
     }
 
     @Test
-    void importGroovyFileWithParametersFile() throws URISyntaxException, RepositoryException, JAXBException, IOException {
+    void importGroovyFileWithParametersFile() throws URISyntaxException, RepositoryException, IOException {
         URL testfileUrl = getClass().getResource("/updater-ext.groovy");
         URL testfileProperties = getClass().getResource("/updater.properties");
 

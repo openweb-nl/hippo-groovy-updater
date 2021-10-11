@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,8 +178,6 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             LOGGER.debug("NullPointerException we cannot avoid because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() " +
                 "returns null on IOException. We can ignore this event since it is the result of an event that will " +
                 " be processed shortly after this exception. Hence, ignore change path '{}'", changedPath, e);
-        } catch (JAXBException e) {
-            LOGGER.error("JAXBException in import", e);
         }
     }
 
