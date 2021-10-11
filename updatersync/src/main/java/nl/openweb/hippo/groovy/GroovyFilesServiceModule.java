@@ -54,7 +54,7 @@ import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherJcrConfig;
 @RequiresService(types = AutoReloadService.class, optional = true)
 public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GroovyFilesServiceModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroovyFilesServiceModule.class);
     private GroovyFilesServiceImpl service;
     private GroovyFilesWatcherConfig config;
     private GroovyFilesWatcher watcher;
@@ -82,7 +82,7 @@ public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule
         watchedFiles.includeFiles(config.getIncludedFiles());
         watchedFiles.excludeDirectories(config.getExcludedDirectories());
 
-        LOG.debug("Starting Service for checking Groovy");
+        LOGGER.debug("Starting Service for checking Groovy");
         service = new GroovyFilesServiceImpl();
         HippoServiceRegistry.registerService(service, GroovyFilesService.class);
 

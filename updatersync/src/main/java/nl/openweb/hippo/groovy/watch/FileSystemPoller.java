@@ -40,7 +40,7 @@ import nl.openweb.hippo.groovy.GroovyFileException;
  */
 public class FileSystemPoller implements FileSystemObserver, FileAlterationListener {
 
-    private static final Logger log = LoggerFactory.getLogger(FileSystemPoller.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemPoller.class);
 
     private final FileFilter fileNameFilter;
     private final Map<Path, FileSystemListener> listeners;
@@ -60,8 +60,8 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
 
     @Override
     public synchronized void registerDirectory(final Path directory, final FileSystemListener listener) throws IOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Registering {}", directory);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Registering {}", directory);
         }
 
         final FileAlterationObserver observer = new FileAlterationObserver(directory.toFile(), this.fileNameFilter);
@@ -87,10 +87,10 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
         final Path observedPath = observer.getDirectory().toPath();
         listenerForCurrentChange = listeners.get(observedPath);
         if (listenerForCurrentChange != null) {
-            log.debug("Start collecting changes in {}", observedPath);
+            LOGGER.debug("Start collecting changes in {}", observedPath);
             listenerForCurrentChange.fileSystemChangesStarted();
         } else {
-            log.warn("Ignoring file system changes in unknown directory: {}", observedPath);
+            LOGGER.warn("Ignoring file system changes in unknown directory: {}", observedPath);
         }
     }
 
@@ -98,7 +98,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     public void onDirectoryCreate(final File directory) {
         if (listenerForCurrentChange != null) {
             final Path path = directory.toPath();
-            log.debug("Create directory {}", path);
+            LOGGER.debug("Create directory {}", path);
             listenerForCurrentChange.directoryCreated(path);
         }
     }
@@ -107,7 +107,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     public void onDirectoryChange(final File directory) {
         if (listenerForCurrentChange != null) {
             final Path path = directory.toPath();
-            log.debug("Change directory {}", path);
+            LOGGER.debug("Change directory {}", path);
             listenerForCurrentChange.directoryModified(path);
         }
     }
@@ -116,7 +116,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     public void onDirectoryDelete(final File directory) {
         if (listenerForCurrentChange != null) {
             final Path path = directory.toPath();
-            log.debug("Delete directory {}", path);
+            LOGGER.debug("Delete directory {}", path);
             listenerForCurrentChange.directoryDeleted(path);
         }
     }
@@ -125,7 +125,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     public void onFileCreate(final File file) {
         if (listenerForCurrentChange != null) {
             final Path path = file.toPath();
-            log.debug("Create file {}", path);
+            LOGGER.debug("Create file {}", path);
             listenerForCurrentChange.fileCreated(path);
         }
     }
@@ -134,7 +134,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     public void onFileChange(final File file) {
         if (listenerForCurrentChange != null) {
             final Path path = file.toPath();
-            log.debug("Change file {}", path);
+            LOGGER.debug("Change file {}", path);
             listenerForCurrentChange.fileModified(path);
         }
     }
@@ -143,7 +143,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     public void onFileDelete(final File file) {
         if (listenerForCurrentChange != null) {
             final Path path = file.toPath();
-            log.debug("Delete file {}", path);
+            LOGGER.debug("Delete file {}", path);
             listenerForCurrentChange.fileDeleted(path);
         }
     }
@@ -151,7 +151,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
     @Override
     public void onStop(final FileAlterationObserver observer) {
         if (listenerForCurrentChange != null) {
-            log.debug("Stop collecting changes in {}", observer.getDirectory());
+            LOGGER.debug("Stop collecting changes in {}", observer.getDirectory());
             listenerForCurrentChange.fileSystemChangesStopped();
         }
     }
@@ -163,7 +163,7 @@ public class FileSystemPoller implements FileSystemObserver, FileAlterationListe
         } catch (IllegalStateException ignored) {
             // throw when the monitor was already stopped
         } catch (Exception e) {
-            log.debug("Ignored error while shutting down", e);
+            LOGGER.debug("Ignored error while shutting down", e);
         }
     }
 }

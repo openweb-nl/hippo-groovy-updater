@@ -69,7 +69,7 @@ import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 
 public class GroovyFilesServiceImpl implements GroovyFilesService {
 
-    private static final Logger log = LoggerFactory.getLogger(GroovyFilesServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroovyFilesServiceImpl.class);
 
     private static void warnAndThrow(final String message, final Object... args) {
         throw new GroovyFileException(warn(message, args));
@@ -77,13 +77,13 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
 
     private static String warn(final String message, final Object... args) {
         String warning = String.format(message, args);
-        log.warn(warning);
+        LOGGER.warn(warning);
         return warning;
     }
 
     private static String info(final String message, final Object... args) {
         String warning = String.format(message, args);
-        log.info(warning);
+        LOGGER.info(warning);
         return warning;
     }
 

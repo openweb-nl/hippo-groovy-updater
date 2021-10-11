@@ -42,19 +42,19 @@ public class ScriptClassFactory {
     private static final String LINE_END_WINDOWS = "\r\n";
     private static final String LINE_END_LINUX = "\n";
     private static final String LINE_END_MAC = "\r";
-    private static final NamespaceMapping namespaceResolver = new NamespaceMapping();
-    private static final NameFactory nameFactory = NameFactoryImpl.getInstance();
-    private static GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
+    private static final NamespaceMapping NAMESPACE_MAPPING = new NamespaceMapping();
+    private static final NameFactory NAME_FACTORY = NameFactoryImpl.getInstance();
+    private static final GroovyClassLoader GROOVY_CLASS_LOADER = new GroovyClassLoader();
 
     private ScriptClassFactory() {
         //No instantiating of this class
     }
 
-    private static NamespaceMapping getNamespaceResolver() throws NamespaceException {
-        if (!namespaceResolver.hasPrefix("")) {
-            namespaceResolver.setMapping("", "");
+    private static NamespaceMapping getNamespaceMapping() throws NamespaceException {
+        if (!NAMESPACE_MAPPING.hasPrefix("")) {
+            NAMESPACE_MAPPING.setMapping("", "");
         }
-        return namespaceResolver;
+        return NAMESPACE_MAPPING;
     }
 
     private static void validateScriptClass(final ScriptClass scriptClass) {
@@ -64,7 +64,7 @@ public class ScriptClassFactory {
         final String name = scriptClass.getUpdater().name();
 
         try {
-            NameParser.parse(name, getNamespaceResolver(), nameFactory);
+            NameParser.parse(name, getNamespaceMapping(), NAME_FACTORY);
         } catch (Exception e) {
             throw new ScriptParseException("Error parsing the updater name for: " + scriptClass.getFile().getAbsolutePath(), e);
         }
@@ -88,7 +88,7 @@ public class ScriptClassFactory {
      * @return a fake class with the Bootstrap and Updater annotations
      */
     public static ScriptClass getInterpretingClass(final File file, final boolean keepLineCount) {
-        groovyClassLoader.clearCache();
+        GROOVY_CLASS_LOADER.clearCache();
         String script;
         try {
             script = readFileEnsuringLinuxLineEnding(file);
@@ -98,7 +98,7 @@ public class ScriptClassFactory {
                 .collect(joining());
             String interpretCode = imports + getAnnotations(script).stream().collect(joining(LINE_END_LINUX)) + LINE_END_LINUX + "class InterpretClass {}";
             script = stripAnnotations(script, keepLineCount);
-            final ScriptClass scriptClass = new ScriptClass(file, groovyClassLoader.parseClass(interpretCode), script);
+            final ScriptClass scriptClass = new ScriptClass(file, GROOVY_CLASS_LOADER.parseClass(interpretCode), script);
             validateScriptClass(scriptClass);
             return scriptClass;
         } catch (IOException e) {
