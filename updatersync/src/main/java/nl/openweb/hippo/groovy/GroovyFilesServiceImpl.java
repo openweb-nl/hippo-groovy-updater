@@ -96,7 +96,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
      */
     private static boolean setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
         ScriptClass scriptClass = getInterpretingClass(file, true);
-        if (!scriptClass.isValid()) {
+        if (scriptClass == null || !scriptClass.isValid()) {
             return false;
         }
         final Updater updater = scriptClass.getUpdater();
@@ -146,7 +146,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         return scriptRegistry;
     }
 
-    public void importGroovyFiles(Session session, File file) throws IOException, RepositoryException {
+    public void importGroovyFiles(Session session, File file) {
         List<File> groovyFiles = getGroovyFiles(file);
         for (File groovyFile : groovyFiles) {
             importGroovyFiles(session, groovyFile);

@@ -46,7 +46,6 @@ import org.onehippo.repository.modules.RequiresService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.openweb.hippo.groovy.watch.GlobFileNameMatcher;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcher;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherConfig;
 import nl.openweb.hippo.groovy.watch.GroovyFilesWatcherJcrConfig;
@@ -78,10 +77,6 @@ public class GroovyFilesServiceModule extends AbstractReconfigurableDaemonModule
 
     @Override
     protected void doInitialize(final Session session) {
-        final GlobFileNameMatcher watchedFiles = new GlobFileNameMatcher();
-        watchedFiles.includeFiles(config.getIncludedFiles());
-        watchedFiles.excludeDirectories(config.getExcludedDirectories());
-
         LOGGER.debug("Starting Service for checking Groovy");
         service = new GroovyFilesServiceImpl();
         HippoServiceRegistry.registerService(service, GroovyFilesService.class);

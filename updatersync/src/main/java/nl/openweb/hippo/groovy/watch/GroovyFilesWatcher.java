@@ -17,16 +17,21 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +94,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
                 LOGGER.info("About to listen to directories: {}", groovyFilesDirectory);
                 SubDirectoriesWatcher.watch(groovyFilesDirectory, fsObserver, this);
             } catch (Exception e) {
-                LOGGER.error("Failed to watch or import groovy files in module '{}'", groovyFilesDirectory.toString(), e);
+                LOGGER.error("Failed to watch or import groovy files in module '{}'", groovyFilesDirectory, e);
             }
         }
         return fsObserver;
@@ -134,9 +139,9 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         Set<Path> processedPaths = new HashSet<>(changedPaths.size());
         try {
             for (Path changedPath : changedPaths) {
-                final Path relChangedDir = watchedRootDir.relativize(changedPath);
-
-                reloadGroovyFile(processedPaths, changedPath, relChangedDir);
+                final Path relevantScriptPath = getRelevantScriptPath(changedPath);
+                final Path relChangedDir = watchedRootDir.relativize(relevantScriptPath);
+                reloadGroovyFile(processedPaths, relevantScriptPath, relChangedDir);
             }
             if (!processedPaths.isEmpty()) {
                 session.save();
@@ -151,9 +156,31 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             }
             resetSilently(session);
             tryReimportBundles(watchedRootDir, changedPaths);
+        } catch (IOException e) {
+            LOGGER.info("Failure on reading files", e);
         }
         final long endTime = System.currentTimeMillis();
         LOGGER.info("Replacing groovy file took {} ms", endTime - startTime);
+    }
+
+    private static Path getRelevantScriptPath(final Path path) throws IOException {
+        if(path.endsWith(".groovy")){
+            return path;
+        } else {
+            try(final Stream<Path> files = Files.walk(path.getParent())) {
+                return files.filter(file -> containsPathForParameters(file, path)).findFirst().orElse(null);
+            }
+        }
+    }
+
+    private static boolean containsPathForParameters(final Path path, final Path parameters) {
+        try {
+            final File file = path.toFile();
+            return file.isFile() && FileUtils.readFileToString(file, StandardCharsets.UTF_8).contains(parameters.getFileName().toString());
+        } catch (IOException e) {
+            LOGGER.info("failed to read {}", path, e);
+        }
+        return false;
     }
 
     private void reloadGroovyFile(final Set<Path> processedPaths, final Path changedPath, final Path relChangedDir) throws RepositoryException {
@@ -164,12 +191,6 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             } else {
                 LOGGER.info("** Failed to process '{}' as a groovy updater", relChangedDir);
             }
-        } catch (IOException e) {
-            // we do not have to take action. An IOException is the result of a concurrent change (delete/move)
-            // during creation or processing of the archive. The change will trigger a new import
-            LOGGER.debug("IOException during importing '{}'. This is typically the result of a file that is deleted" +
-                "during the import of a directory. This delete will trigger an event shortly after this" +
-                " exception.", changedPath, e);
         } catch (NullPointerException e) {
             // sigh....because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() returns null
             // on a IOException (for example when a file is deleted during processing) I get an NPE I cannot avoid,
