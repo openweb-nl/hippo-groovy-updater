@@ -25,7 +25,7 @@
 
   <name>Groovy updater</name>
   <description>This project is designed for Hippo developers to have an easy way to create updaters in groovy, without
-    being bothered with the bootstrap xml
+    being bothered with the repositorydata yaml
   </description>
   <url>https://github.com/openweb-nl/hippo-groovy-updater</url>
 
@@ -78,9 +78,8 @@
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <groovy.version>3.0.9</groovy.version>
     <snakeyaml.version>1.29</snakeyaml.version>
-    <hippo.repository.version>14.6.3</hippo.repository.version>
-    <hippo.services.version>14.6.3</hippo.services.version>
-    <glassfish.jaxb-runtime.version>3.0.2</glassfish.jaxb-runtime.version>
+    <hippo.repository.version>12.6.18</hippo.repository.version>
+    <hippo.services.version>12.6.18</hippo.services.version>
     <javax.jcr.version>2.0</javax.jcr.version>
     <junit.jupiter.version>5.8.1</junit.jupiter.version>
     <junit.vintage.version>5.8.1</junit.vintage.version>
@@ -142,11 +141,6 @@
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy</artifactId>
         <version>${groovy.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>${glassfish.jaxb-runtime.version}</version>
       </dependency>
       <dependency>
         <groupId>org.onehippo.cms7</groupId>

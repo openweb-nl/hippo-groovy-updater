@@ -44,12 +44,12 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
     private static final String MAX_FILE_LENGTH_KB = "maxFileLengthKb";
     private static final String PARAM_PREFIX = "groovy.sync.";
 
-    private List<String> watchedModules;
-    private List<String> includedFiles;
-    private List<String> excludedDirs;
-    private List<String> useWatchServiceOnOsNames;
-    private long watchDelayMillis;
-    private long maxFileLengthBytes;
+    private final List<String> watchedModules;
+    private final List<String> includedFiles;
+    private final List<String> excludedDirs;
+    private final List<String> useWatchServiceOnOsNames;
+    private final long watchDelayMillis;
+    private final long maxFileLengthBytes;
 
     public GroovyFilesWatcherJcrConfig(final Node configNode) throws RepositoryException {
         watchedModules = getMultipleStringConfig(configNode, WATCHED_MODULES_PROPERTY, WatchFilesUtils.DEFAULT_WATCHED_MODULES);

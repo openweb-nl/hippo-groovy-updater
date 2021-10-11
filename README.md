@@ -1,5 +1,5 @@
 # Project for Hippo Updaters Maven Plugin
-This project is designed for Hippo developers to have an easy way to create updaters in groovy, without being bothered with the bootstrap xml.
+This project is designed for Hippo developers to have an easy way to create updaters in groovy, without being bothered with the repositorydata yaml.
 
 For use the updaters are located in their own submodule. Nicely separated from other bootstrap.
 They are groovy scripts, so the editor can easily provide autocomplete and stuff, configured by Annotations.
@@ -34,7 +34,6 @@ To add mixin(s) (since 1.14):
 ```
 ## Use of the maven plugin
 In the build section of the (new) module containing the groovy updater scripts, define the execution of the plugin  
-*For Hippo 12 use the *'generate-yaml'* goal.*
 ```xml
   <plugin>
     <groupId>nl.openweb.hippo.updater</groupId>
@@ -45,7 +44,7 @@ In the build section of the (new) module containing the groovy updater scripts, 
         <id>default-resources</id>
         <phase>compile</phase>
         <goals>
-          <goal>generate-xml</goal>
+          <goal>generate-yaml</goal>
         </goals>
       </execution>
     </executions>
@@ -59,12 +58,9 @@ In the build section of the (new) module containing the groovy updater scripts, 
 * **targetDir** 
   *  where to generate the bootstrap  
      ```(default: ${project.build.outputDirectory})```
-* **defaultContentRoot** (since 1.12)
+* **defaultContentRoot**
   *  default contentroot value _(registry/queue)_   
      ```(default: queue)```
-* **initializeNamePrefix** 
-  *  prefix in the ecm-extension.xml nodenames   
-     ```(default:hippo-updater-) ``` 
 * **yamlContentPath** (since 1.13)
   *  relative path for the yaml queue bootstrap files
      ```(default: hcm-content/configuration/update)```
@@ -73,7 +69,7 @@ In the build section of the (new) module containing the groovy updater scripts, 
      ```(default: hcm-config/configuration/update)```
 
 
-When using a separate module in Hippo 12, don't forget to place an hcm-module.yaml in the project.
+When using a separate module, don't forget to place an hcm-module.yaml in the project.
 ```yaml
 group:
   name: hippoproject
@@ -131,15 +127,8 @@ set the system property `groovy.sync.watchedModules` in the cargo container.
     </configuration>
   </plugin>
 ```
-### Log4j
+### Log4j2
 Add an info logging level for nl.openweb.hippo.groovy to your development log4j configuration
-```xml
-    <logger name="nl.openweb.hippo.groovy" additivity="false">
-      <level value="info"/>
-      <appender-ref ref="messages"/>
-    </logger>
-```
-**Log4j2:**
 ```xml
     <Logger name="nl.openweb.hippo.groovy" additivity="false" level="info">
       <AppenderRef ref="messages"/>

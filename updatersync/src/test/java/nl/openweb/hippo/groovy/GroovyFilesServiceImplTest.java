@@ -40,7 +40,7 @@ import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GroovyFilesServiceImplTest {
-    private GroovyFilesServiceImpl service = new GroovyFilesServiceImpl();
+    private final GroovyFilesServiceImpl service = new GroovyFilesServiceImpl();
     private Session session;
     private Node scriptRoot;
 

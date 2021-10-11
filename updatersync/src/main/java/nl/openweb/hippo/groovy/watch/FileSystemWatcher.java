@@ -137,7 +137,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
         } catch (ClosedWatchServiceException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("Exception while processing watch keys: {}", e.toString(), e);
+            log.warn("Exception while processing watch keys: {}", e, e);
         }
     }
 
@@ -166,7 +166,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("Polled '{}' more changes during '{}' ms", polledKeys.size(), String.valueOf(System.currentTimeMillis() - startPolling));
+            log.debug("Polled '{}' more changes during '{}' ms", polledKeys.size(), System.currentTimeMillis() - startPolling);
         }
         for (WatchKey polledKey : polledKeys) {
             processWatchKey(polledKey);

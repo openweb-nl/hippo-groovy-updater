@@ -59,7 +59,7 @@ public abstract class Generator {
         + REGEX_ATTR_VALUE_SIMPLE
         + ")?";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_COMMA;
-    private static final String ANNOTATION_PAYLOAD = REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")*\\))?";
+    private static final String ANNOTATION_PAYLOAD = "(?:\\s*\\((" + REGEX_ATTRIBUTES + ")*\\))?";
 
     protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
 

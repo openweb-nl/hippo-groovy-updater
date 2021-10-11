@@ -29,7 +29,6 @@ public abstract class ScriptProcessor {
     protected Log log;
     protected File sourceDir;
     protected File targetDir;
-    protected String initializeNamePrefix;
 
     /**
      * Generate updater files from groovy scripts
@@ -75,9 +74,5 @@ public abstract class ScriptProcessor {
 
     public void setTargetDir(final File targetDir) {
         this.targetDir = targetDir;
-    }
-
-    public void setInitializeNamePrefix(final String initializeNamePrefix) {
-        this.initializeNamePrefix = initializeNamePrefix;
     }
 }

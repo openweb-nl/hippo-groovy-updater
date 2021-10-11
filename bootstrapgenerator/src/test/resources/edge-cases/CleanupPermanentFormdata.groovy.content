@@ -23,7 +23,7 @@ import org.onehippo.repository.update.BaseNodeUpdateVisitor
 import javax.jcr.Node
 import javax.jcr.RepositoryException
 
-@Bootstrap(sequence = 32000d, contentroot = Bootstrap.ContentRoot.REGISTRY)
+@Bootstrap(contentroot = Bootstrap.ContentRoot.REGISTRY)
 @Updater(name = 'Cleanup \'permanent\' formdata', xpath = "//formdata/permanent/*//element(*,hst:formdata)[@hst:creationtime<xs:dateTime(\"2016-06-01T00:00:00.000+02:00\")] order by @hst:creationtime descending",
   description = "Permanently removes formdata! All formdata that matches the query will be deleted. Empty formdatacontainers will be removed.",
   batchSize = 100L)

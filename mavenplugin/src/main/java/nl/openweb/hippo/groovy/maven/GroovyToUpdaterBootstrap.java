@@ -37,8 +37,6 @@ public abstract class GroovyToUpdaterBootstrap extends AbstractMojo {
     private File sourceDir;
     @Parameter(defaultValue = "${project.build.outputDirectory}", property = "targetDir")
     private File targetDir;
-    @Parameter(defaultValue = "hippo-updater-", property = "initializeNamePrefix")
-    private String initializeNamePrefix;
     @Parameter(defaultValue = "queue", property = "defaultContentRoot")
     private String defaultContentRoot;
 
@@ -52,7 +50,6 @@ public abstract class GroovyToUpdaterBootstrap extends AbstractMojo {
         final Log log = getLog();
         log.info("sourceDir: " + sourceDir.getAbsolutePath());
         log.info("targetDir: " + targetDir.getAbsolutePath());
-        log.info("initializeNamePrefix: " + initializeNamePrefix);
     }
 
     private ScriptProcessor getProcessor() {
@@ -60,7 +57,6 @@ public abstract class GroovyToUpdaterBootstrap extends AbstractMojo {
         processor.setLog(getLog());
         processor.setTargetDir(targetDir);
         processor.setSourceDir(sourceDir);
-        processor.setInitializeNamePrefix(initializeNamePrefix);
         Generator.setDefaultContentRoot(defaultContentRoot.equalsIgnoreCase("registry") ?
             Bootstrap.ContentRoot.REGISTRY : Bootstrap.ContentRoot.QUEUE);
         return processor;

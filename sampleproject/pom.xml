@@ -66,7 +66,6 @@
         <configuration>
           <sourceDir>${project.build.scriptSourceDirectory}</sourceDir>
           <targetDir>${project.build.outputDirectory}</targetDir>
-          <initializeNamePrefix>sampleproject-update-</initializeNamePrefix>
           <yamlPath>hcm-content/configuration/update</yamlPath>
         </configuration>
         <executions>
@@ -74,7 +73,6 @@
             <id>default-resources</id>
             <phase>compile</phase>
             <goals>
-              <goal>generate-xml</goal>
               <goal>generate-yaml</goal>
             </goals>
           </execution>
