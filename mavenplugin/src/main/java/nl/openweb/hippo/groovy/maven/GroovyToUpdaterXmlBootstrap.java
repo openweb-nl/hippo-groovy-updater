@@ -20,7 +20,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
 
-@Mojo(name = "generate-xml")
+@Mojo(name = "generate-xml", threadSafe = true)
 public class GroovyToUpdaterXmlBootstrap extends GroovyToUpdaterBootstrap {
     @Override
     protected ScriptProcessor getProcessorBase() {
