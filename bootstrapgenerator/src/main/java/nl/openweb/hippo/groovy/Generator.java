@@ -98,7 +98,7 @@ public abstract class Generator {
             result = result.replace(annotation, StringUtils.EMPTY);
         }
         for (final Class<?> aClass : getAnnotationClasses()) {
-            result = result.replaceAll("import\\s*" + aClass.getCanonicalName() + "\\s*[;]?\n", "");
+            result = result.replaceAll("import\\s*" + aClass.getCanonicalName() + "\\s*[;]?\n", StringUtils.EMPTY);
         }
         if (keepSpaces) {
             int scriptClassStartLine = getClassStartLineNr(script);

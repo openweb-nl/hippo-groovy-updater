@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.jcr.NamespaceException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.spi.NameFactory;
 import org.apache.jackrabbit.spi.commons.conversion.NameParser;
 import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
@@ -51,8 +52,8 @@ public class ScriptClassFactory {
     }
 
     private static NamespaceMapping getNamespaceMapping() throws NamespaceException {
-        if (!NAMESPACE_MAPPING.hasPrefix("")) {
-            NAMESPACE_MAPPING.setMapping("", "");
+        if (!NAMESPACE_MAPPING.hasPrefix(StringUtils.EMPTY)) {
+            NAMESPACE_MAPPING.setMapping(StringUtils.EMPTY, StringUtils.EMPTY);
         }
         return NAMESPACE_MAPPING;
     }

@@ -35,13 +35,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GeneratorTest {
 
+    public static final String EMPTY_STRING = "";
+
     @BeforeAll
     public static void setup() {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.QUEUE);
     }
 
     @Test
-    public void extractAnnotation() throws URISyntaxException, IOException {
+    void extractAnnotation() throws URISyntaxException, IOException {
         URL testfileUrl = getClass().getResource("updater.groovy");
         URL testfileUrl2 = getClass().getResource("updater-noimport.groovy");
 
@@ -75,16 +77,16 @@ public class GeneratorTest {
 
         assertEquals(updaterExpected, updater);
         assertEquals(bootstrapExpected, bootstrap);
-        assertEquals("", fullUpdater);
-        assertEquals("", fullBootstrap);
-        assertEquals("", updater2);
-        assertEquals("", bootstrap2);
+        assertEquals(EMPTY_STRING, fullUpdater);
+        assertEquals(EMPTY_STRING, fullBootstrap);
+        assertEquals(EMPTY_STRING, updater2);
+        assertEquals(EMPTY_STRING, bootstrap2);
         assertEquals(updaterFull2, fullUpdater2);
         assertEquals(bootstrapFull2, fullBootstrap2);
     }
 
     @Test
-    public void getAnnotations() throws URISyntaxException, IOException {
+    void getAnnotations() throws URISyntaxException, IOException {
         URL testfileUrl = getClass().getResource("updater.groovy");
         URL testfileUrl2 = getClass().getResource("updater-noimport.groovy");
 
@@ -99,7 +101,7 @@ public class GeneratorTest {
     }
 
     @Test
-    public void getAnnotationClassesTest() throws Exception {
+    void getAnnotationClassesTest() {
         List<Class<?>> classes = getAnnotationClasses();
 
         assertEquals(4, classes.size());
