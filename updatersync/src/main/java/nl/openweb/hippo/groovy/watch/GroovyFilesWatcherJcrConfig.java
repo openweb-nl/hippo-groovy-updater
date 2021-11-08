@@ -34,7 +34,7 @@ import static org.hippoecm.repository.util.JcrUtils.getMultipleStringProperty;
 
 public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(GroovyFilesWatcherJcrConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroovyFilesWatcherJcrConfig.class);
 
     private static final String INCLUDED_FILES = "includedFiles";
     private static final String EXCLUDED_DIRECTORIES = "excludedDirectories";
@@ -44,12 +44,12 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
     private static final String MAX_FILE_LENGTH_KB = "maxFileLengthKb";
     private static final String PARAM_PREFIX = "groovy.sync.";
 
-    private List<String> watchedModules;
-    private List<String> includedFiles;
-    private List<String> excludedDirs;
-    private List<String> useWatchServiceOnOsNames;
-    private long watchDelayMillis;
-    private long maxFileLengthBytes;
+    private final List<String> watchedModules;
+    private final List<String> includedFiles;
+    private final List<String> excludedDirs;
+    private final List<String> useWatchServiceOnOsNames;
+    private final long watchDelayMillis;
+    private final long maxFileLengthBytes;
 
     public GroovyFilesWatcherJcrConfig(final Node configNode) throws RepositoryException {
         watchedModules = getMultipleStringConfig(configNode, WATCHED_MODULES_PROPERTY, WatchFilesUtils.DEFAULT_WATCHED_MODULES);
@@ -63,8 +63,8 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
     private List<String> getMultipleStringConfig(final Node configNode, final String propertyName, final String[] defaultValue) {
         String[] values = getMultipleStringPropertyOrDefault(configNode, propertyName, defaultValue);
         String[] systemPropertyChecked = getMultipleStringFromSystemProperty(propertyName, values);
-        if (log.isDebugEnabled()) {
-            log.debug("Configuration value for {} = {}", propertyName, StringUtils.join(systemPropertyChecked, ";"));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Configuration value for {} = {}", propertyName, StringUtils.join(systemPropertyChecked, ";"));
         }
         return Collections.unmodifiableList(Arrays.asList(systemPropertyChecked));
     }
@@ -78,7 +78,7 @@ public class GroovyFilesWatcherJcrConfig implements GroovyFilesWatcherConfig {
         try {
             return getMultipleStringProperty(configNode, propertyName, defaultValue);
         } catch (RepositoryException e) {
-            log.warn("Error reading configuration property '{}' at {}, using default value instead: {}",
+            LOGGER.warn("Error reading configuration property '{}' at {}, using default value instead: {}",
                 propertyName, JcrUtils.getNodePathQuietly(configNode), Arrays.asList(defaultValue), e);
             return defaultValue;
         }

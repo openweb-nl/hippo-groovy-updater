@@ -46,7 +46,7 @@ public abstract class YamlGenerator {
      *
      * @param sourceDir   the directory to read the resources from
      * @param scriptClass class to use for source
-     * @return Node object representing the groovy updater to marshall to xml
+     * @return Mapping object representing the groovy updater to write out as yaml
      */
     public static Map<String, Map<String, Object>> getUpdateYamlScript(final File sourceDir, final ScriptClass scriptClass) {
         Map<String, Object> properties = PropertyCollector.getPropertiesForUpdater(scriptClass, sourceDir);

@@ -17,7 +17,7 @@
 @nl.openweb.hippo.groovy.annotations.Updater(name = "Test Updater noimport",
         xpath = "//element(*, hippo:document)",
  description="", path = "", parameters = " ")
-@nl.openweb.hippo.groovy.annotations.Bootstrap(sequence = 99999.0d)
+@nl.openweb.hippo.groovy.annotations.Bootstrap
 class TestUpdater extends org.onehippo.repository.update.BaseNodeUpdateVisitor {
     boolean doUpdate(javax.jcr.Node node) {
         log.info "manipulate node < > & an %^&* /> {}", node.path

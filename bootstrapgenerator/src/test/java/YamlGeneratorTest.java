@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,12 +46,12 @@ public class YamlGeneratorTest {
     }
 
     @Test
-    public void testScrubbingAnnotations() throws JAXBException, IOException, URISyntaxException {
+    public void testScrubbingAnnotations() throws IOException, URISyntaxException {
         checkGeneration("sub/annotatestrip");
     }
 
     @Test
-    public void testUpdatescriptCreating() throws URISyntaxException, IOException, JAXBException {
+    public void testUpdatescriptCreating() throws URISyntaxException, IOException {
         checkGeneration("updater");
         checkGeneration("updater2");
         checkGeneration("updater3");
@@ -64,7 +63,7 @@ public class YamlGeneratorTest {
         checkGeneration("updaterdata/updater7");
     }
 
-    private void checkGeneration(String name) throws URISyntaxException, IOException, JAXBException {
+    private void checkGeneration(String name) throws URISyntaxException, IOException {
         URL testfileUrl = getClass().getResource(name + ".groovy");
         URL testfileResultUrlYaml = getClass().getResource(name + ".yaml");
 
@@ -80,7 +79,7 @@ public class YamlGeneratorTest {
     }
 
     @Test
-    public void checkDefaultingContentRootYamlFile() throws URISyntaxException, IOException, JAXBException {
+    public void checkDefaultingContentRootYamlFile() throws URISyntaxException, IOException {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.REGISTRY);
         URL testfileUrl = getClass().getResource("updater.groovy");
         URL testfileResultUrlYaml = getClass().getResource("updater.yaml");

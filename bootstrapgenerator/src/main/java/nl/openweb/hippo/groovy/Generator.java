@@ -41,14 +41,14 @@ public abstract class Generator {
     protected static final String NEWLINE = "\n";
     private static final List<Class<?>> ANNOTATED_CLASSES = Arrays.asList(Exclude.class, Bootstrap.class, Updater.class, Bootstrap.ContentRoot.class);
     private static final String HIPPO_CONFIGURATION_UPDATE_PATH_PREFIX = "/hippo:configuration/hippo:update/hippo:";
-    private static final String REGEX_ANNOTATIONS_SNIPPET = "(?:[\\w\\W]+[\\n|;]\\s*import [\\w\\.]+[;|\\n]+)?(?=[\\w\\W]*@[\\w\\.]*Updater)(?:([\\w\\W]*)(?=(?:(?:public )?class \\w+ extends [\\w\\W]+\\s*\\{)))";
     private static final String REGEX_WHITESPACE = "\\s*";
+    private static final String REGEX_ANNOTATIONS_SNIPPET = "(?:[\\w\\W]+[\\n|;]" + REGEX_WHITESPACE + "import [\\w.]+[;|\\n]+)?(?=[\\w\\W]*@[\\w.]*Updater)([\\w\\W]*)(?=(?:public )?class \\w+ extends [\\w\\W]+" + REGEX_WHITESPACE + "\\{)";
     private static final String REGEX_ATTR_NAME = "([A-Za-z]\\w*)";
     private static final String REGEX_ATTR_VALUE_SINGLEQUOTE = "('.*?(?<!\\\\)('))";
     private static final String REGEX_ATTR_VALUE_QUOTE = "(\".*?(?<!\\\\)(\"))";
     private static final String REGEX_ATTR_VALUE_TRIPQUOTE = "('''([\\s\\S]*)''')";
     private static final String REGEX_ATTR_VALUE_SIMPLE = "true|false|([^,^\\)]+)";
-    private static final String REGEX_COMMA = "\\s*,*\\s*";
+    private static final String REGEX_COMMA = REGEX_WHITESPACE + ",*" + REGEX_WHITESPACE;
     private static final String REGEX_ATTR_VALUE = "("
         + REGEX_ATTR_VALUE_SINGLEQUOTE
         + "|"
@@ -59,7 +59,7 @@ public abstract class Generator {
         + REGEX_ATTR_VALUE_SIMPLE
         + ")?";
     private static final String REGEX_ATTRIBUTES = REGEX_WHITESPACE + REGEX_ATTR_NAME + REGEX_WHITESPACE + "=" + REGEX_WHITESPACE + REGEX_ATTR_VALUE + REGEX_COMMA;
-    private static final String ANNOTATION_PAYLOAD = REGEX_WHITESPACE + "(\\((" + REGEX_ATTRIBUTES + ")*\\))?";
+    private static final String ANNOTATION_PAYLOAD = "(?:" + REGEX_WHITESPACE + "\\((" + REGEX_ATTRIBUTES + ")*\\))?";
 
     protected static Bootstrap.ContentRoot defaultContentRoot = Bootstrap.ContentRoot.QUEUE;
 
@@ -68,11 +68,11 @@ public abstract class Generator {
 
     public static List<String> getAnnotations(final String script){
         //Strip comments
-        String codeBlock = script.replaceAll("\\s\\/\\*[\\w\\W]*\\*\\/", StringUtils.EMPTY);
+        String codeBlock = script.replaceAll("\\s/\\*[\\w\\W]*\\*/", StringUtils.EMPTY);
         if(codeBlock.startsWith("/*")) {
             codeBlock = StringUtils.substringAfter(codeBlock, "*/");
         }
-        codeBlock = codeBlock.replaceAll("\\n\\/\\/.*", StringUtils.EMPTY);
+        codeBlock = codeBlock.replaceAll("\\n//.*", StringUtils.EMPTY);
         final Matcher matcher = Pattern.compile(REGEX_ANNOTATIONS_SNIPPET).matcher(codeBlock);
         final List<String> annotationStrings = new ArrayList<>();
         if(matcher.find()) {
@@ -98,7 +98,7 @@ public abstract class Generator {
             result = result.replace(annotation, StringUtils.EMPTY);
         }
         for (final Class<?> aClass : getAnnotationClasses()) {
-            result = result.replaceAll("import\\s*" + aClass.getCanonicalName() + "\\s*[;]?\n", "");
+            result = result.replaceAll("import" + REGEX_WHITESPACE + aClass.getCanonicalName() + REGEX_WHITESPACE + "[;]?\n", StringUtils.EMPTY);
         }
         if (keepSpaces) {
             int scriptClassStartLine = getClassStartLineNr(script);
@@ -123,13 +123,6 @@ public abstract class Generator {
         return lineNr;
     }
 
-    private static String stripAnnotation(final String script, final String className) {
-        final String regex = getAnnotationRegex(className);
-        String s = script.replaceAll(regex, StringUtils.EMPTY);
-        s = s.replaceAll("(\n){3,}", "\n\n");
-        return s;
-    }
-
     public static String getAnnotation(final String script, final String className) {
         final String regex = getAnnotationRegex(className);
         Matcher matcher = Pattern.compile(regex).matcher(script);
@@ -141,7 +134,7 @@ public abstract class Generator {
         return annotationName + ANNOTATION_PAYLOAD;
     }
 
-    public static String getAnnotation(final String script, final Class clazz) {
+    public static String getAnnotation(final String script, final Class<?> clazz) {
         String simple = getAnnotation(script, clazz.getSimpleName());
 
         return StringUtils.isNotBlank(simple) ?
@@ -165,7 +158,7 @@ public abstract class Generator {
         final List<File> allFiles = new ArrayList<>();
         if (groovyFiles != null) {
             allFiles.addAll(Arrays.asList(groovyFiles));
-            Collections.sort(allFiles, Comparator.comparing(File::getName));
+            allFiles.sort(Comparator.comparing(File::getName));
         }
         if (directories != null) {
             Arrays.stream(directories)

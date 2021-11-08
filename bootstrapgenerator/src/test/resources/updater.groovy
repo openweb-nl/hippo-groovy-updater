@@ -10,7 +10,7 @@ import javax.jcr.Node
             (It should allow any notations, for the stripping etc..
             for example a description on how the XPath query should be like //element(*, hippo:document)[mixin:types='project:example']
             or the parameters field, describing like: { "foobar": [ "bar", "foo"]}''', path = "", parameters = " ")
-@Bootstrap(reload = true, sequence = 99999.0d)
+@Bootstrap(reload = true)
 class TestUpdater extends BaseNodeUpdateVisitor {
     boolean doUpdate(Node node) {
         log.info "manipulate node < > & an %^&* /> {}", node.path

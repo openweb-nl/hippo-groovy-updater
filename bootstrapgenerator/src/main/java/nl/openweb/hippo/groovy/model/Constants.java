@@ -17,25 +17,23 @@
 package nl.openweb.hippo.groovy.model;
 
 /**
- * Constants for generating bootstrap xml
+ * Constants for generating bootstrap files
  */
 public final class Constants {
     private Constants() {
         //no public construction
     }
 
-    public final class Files {
+    public static final class Files {
         private Files() {
             //no public construction
         }
 
         public static final String GROOVY_EXTENSION = ".groovy";
-        public static final String XML_EXTENSION = ".xml";
         public static final String YAML_EXTENSION = ".yaml";
-        public static final String ECM_EXTENSIONS_NAME = "hippoecm-extension.xml";
     }
 
-    public final class PropertyName {
+    public static final class PropertyName {
         private PropertyName() {
             //no public construction
         }
@@ -50,33 +48,14 @@ public final class Constants {
         public static final String HIPPOSYS_THROTTLE = "hipposys:throttle";
         public static final String HIPPOSYS_DESCRIPTION = "hipposys:description";
         public static final String HIPPOSYS_PATH = "hipposys:path";
-        public static final String HIPPO_SEQUENCE = "hippo:sequence";
-        public static final String HIPPO_CONTENTRESOURCE = "hippo:contentresource";
-        public static final String HIPPO_CONTENTROOT = "hippo:contentroot";
-        public static final String HIPPO_RELOADONSTARTUP = "hippo:reloadonstartup";
-        public static final String HIPPO_VERSION = "hippo:version";
     }
 
-    public final class NodeType {
+    public static final class NodeType {
         private NodeType() {
             //no public construction
         }
 
         public static final String HIPPOSYS_UPDATERINFO = "hipposys:updaterinfo";
-        public static final String HIPPO_INITIALIZEITEM = "hippo:initializeitem";
-        public static final String HIPPO_INITIALIZE = "hippo:initialize";
-        public static final String HIPPO_INITIALIZEFOLDER = "hippo:initializefolder";
-    }
 
-    public final class ValueType {
-        private ValueType() {
-            //no public construction
-        }
-
-        public static final String STRING = "String";
-        public static final String NAME = "Name";
-        public static final String LONG = "Long";
-        public static final String BOOLEAN = "Boolean";
-        public static final String DOUBLE = "Double";
     }
 }
