@@ -1,5 +1,5 @@
 # Project for Hippo Updaters Maven Plugin
-This project is designed for Hippo developers to have an easy way to create updaters in groovy, without being bothered with the repositorydata yaml.
+This project is designed for Hippo developers to have an easy way to create updaters in groovy, without being bothered with the repository data yaml.
 
 For use the updaters are located in their own submodule. Nicely separated from other bootstrap.
 They are groovy scripts, so the editor can easily provide autocomplete and stuff, configured by Annotations.
