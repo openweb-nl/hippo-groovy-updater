@@ -40,11 +40,6 @@ import java.io.File;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.onehippo.cms7.services.SingletonService;
-import org.onehippo.cms7.services.WhiteboardService;
-
-@SingletonService
-@WhiteboardService
 public interface GroovyFilesService {
 
     void importGroovyFiles(Session session, File file);
