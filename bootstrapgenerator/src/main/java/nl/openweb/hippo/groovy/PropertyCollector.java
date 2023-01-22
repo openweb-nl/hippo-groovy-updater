@@ -80,8 +80,8 @@ public class PropertyCollector {
         if (StringUtils.isNotBlank(updater.mixin())) {
             addPropertyIfNotEmpty(properties, JCR_MIXIN_TYPES, createMultiValueProperty(updater.mixin()));
         }
-        if (StringUtils.isNotBlank(updater.logTarget())) {
-            addPropertyIfNotEmpty(properties, HIPPOSYS_LOGTARGET, updater.logTarget());
+        if (StringUtils.isNotBlank(updater.logTarget().toString())) {
+            addPropertyIfNotEmpty(properties, HIPPOSYS_LOGTARGET, updater.logTarget().toString());
         }
         addPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, getValueOrFileContent(script, sourceDir, updater.parameters()));
         if (StringUtils.isBlank(updater.xpath())) {

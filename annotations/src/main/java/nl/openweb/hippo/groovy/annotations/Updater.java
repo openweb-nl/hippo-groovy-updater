@@ -27,6 +27,22 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Updater {
+    enum LogTarget {
+        DEFAULT(""),
+        LOG_FILES("LOG FILES"),
+        REPOSITORY("REPOSITORY");
+
+        private final String value;
+
+        LogTarget(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
     String name();
 
     String description() default "";
@@ -45,5 +61,5 @@ public @interface Updater {
 
     String mixin() default "";
 
-    String logTarget() default "";
+    LogTarget logTarget() default LogTarget.DEFAULT;
 }
