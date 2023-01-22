@@ -76,15 +76,15 @@
   <properties>
     <commons-io.version>2.11.0</commons-io.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
-    <groovy.version>3.0.9</groovy.version>
-    <snakeyaml.version>1.29</snakeyaml.version>
-    <hippo.repository.version>12.6.18</hippo.repository.version>
-    <hippo.services.version>12.6.18</hippo.services.version>
+    <groovy.version>3.0.14</groovy.version>
+    <snakeyaml.version>1.33</snakeyaml.version>
+    <hippo.repository.version>15.1.3</hippo.repository.version>
+    <hippo.services.version>15.1.3</hippo.services.version>
     <javax.jcr.version>2.0</javax.jcr.version>
-    <junit.jupiter.version>5.8.1</junit.jupiter.version>
-    <junit.vintage.version>5.8.1</junit.vintage.version>
-    <jackrabbit.version>2.21.7</jackrabbit.version>
-    <maven.plugin.api.version>3.8.3</maven.plugin.api.version>
+    <junit.jupiter.version>5.9.2</junit.jupiter.version>
+    <junit.vintage.version>5.9.2</junit.vintage.version>
+    <jackrabbit.version>2.21.14</jackrabbit.version>
+    <maven.plugin.api.version>3.8.7</maven.plugin.api.version>
     <maven.dependency.plugin.version>3.2.0</maven.dependency.plugin.version>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
@@ -99,13 +99,13 @@
     <maven.resources.plugin.version>3.2.0</maven.resources.plugin.version>
     <maven.site.plugin.version>3.9.1</maven.site.plugin.version>
     <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
-    <maven.plugin.annotations.version>3.6.1</maven.plugin.annotations.version>
-    <maven.plugin.plugin.version>3.6.1</maven.plugin.plugin.version>
+    <maven.plugin.annotations.version>3.7.1</maven.plugin.annotations.version>
+    <maven.plugin.plugin.version>3.7.1</maven.plugin.plugin.version>
     <maven.plugin.jacoco.version>0.8.7</maven.plugin.jacoco.version>
-    <plexus-utils.version>3.4.1</plexus-utils.version>
-    <apache.sling.version>1.5.4</apache.sling.version>
+    <plexus-utils.version>3.5.0</plexus-utils.version>
+    <apache.sling.version>1.6.0</apache.sling.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j.version>1.7.32</slf4j.version>
+    <slf4j.version>2.0.6</slf4j.version>
     <owasp.depcheck.plugin.version>6.3.2</owasp.depcheck.plugin.version>
   </properties>
 

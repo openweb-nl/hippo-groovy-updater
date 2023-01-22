@@ -81,10 +81,4 @@
     </plugins>
   </build>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>openweb-maven-releases</id>
-      <url>https://maven.open-web.nl/content/repositories/releases/</url>
-    </pluginRepository>
-  </pluginRepositories>
 </project>
