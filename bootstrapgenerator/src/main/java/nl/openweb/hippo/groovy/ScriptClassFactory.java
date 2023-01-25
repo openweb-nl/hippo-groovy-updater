@@ -18,16 +18,17 @@ package nl.openweb.hippo.groovy;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.jcr.NamespaceException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.spi.NameFactory;
 import org.apache.jackrabbit.spi.commons.conversion.NameParser;
 import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
 import org.apache.jackrabbit.spi.commons.namespace.NamespaceMapping;
-import org.codehaus.plexus.util.FileUtils;
 
 import groovy.lang.GroovyClassLoader;
 import nl.openweb.hippo.groovy.exception.ScriptParseException;
@@ -108,7 +109,7 @@ public class ScriptClassFactory {
     }
 
     public static String readFileEnsuringLinuxLineEnding(final File file) throws IOException {
-        String content = FileUtils.fileRead(file);
+        String content = FileUtils.readFileToString(file, Charset.defaultCharset());
         if (content.contains(LINE_END_MAC)) {
             content = content.replace(LINE_END_WINDOWS, LINE_END_LINUX)
                 .replace(LINE_END_MAC, LINE_END_LINUX);
