@@ -24,6 +24,6 @@ public class Utilities {
     public static void enforceWindowsFileEndings(File file) throws IOException {
         String content = FileUtils.readFileToString(file, Charset.defaultCharset());
         String lfContent = content.replaceAll("\r\n", "\n");
-        FileUtils.writeStringToFile(file,lfContent.replaceAll("\n", "\r\n"), Charset.defaultCharset());
+        FileUtils.writeStringToFile(file, lfContent.replaceAll("\n", "\r\n"), Charset.defaultCharset());
     }
 }
