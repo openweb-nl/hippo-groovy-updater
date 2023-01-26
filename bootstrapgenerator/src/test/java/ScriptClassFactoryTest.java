@@ -18,8 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -43,7 +44,7 @@ public class ScriptClassFactoryTest {
 
         final File tempFile = File.createTempFile("updater", "mysuffix");
         tempFile.deleteOnExit();
-        FileUtils.fileWrite(tempFile, content.replace("Test Updater", updaterName));
+        FileUtils.writeStringToFile(tempFile,content.replace("Test Updater", updaterName), Charset.defaultCharset());
 
         ScriptClassFactory.getInterpretingClass(tempFile);
     }

@@ -102,7 +102,6 @@
     <maven.plugin.annotations.version>3.7.1</maven.plugin.annotations.version>
     <maven.plugin.plugin.version>3.7.1</maven.plugin.plugin.version>
     <maven.plugin.jacoco.version>0.8.7</maven.plugin.jacoco.version>
-    <plexus-utils.version>3.5.0</plexus-utils.version>
     <apache.sling.version>1.6.0</apache.sling.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>2.0.6</slf4j.version>
@@ -132,11 +131,6 @@
         <artifactId>maven-plugin-annotations</artifactId>
         <version>${maven.plugin.annotations.version}</version>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>${plexus-utils.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.groovy</groupId>

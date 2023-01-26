@@ -18,9 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
-
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -91,7 +91,7 @@ class YamlGeneratorTest {
 
         final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(sourceDir, getInterpretingClass(file)));
 
-        String unExpectedContentYaml = FileUtils.fileRead(resultFileYaml);
+        String unExpectedContentYaml = FileUtils.readFileToString(resultFileYaml, Charset.defaultCharset());
         assertNotEquals("failed yaml parsing of updater", unExpectedContentYaml, yaml);
     }
 }
