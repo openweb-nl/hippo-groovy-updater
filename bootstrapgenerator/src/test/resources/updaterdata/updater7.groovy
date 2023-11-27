@@ -24,7 +24,7 @@ import org.onehippo.repository.update.BaseNodeUpdateVisitor
 
 import javax.jcr.Node
 import nl.openweb.hippo.groovy.annotations.Bootstrap.ContentRoot
-@Bootstrap(contentroot = ContentRoot.QUEUE, sequence = 99999.0d, reload = true, version = "2")
+@Bootstrap(contentroot = ContentRoot.QUEUE, reload = true, version = "2")
 @Updater(name = "Test Updater 7", path = "", xpath = "//element(*, hippo:document)"
         , description = "Test Mixin", batchSize = 1L, throttle = 200L, dryRun = true
         , mixin = "mixin:test")

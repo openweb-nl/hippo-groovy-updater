@@ -18,7 +18,6 @@ package nl.openweb.hippo.groovy.maven.processor;
 import java.io.File;
 import java.util.List;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import nl.openweb.hippo.groovy.model.ScriptClass;
@@ -29,18 +28,17 @@ public abstract class ScriptProcessor {
     protected Log log;
     protected File sourceDir;
     protected File targetDir;
-    protected String initializeNamePrefix;
 
     /**
      * Generate updater files from groovy scripts
      *
      * @return list of valid parsed groovy files
      */
-    public List<ScriptClass> processUpdateScripts() throws MojoExecutionException {
+    public List<ScriptClass> processUpdateScripts() {
         return processUpdateScripts(getScriptClasses(sourceDir));
     }
 
-    public abstract List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClasses) throws MojoExecutionException;
+    public abstract List<ScriptClass> processUpdateScripts(final List<ScriptClass> scriptClasses);
 
     /**
      * Generate updater files from groovy scripts
@@ -75,9 +73,5 @@ public abstract class ScriptProcessor {
 
     public void setTargetDir(final File targetDir) {
         this.targetDir = targetDir;
-    }
-
-    public void setInitializeNamePrefix(final String initializeNamePrefix) {
-        this.initializeNamePrefix = initializeNamePrefix;
     }
 }

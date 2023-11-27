@@ -16,13 +16,14 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 public class Utilities {
     public static void enforceWindowsFileEndings(File file) throws IOException {
-        String content = FileUtils.fileRead(file);
+        String content = FileUtils.readFileToString(file, Charset.defaultCharset());
         String lfContent = content.replaceAll("\r\n", "\n");
-        FileUtils.fileWrite(file, lfContent.replaceAll("\n", "\r\n"));
+        FileUtils.writeStringToFile(file, lfContent.replaceAll("\n", "\r\n"), Charset.defaultCharset());
     }
 }

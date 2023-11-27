@@ -31,7 +31,7 @@ definitions:
           'RCS',
           '.svn',
         ]
-        includedFiles: ['*.groovy']
+        includedFiles: ['*.groovy', '*.json']
         #  Disabled: Windows*
         #
         #  Two JDK issues are annoying enough to disable the Watch Service on Windows for now:

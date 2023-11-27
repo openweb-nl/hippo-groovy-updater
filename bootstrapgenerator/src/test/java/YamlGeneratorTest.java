@@ -18,10 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
-import javax.xml.bind.JAXBException;
-
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ import static nl.openweb.hippo.groovy.YamlGenerator.getYamlString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class YamlGeneratorTest {
+class YamlGeneratorTest {
 
     final File sourceDir = new File(getClass().getResource("/").toURI());
 
@@ -47,12 +46,12 @@ public class YamlGeneratorTest {
     }
 
     @Test
-    public void testScrubbingAnnotations() throws JAXBException, IOException, URISyntaxException {
+    void testScrubbingAnnotations() throws IOException, URISyntaxException {
         checkGeneration("sub/annotatestrip");
     }
 
     @Test
-    public void testUpdatescriptCreating() throws URISyntaxException, IOException, JAXBException {
+    void testUpdatescriptCreating() throws URISyntaxException, IOException {
         checkGeneration("updater");
         checkGeneration("updater2");
         checkGeneration("updater3");
@@ -62,9 +61,10 @@ public class YamlGeneratorTest {
         checkGeneration("updaterdata/updater5");
         checkGeneration("updaterdata/updater6");
         checkGeneration("updaterdata/updater7");
+        checkGeneration("updaterdata/updater-logtarget");
     }
 
-    private void checkGeneration(String name) throws URISyntaxException, IOException, JAXBException {
+    private void checkGeneration(String name) throws URISyntaxException, IOException {
         URL testfileUrl = getClass().getResource(name + ".groovy");
         URL testfileResultUrlYaml = getClass().getResource(name + ".yaml");
 
@@ -80,7 +80,7 @@ public class YamlGeneratorTest {
     }
 
     @Test
-    public void checkDefaultingContentRootYamlFile() throws URISyntaxException, IOException, JAXBException {
+    void checkDefaultingContentRootYamlFile() throws URISyntaxException, IOException {
         Generator.setDefaultContentRoot(Bootstrap.ContentRoot.REGISTRY);
         URL testfileUrl = getClass().getResource("updater.groovy");
         URL testfileResultUrlYaml = getClass().getResource("updater.yaml");
@@ -91,7 +91,7 @@ public class YamlGeneratorTest {
 
         final String yaml = getYamlString(YamlGenerator.getUpdateYamlScript(sourceDir, getInterpretingClass(file)));
 
-        String unExpectedContentYaml = FileUtils.fileRead(resultFileYaml);
+        String unExpectedContentYaml = FileUtils.readFileToString(resultFileYaml, Charset.defaultCharset());
         assertNotEquals("failed yaml parsing of updater", unExpectedContentYaml, yaml);
     }
 }

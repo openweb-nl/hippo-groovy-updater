@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
-import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorXML;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorYAML;
 import static nl.openweb.hippo.groovy.ScriptClassFactory.getScriptClasses;
 import static nl.openweb.tools.Tools.compareFolders;
@@ -42,37 +41,8 @@ public class ScriptProcessorTest {
     ScriptProcessor processor;
 
     @Test
-    public void testXML() throws URISyntaxException, MojoExecutionException, IOException {
-        processor = new ScriptProcessorXML();
-        processor.setInitializeNamePrefix("sampleproject-update-");
-        processor.setLog(new SystemStreamLog());
-
-        File input = new File(getClass().getResource("/src/main/scripts").toURI());
-        File xml_output = new File(new File(getClass().getResource("/").toURI()), "xml_output");
-
-        File resource = new File(getClass()
-            .getResource("/src/main/resources/hippoecm-extension.xml").toURI());
-        File targetResource = new File(xml_output, "hippoecm-extension.xml");
-        if (xml_output.exists()) {
-            FileUtils.deleteDirectory(xml_output);
-            assertFalse(xml_output.exists());
-        }
-        //Preparation: existing ecm-extension.xml in target
-        targetResource.mkdirs();
-        Files.copy(resource.toPath(), targetResource.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        processor.setSourceDir(input);
-        processor.setTargetDir(xml_output);
-
-        processor.processUpdateScripts(getScriptClasses(input));
-        File xml_expected = new File(getClass().getResource("/target_xml").toURI());
-
-        compareFolders(xml_expected, xml_output);
-    }
-
-    @Test
     public void testYaml() throws URISyntaxException, MojoExecutionException, IOException {
         processor = new ScriptProcessorYAML();
-        processor.setInitializeNamePrefix("my-hippo-updater-");
         processor.setLog(new SystemStreamLog());
 
         File input = new File(getClass().getResource("/src/main/scripts").toURI());

@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Bootstrap annotation to define properties in the hippoecm-extension.xml
+ * Bootstrap annotation to define where to bootstrap the script
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -32,7 +32,7 @@ public @interface Bootstrap {
         QUEUE("queue"),
         REGISTRY("registry");
 
-        private String value;
+        private final String value;
 
         ContentRoot(String value) {
             this.value = value;
@@ -46,9 +46,16 @@ public @interface Bootstrap {
 
     ContentRoot contentroot() default ContentRoot.DEFAULT;
 
-    double sequence() default 99999.0d;
-
+    /**
+     * reload the script
+     * applies if contentroot is queue, and a version is defined.
+     * @return
+     */
     boolean reload() default false;
 
+    /**
+     * if the reload is set to true, the version will be used for bootstrapping
+     * @return
+     */
     String version() default "";
 }

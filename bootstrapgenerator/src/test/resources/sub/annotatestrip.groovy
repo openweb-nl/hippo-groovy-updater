@@ -11,7 +11,7 @@ import javax.jcr.RepositoryException
 import javax.jcr.Session
 import javax.jcr.Value
 
-@Bootstrap(sequence = 99999.00005d)
+@Bootstrap
 @Updater(name = "Set some property", xpath = "content/documents//element(*,hippotaxonomy:classifiable)[@jcr:primaryType='project:communication' or @jcr:primaryType='project:listing' or @jcr:primaryType='project:newsdocument' or @jcr:primaryType='project:simpledocument' or @jcr:primaryType='project:richtextdocument' or @jcr:primaryType='project:services' or @jcr:primaryType='project:diydocument']")
 class SetSomeDocumentProperty extends BaseNodeUpdateVisitor {
 

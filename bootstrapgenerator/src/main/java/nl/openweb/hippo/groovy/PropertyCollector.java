@@ -18,6 +18,7 @@ package nl.openweb.hippo.groovy;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import static nl.openweb.hippo.groovy.model.Constants.NodeType.HIPPOSYS_UPDATERI
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_BATCHSIZE;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DESCRIPTION;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_DRYRUN;
+import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_LOGTARGET;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PARAMETERS;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_PATH;
 import static nl.openweb.hippo.groovy.model.Constants.PropertyName.HIPPOSYS_QUERY;
@@ -56,7 +58,7 @@ public class PropertyCollector {
         if (file.exists()) {
             try {
                 return ScriptClassFactory.readFileEnsuringLinuxLineEnding(file);
-            } catch (IOException e) {
+            } catch (IOException | InvalidPathException e) {
                 //do nothing, it's fine
             }
         }
@@ -77,6 +79,9 @@ public class PropertyCollector {
         properties.put(HIPPOSYS_DRYRUN, updater.dryRun());
         if (StringUtils.isNotBlank(updater.mixin())) {
             addPropertyIfNotEmpty(properties, JCR_MIXIN_TYPES, createMultiValueProperty(updater.mixin()));
+        }
+        if (StringUtils.isNotBlank(updater.logTarget().toString())) {
+            addPropertyIfNotEmpty(properties, HIPPOSYS_LOGTARGET, updater.logTarget().toString());
         }
         addPropertyIfNotEmpty(properties, HIPPOSYS_PARAMETERS, getValueOrFileContent(script, sourceDir, updater.parameters()));
         if (StringUtils.isBlank(updater.xpath())) {

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 class SubDirectoriesWatcher implements FileSystemListener {
 
-    private static final Logger log = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
 
     private static final DirectoryStream.Filter<Path> DIRECTORY_FILTER = path -> path.toFile().isDirectory();
 
@@ -80,7 +80,7 @@ class SubDirectoriesWatcher implements FileSystemListener {
     private void observeSubDirectories(final Path directory) throws IOException {
         try (DirectoryStream<Path> subDirectories = Files.newDirectoryStream(directory, DIRECTORY_FILTER)) {
             for (Path subDirectory : subDirectories) {
-                log.info("Watching directory: {}", subDirectory);
+                LOGGER.info("Watching directory: {}", subDirectory);
                 fsObserver.registerDirectory(subDirectory, this);
             }
         }
@@ -155,33 +155,33 @@ class SubDirectoriesWatcher implements FileSystemListener {
     }
 
     private void notifyStart() {
-        log.debug("Start change");
+        LOGGER.debug("Start change");
         try {
             listener.onStart();
         } catch (RuntimeException e) {
-            log.warn("Exception by listener '{}' when change started", listener, e);
+            LOGGER.warn("Exception by listener '{}' when change started", listener, e);
         }
     }
 
     private void notifyPathsChanged(final Set<Path> changedPaths) {
-        log.debug("Paths changed: {}", changedPaths);
+        LOGGER.debug("Paths changed: {}", changedPaths);
         try {
             listener.onPathsChanged(rootDirectory, changedPaths);
         } catch (RuntimeException e) {
-            if (log.isDebugEnabled()) {
-                log.warn("Exception by listener '{}' while processing paths {}", listener, changedPaths, e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.warn("Exception by listener '{}' while processing paths {}", listener, changedPaths, e);
             } else {
-                log.warn("Exception by listener '{}' while processing paths {} : {}", listener, changedPaths, e.getMessage());
+                LOGGER.warn("Exception by listener '{}' while processing paths {} : {}", listener, changedPaths, e.getMessage());
             }
         }
     }
 
     private void notifyStop() {
-        log.debug("Stop change");
+        LOGGER.debug("Stop change");
         try {
             listener.onStop();
         } catch (RuntimeException e) {
-            log.warn("Exception by listener '{}' when change stopped", listener, e);
+            LOGGER.warn("Exception by listener '{}' when change stopped", listener, e);
         }
     }
 

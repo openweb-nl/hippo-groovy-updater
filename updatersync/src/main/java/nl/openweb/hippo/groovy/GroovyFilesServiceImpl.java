@@ -35,7 +35,6 @@
 package nl.openweb.hippo.groovy;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +43,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
-import javax.xml.bind.JAXBException;
 
 import org.apache.jackrabbit.value.BooleanValue;
 import org.apache.jackrabbit.value.LongValue;
@@ -69,7 +67,7 @@ import static nl.openweb.hippo.groovy.util.WatchFilesUtils.SCRIPT_ROOT;
 
 public class GroovyFilesServiceImpl implements GroovyFilesService {
 
-    private static final Logger log = LoggerFactory.getLogger(GroovyFilesServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroovyFilesServiceImpl.class);
 
     private static void warnAndThrow(final String message, final Object... args) {
         throw new GroovyFileException(warn(message, args));
@@ -77,13 +75,13 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
 
     private static String warn(final String message, final Object... args) {
         String warning = String.format(message, args);
-        log.warn(warning);
+        LOGGER.warn(warning);
         return warning;
     }
 
     private static String info(final String message, final Object... args) {
         String warning = String.format(message, args);
-        log.info(warning);
+        LOGGER.info(warning);
         return warning;
     }
 
@@ -97,7 +95,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
      */
     private static boolean setUpdateScriptJcrNode(Node parent, File file) throws RepositoryException {
         ScriptClass scriptClass = getInterpretingClass(file, true);
-        if (!scriptClass.isValid()) {
+        if (scriptClass == null || !scriptClass.isValid()) {
             return false;
         }
         final Updater updater = scriptClass.getUpdater();
@@ -147,7 +145,7 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
         return scriptRegistry;
     }
 
-    public void importGroovyFiles(Session session, File file) throws IOException, RepositoryException {
+    public void importGroovyFiles(Session session, File file) {
         List<File> groovyFiles = getGroovyFiles(file);
         for (File groovyFile : groovyFiles) {
             importGroovyFiles(session, groovyFile);
@@ -160,11 +158,9 @@ public class GroovyFilesServiceImpl implements GroovyFilesService {
      * @param session jcr session tu use
      * @param file    file to transform
      * @return success
-     * @throws IOException
      * @throws RepositoryException
-     * @throws JAXBException
      */
-    public boolean importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException {
+    public boolean importGroovyFile(Session session, File file) throws RepositoryException {
         return setUpdateScriptJcrNode(getRegistryNode(session), file);
     }
 }

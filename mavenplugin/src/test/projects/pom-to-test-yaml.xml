@@ -40,9 +40,6 @@
         <groupId>nl.openweb.hippo.updater</groupId>
         <artifactId>groovy-updater-maven-plugin</artifactId>
         <version>${project.version}</version>
-        <configuration>
-          <initializeNamePrefix>sampleproject-update-</initializeNamePrefix>
-        </configuration>
         <executions>
           <execution>
             <id>default-resources</id>

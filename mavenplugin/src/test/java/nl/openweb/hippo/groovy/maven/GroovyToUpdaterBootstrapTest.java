@@ -44,8 +44,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class GroovyToUpdaterXmlBootstrapTest {
-    private static Logger logger = LoggerFactory.getLogger(GroovyToUpdaterXmlBootstrapTest.class);
+public class GroovyToUpdaterBootstrapTest {
     @Rule
     public MojoRule rule = new MojoRule() {
         @Override
@@ -62,28 +61,6 @@ public class GroovyToUpdaterXmlBootstrapTest {
     @Rule
     public TestResources resources = new TestResources();
 
-    //    @Test
-    public void noottest() throws URISyntaxException, IOException, MojoFailureException, MojoExecutionException {
-        GroovyToUpdaterXmlBootstrap gtuxb = new GroovyToUpdaterXmlBootstrap();
-        Map<String, Object> pluginContext = new HashMap<>();
-        File input = new File(getClass().getResource("/src/scripts").toURI());
-        File output = new File(new File(getClass().getResource("/").toURI()), "mvn_xml_output");
-        pluginContext.put("defaultContentRoot", "registry");
-        pluginContext.put("sourceDir", input);
-        pluginContext.put("targetDir", output);
-        gtuxb.setPluginContext(pluginContext);
-        gtuxb.logPluginConfigurationItems();
-        if (output.exists()) {
-            FileUtils.deleteDirectory(output);
-            assertFalse(output.exists());
-        }
-        output.mkdirs();
-        gtuxb.execute();
-        File xml_expected = new File(getClass().getResource("/target_xml").toURI());
-
-        compareFolders(xml_expected, output);
-    }
-
     private Mojo getMojo(String goal, File pomFile) {
         MavenExecutionRequest executionRequest = new DefaultMavenExecutionRequest();
         ProjectBuildingRequest buildingRequest = executionRequest.getProjectBuildingRequest();
@@ -98,41 +75,6 @@ public class GroovyToUpdaterXmlBootstrapTest {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Test
-    public void testXml() throws Exception {
-        File basedir = resources.getBasedir("");
-        File target = new File(basedir, "target/classes");
-        File pom = new File(basedir, "pom-to-test-xml.xml");
-        target.mkdirs();
-
-        FileUtils.copyFile(new File(basedir, "src/main/resources/hippoecm-extension.xml"), new File(target, "hippoecm-extension.xml"));
-
-        runMojo(pom, "generate-xml");
-
-        File xml_expected = new File(getClass().getResource("/target_xml").toURI());
-        compareFolders(xml_expected, target);
-    }
-
-    @Test
-    public void testXml2() throws Exception {
-        File basedir = resources.getBasedir("");
-        File target = new File(basedir, "target/classes2");
-        File pom = new File(basedir, "pom-to-test-xml-2.xml");
-        target.mkdirs();
-
-        FileUtils.copyFile(new File(basedir, "src/main/resources/hippoecm-extension.xml"), new File(target, "hippoecm-extension.xml"));
-
-        runMojo(pom, "generate-xml");
-
-        File xml_expected_original = new File(getClass().getResource("/target_xml").toURI());
-        File xml_expected_overlay = new File(getClass().getResource("/target_xml2_overlay").toURI());
-        File xml_expected = new File(basedir, "target_xml");
-        xml_expected.mkdirs();
-        FileUtils.copyDirectory(xml_expected_original, xml_expected);
-        FileUtils.copyDirectory(xml_expected_overlay, xml_expected);
-        compareFolders(xml_expected, target);
     }
 
     @Test

@@ -43,7 +43,6 @@
         <configuration>
           <defaultContentRoot>registry</defaultContentRoot>
           <targetDir>${project.build.outputDirectory}2</targetDir>
-          <initializeNamePrefix>sampleproject-update-</initializeNamePrefix>
         </configuration>
         <executions>
           <execution>
