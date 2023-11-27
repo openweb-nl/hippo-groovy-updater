@@ -36,20 +36,13 @@
 package nl.openweb.hippo.groovy;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.xml.bind.JAXBException;
 
-import org.onehippo.cms7.services.SingletonService;
-import org.onehippo.cms7.services.WhiteboardService;
-
-@SingletonService
-@WhiteboardService
 public interface GroovyFilesService {
 
-    void importGroovyFiles(Session session, File file) throws IOException, RepositoryException;
+    void importGroovyFiles(Session session, File file);
 
-    boolean importGroovyFile(Session session, File file) throws IOException, RepositoryException, JAXBException;
+    boolean importGroovyFile(Session session, File file) throws RepositoryException;
 }

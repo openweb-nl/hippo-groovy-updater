@@ -28,9 +28,9 @@ public class DefaultBootstrap {
         //no instantiating
     }
 
-    private static final Bootstrap bootstrap = DefaultBootstrap.class.getAnnotation(Bootstrap.class);
+    private static final Bootstrap BOOTSTRAP = DefaultBootstrap.class.getAnnotation(Bootstrap.class);
 
     public static Bootstrap getBootstrap() {
-        return bootstrap;
+        return BOOTSTRAP;
     }
 }

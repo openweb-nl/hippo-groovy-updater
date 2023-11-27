@@ -24,7 +24,7 @@ import org.onehippo.repository.update.BaseNodeUpdateVisitor
 import javax.jcr.Node
 import javax.jcr.RepositoryException
 
-@Bootstrap(sequence = 50000d, reload = true, version = "1")
+@Bootstrap(reload = true, version = "1")
 @Updater(name = "Cleanup Nodes no longer needed", xpath = "/jcr:root")
 class Cleanup extends BaseNodeUpdateVisitor {
 

@@ -17,17 +17,21 @@
  */
 package nl.openweb.hippo.groovy.watch;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +46,7 @@ import nl.openweb.hippo.groovy.util.WatchFilesUtils;
  */
 public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesListener {
 
-    private static final Logger log = LoggerFactory.getLogger(GroovyFilesWatcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroovyFilesWatcher.class);
 
     private final GroovyFilesWatcherConfig config;
     private final GroovyFilesService service;
@@ -64,7 +68,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             return null;
         }
         if (config.getWatchedModules().isEmpty()) {
-            log.info("Watching groovy files is disabled: no modules configured to watch in {}", projectBaseDir);
+            LOGGER.info("Watching groovy files is disabled: no modules configured to watch in {}", projectBaseDir);
         } else {
             return observeFileSystem(projectBaseDir);
         }
@@ -76,21 +80,21 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         try {
             fsObserver = createFileSystemObserver();
         } catch (Exception e) {
-            log.error("Watching groovy files is disabled: cannot create file system observer", e);
+            LOGGER.error("Watching groovy files is disabled: cannot create file system observer", e);
             return null;
         }
 
         List<Path> groovyFilesDirectories = WatchFilesUtils.getGroovyFilesDirectories(projectBaseDir, config);
-        if (log.isDebugEnabled()) {
-            log.debug("Observe {} paths: {}", groovyFilesDirectories.size(), groovyFilesDirectories.stream().map(Path::toString)
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Observe {} paths: {}", groovyFilesDirectories.size(), groovyFilesDirectories.stream().map(Path::toString)
                 .collect(Collectors.joining(", ")));
         }
         for (Path groovyFilesDirectory : groovyFilesDirectories) {
             try {
-                log.info("About to listen to directories: {}", groovyFilesDirectory);
+                LOGGER.info("About to listen to directories: {}", groovyFilesDirectory);
                 SubDirectoriesWatcher.watch(groovyFilesDirectory, fsObserver, this);
             } catch (Exception e) {
-                log.error("Failed to watch or import groovy files in module '{}'", groovyFilesDirectory.toString(), e);
+                LOGGER.error("Failed to watch or import groovy files in module '{}'", groovyFilesDirectory, e);
             }
         }
         return fsObserver;
@@ -102,11 +106,11 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         watchedFiles.excludeDirectories(config.getExcludedDirectories());
 
         if (useWatchService()) {
-            log.info("Using file system watcher");
+            LOGGER.info("Using file system watcher");
             return new FileSystemWatcher(watchedFiles);
         } else {
             long watchDelayMillis = config.getWatchDelayMillis();
-            log.info("Using file system poller (delay: {} ms)", watchDelayMillis);
+            LOGGER.info("Using file system poller (delay: {} ms)", watchDelayMillis);
             return new FileSystemPoller(watchedFiles, watchDelayMillis);
         }
     }
@@ -117,7 +121,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
             try {
                 matcher.include(pattern);
             } catch (IllegalArgumentException e) {
-                log.warn("Ignoring OS name '{}': {}. On this OS files will be watched using file system polling.",
+                LOGGER.warn("Ignoring OS name '{}': {}. On this OS files will be watched using file system polling.",
                     pattern, e.getMessage());
             }
         }
@@ -135,52 +139,66 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         Set<Path> processedPaths = new HashSet<>(changedPaths.size());
         try {
             for (Path changedPath : changedPaths) {
-                final Path relChangedDir = watchedRootDir.relativize(changedPath);
-
-                reloadGroovyFile(processedPaths, changedPath, relChangedDir);
+                final Path relevantScriptPath = getRelevantScriptPath(changedPath);
+                final Path relChangedDir = watchedRootDir.relativize(relevantScriptPath);
+                reloadGroovyFile(processedPaths, relevantScriptPath, relChangedDir);
             }
             if (!processedPaths.isEmpty()) {
                 session.save();
             }
         } catch (RepositoryException e) {
-            if (log.isDebugEnabled()) {
-                log.info("Failed to reload groovy files from '{}', resetting session and trying to reimport whole bundle(s)",
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.info("Failed to reload groovy files from '{}', resetting session and trying to reimport whole bundle(s)",
                     changedPaths, e);
-            } else if (log.isInfoEnabled()) {
-                log.info("Failed to reload groovy files from '{}' : '{}', resetting session and trying to reimport whole bundle(s)",
+            } else if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Failed to reload groovy files from '{}' : '{}', resetting session and trying to reimport whole bundle(s)",
                     changedPaths, e.getMessage());
             }
             resetSilently(session);
             tryReimportBundles(watchedRootDir, changedPaths);
+        } catch (IOException e) {
+            LOGGER.info("Failure on reading files", e);
         }
         final long endTime = System.currentTimeMillis();
-        log.info("Replacing groovy file took {} ms", endTime - startTime);
+        LOGGER.info("Replacing groovy file took {} ms", endTime - startTime);
+    }
+
+    private static Path getRelevantScriptPath(final Path path) throws IOException {
+        if(path.endsWith(".groovy")){
+            return path;
+        } else {
+            try(final Stream<Path> files = Files.walk(path.getParent())) {
+                return files.filter(file -> containsPathForParameters(file, path)).findFirst().orElse(null);
+            }
+        }
+    }
+
+    private static boolean containsPathForParameters(final Path path, final Path parameters) {
+        try {
+            final File file = path.toFile();
+            return file.isFile() && FileUtils.readFileToString(file, StandardCharsets.UTF_8).contains(parameters.getFileName().toString());
+        } catch (IOException e) {
+            LOGGER.info("failed to read {}", path, e);
+        }
+        return false;
     }
 
     private void reloadGroovyFile(final Set<Path> processedPaths, final Path changedPath, final Path relChangedDir) throws RepositoryException {
-        log.info("Reloading groovyfile '{}'", relChangedDir);
+        LOGGER.info("Reloading groovyfile '{}'", relChangedDir);
         try {
             if (service.importGroovyFile(session, changedPath.toFile())) {
                 processedPaths.add(changedPath);
             } else {
-                log.info("** Failed to process '{}' as a groovy updater", relChangedDir);
+                LOGGER.info("** Failed to process '{}' as a groovy updater", relChangedDir);
             }
-        } catch (IOException e) {
-            // we do not have to take action. An IOException is the result of a concurrent change (delete/move)
-            // during creation or processing of the archive. The change will trigger a new import
-            log.debug("IOException during importing '{}'. This is typically the result of a file that is deleted" +
-                "during the import of a directory. This delete will trigger an event shortly after this" +
-                " exception.", changedPath, e);
         } catch (NullPointerException e) {
             // sigh....because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() returns null
             // on a IOException (for example when a file is deleted during processing) I get an NPE I cannot avoid,
             // however, it is just similar to the IOException above, typically the result of an event that will
             // be processed shortly after this exception. Hence, ignore
-            log.debug("NullPointerException we cannot avoid because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() " +
+            LOGGER.debug("NullPointerException we cannot avoid because org.apache.jackrabbit.vault.util.FileInputSource.getByteStream() " +
                 "returns null on IOException. We can ignore this event since it is the result of an event that will " +
                 " be processed shortly after this exception. Hence, ignore change path '{}'", changedPath, e);
-        } catch (JAXBException e) {
-            log.error("JAXBException in import", e);
         }
     }
 
@@ -193,7 +211,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
         try {
             session.refresh(false);
         } catch (RepositoryException e) {
-            log.debug("Ignoring that session.refresh(false) failed", e);
+            LOGGER.debug("Ignoring that session.refresh(false) failed", e);
         }
     }
 
@@ -205,13 +223,13 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
                 final String bundleName = relChangedDir.getName(0).toString();
                 final Path bundleRootDir = watchedRootDir.resolve(bundleName);
                 if (reimportedBundleRoots.add(bundleRootDir)) {
-                    log.info("Reimporting bundle '{}'", bundleName);
+                    LOGGER.info("Reimporting bundle '{}'", bundleName);
                     service.importGroovyFiles(session, bundleRootDir.toFile());
                 }
             }
             session.save();
-        } catch (GroovyFileException | RepositoryException | IOException e) {
-            log.warn("Failed to reimport groovy file bundles {}, resetting session", reimportedBundleRoots, e);
+        } catch (GroovyFileException | RepositoryException e) {
+            LOGGER.warn("Failed to reimport groovy file bundles {}, resetting session", reimportedBundleRoots, e);
             resetSilently(session);
         }
     }

@@ -42,7 +42,6 @@
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-services</artifactId>
-      <version>3.2.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -56,7 +55,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
+      <groupId>org.apache.groovy</groupId>
       <artifactId>groovy</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -67,7 +66,6 @@
     <dependency>
       <groupId>org.apache.sling</groupId>
       <artifactId>org.apache.sling.testing.jcr-mock</artifactId>
-      <version>1.4.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

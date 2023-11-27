@@ -58,7 +58,7 @@ public class WatchFilesUtils {
     public static final String[] DEFAULT_WATCHED_MODULES = {};
     public static final Long DEFAULT_WATCH_DELAY_MILLIS = 500L;
     public static final Long DEFAULT_MAX_FILE_LENGTH_KB = 256L;
-    private static final Logger log = LoggerFactory.getLogger(WatchFilesUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WatchFilesUtils.class);
 
     private WatchFilesUtils() {
         //no creation of the instance
@@ -69,15 +69,15 @@ public class WatchFilesUtils {
         if (projectBaseDir != null && !projectBaseDir.isEmpty()) {
             final Path baseDir = FileSystems.getDefault().getPath(projectBaseDir);
             if (baseDir.toFile().isDirectory()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Basedir found: {}", baseDir);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Basedir found: {}", baseDir);
                 }
                 return baseDir;
             } else {
-                log.warn("Watching groovy files is disabled: environment variable '{}' does not point to a directory", PROJECT_BASEDIR_PROPERTY);
+                LOGGER.warn("Watching groovy files is disabled: environment variable '{}' does not point to a directory", PROJECT_BASEDIR_PROPERTY);
             }
         } else {
-            log.info("Watching groovy files is disabled: environment variable '{}' not set or empty", PROJECT_BASEDIR_PROPERTY);
+            LOGGER.info("Watching groovy files is disabled: environment variable '{}' not set or empty", PROJECT_BASEDIR_PROPERTY);
         }
         return null;
     }
@@ -86,8 +86,8 @@ public class WatchFilesUtils {
                                                        final GroovyFilesWatcherConfig config) {
 
         List<Path> filesDirectories = new ArrayList<>(config.getWatchedModules().size());
-        if (log.isDebugEnabled()) {
-            log.debug("getting groovy file directories");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("getting groovy file directories");
         }
         for (String watchedModule : config.getWatchedModules()) {
             final Path modulePath = projectBaseDir.resolve(watchedModule);
@@ -96,12 +96,12 @@ public class WatchFilesUtils {
             paths.add(modulePath.resolve(RESOURCE_FILES_LOCATION_IN_MODULE));
             List<Path> pathList = paths.stream().filter(Files::isDirectory).collect(Collectors.toList());
             filesDirectories.addAll(pathList);
-            if (log.isDebugEnabled()) {
-                log.debug("Found {} paths to add for watching. {}", pathList.size(), pathList.stream().map(Path::toString)
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Found {} paths to add for watching. {}", pathList.size(), pathList.stream().map(Path::toString)
                     .collect(Collectors.joining(", ")));
             }
             if (pathList.isEmpty()) {
-                log.warn("Cannot watch groovy files in module '{}': it does not contain directory '{}' or {}",
+                LOGGER.warn("Cannot watch groovy files in module '{}': it does not contain directory '{}' or {}",
                     watchedModule, SCRIPT_FILES_LOCATION_IN_MODULE, RESOURCE_FILES_LOCATION_IN_MODULE);
             }
         }

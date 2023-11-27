@@ -21,7 +21,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessor;
 import nl.openweb.hippo.groovy.maven.processor.ScriptProcessorYAML;
 
-@Mojo(name = "generate-yaml")
+@Mojo(name = "generate-yaml", threadSafe = true)
 public class GroovyToUpdaterYamlBootstrap extends GroovyToUpdaterBootstrap {
     @Parameter(defaultValue = "hcm-content/configuration/update", property = "yamlContentPath")
     private String yamlContentPath;

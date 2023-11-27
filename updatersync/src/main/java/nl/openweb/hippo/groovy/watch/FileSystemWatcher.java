@@ -50,9 +50,9 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 public class FileSystemWatcher implements FileSystemObserver, Runnable {
 
     static final int POLLING_TIME_MILLIS = 100;
-    private static final Logger log = LoggerFactory.getLogger(SubDirectoriesWatcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemWatcher.class);
     private static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER =
-        (exceptionThread, exception) -> log.warn("FileSystemWatcher '{}' crashed", exceptionThread.getName(), exception);
+        (exceptionThread, exception) -> LOGGER.warn("FileSystemWatcher '{}' crashed", exceptionThread.getName(), exception);
     private static int instanceCounter = 0;
     /**
      * The {@link WatchService} used by this class has a percularity: when a directory is moved, the associated watch
@@ -85,7 +85,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
             changesProcessors.put(directory, new ChangesProcessor(listener));
             registerRecursively(directory);
         } else {
-            log.debug("Do not observe ignored directory {}", directory);
+            LOGGER.debug("Do not observe ignored directory {}", directory);
         }
     }
 
@@ -117,12 +117,12 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     @Override
     public void run() {
         try {
-            log.info("Watch started, polling every {} ms", POLLING_TIME_MILLIS);
+            LOGGER.info("Watch started, polling every {} ms", POLLING_TIME_MILLIS);
             while (fileSystemWatcherThread.isAlive()) {
                 processChanges();
             }
         } catch (ClosedWatchServiceException e) {
-            log.info("Watch closed", e);
+            LOGGER.info("Watch closed", e);
         } finally {
             IOUtils.closeQuietly(watcher);
         }
@@ -130,20 +130,20 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
 
     private void processChanges() {
         try {
-            log.info("Waiting for changes... {}", fileSystemWatcherThread.isAlive() ? "YES" : "NO");
+            LOGGER.info("Waiting for changes... {}", fileSystemWatcherThread.isAlive() ? "YES" : "NO");
             watchChange();
             pollForMoreChanges();
             stopProcessingChanges();
         } catch (ClosedWatchServiceException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("Exception while processing watch keys: {}", e.toString(), e);
+            LOGGER.warn("Exception while processing watch keys: {}", e, e);
         }
     }
 
     private void watchChange() throws InterruptedException {
         final WatchKey key = watcher.take();
-        log.debug("Change found for '{}'", key.watchable());
+        LOGGER.debug("Change found for '{}'", key.watchable());
         processWatchKey(key);
     }
 
@@ -156,17 +156,17 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
         List<WatchKey> polledKeys = new ArrayList<>();
         final long startPolling = System.currentTimeMillis();
         while (keepPolling) {
-            log.debug("Waiting {} ms for more changes...", POLLING_TIME_MILLIS);
+            LOGGER.debug("Waiting {} ms for more changes...", POLLING_TIME_MILLIS);
             WatchKey key = watcher.poll(POLLING_TIME_MILLIS, TimeUnit.MILLISECONDS);
             if (key == null) {
                 keepPolling = false;
             } else {
-                log.debug("Found change for '{}' found during extra polling time", key.watchable());
+                LOGGER.debug("Found change for '{}' found during extra polling time", key.watchable());
                 polledKeys.add(key);
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Polled '{}' more changes during '{}' ms", polledKeys.size(), String.valueOf(System.currentTimeMillis() - startPolling));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Polled '{}' more changes during '{}' ms", polledKeys.size(), System.currentTimeMillis() - startPolling);
         }
         for (WatchKey polledKey : polledKeys) {
             processWatchKey(polledKey);
@@ -177,9 +177,9 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
         try {
             final Path watchedDirectory = watchedPaths.get(key);
             if (watchedDirectory == null) {
-                log.warn("Ignoring watch event for unknown directory: {}", key.watchable());
+                LOGGER.warn("Ignoring watch event for unknown directory: {}", key.watchable());
             } else {
-                log.debug("Processing watch key for '{}'", watchedDirectory);
+                LOGGER.debug("Processing watch key for '{}'", watchedDirectory);
                 processFileSystemChanges(watchedDirectory, key);
             }
         } finally {
@@ -191,7 +191,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
         final ChangesProcessor processor = getChangesProcessorOrNull(watchedDirectory);
 
         if (processor == null) {
-            log.warn("Ignoring change in {}: no change processor found", watchedDirectory);
+            LOGGER.warn("Ignoring change in {}: no change processor found", watchedDirectory);
             return;
         }
 
@@ -201,12 +201,12 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
             final WatchEvent.Kind<?> kind = event.kind();
             final Object eventContext = event.context();
 
-            if (log.isDebugEnabled()) {
-                log.debug("Processing {} {} in {}", kind.name(), eventContext, watchedDirectory);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Processing {} {} in {}", kind.name(), eventContext, watchedDirectory);
             }
 
             if (kind == StandardWatchEventKinds.OVERFLOW) {
-                log.info("event overflow in {}. Reimporting and registering watchedDirectory '{}' to avoid half synced state",
+                LOGGER.info("event overflow in {}. Reimporting and registering watchedDirectory '{}' to avoid half synced state",
                     watchedDirectory, watchedDirectory);
                 if (watchedDirectory.toFile().exists()) {
                     registerQuietly(watchedDirectory);
@@ -219,8 +219,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
     }
 
     private void processEvent(final Path watchedDirectory, final ChangesProcessor processor, final WatchEvent.Kind<?> kind, final Path eventContext) {
-        final Path changedRelPath = eventContext;
-        final Path changedAbsPath = watchedDirectory.resolve(changedRelPath);
+        final Path changedAbsPath = watchedDirectory.resolve(eventContext);
         final boolean isDirectory = isDirectory(changedAbsPath, kind);
         if (watchedFiles.matches(changedAbsPath, isDirectory)) {
             if (isDirectory && kind == StandardWatchEventKinds.ENTRY_CREATE) {
@@ -228,7 +227,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
             }
             processor.processChange(kind, changedAbsPath, isDirectory);
         } else {
-            log.debug("Skipping excluded path {}", changedAbsPath);
+            LOGGER.debug("Skipping excluded path {}", changedAbsPath);
         }
     }
 
@@ -261,7 +260,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
         try {
             registerRecursively(changedAbsPath);
         } catch (IOException e) {
-            log.error("Failed to register changed directory '{}'. Changes in this directory will not be picked up.", changedAbsPath, e);
+            LOGGER.error("Failed to register changed directory '{}'. Changes in this directory will not be picked up.", changedAbsPath, e);
         }
     }
 
@@ -274,7 +273,7 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
             Thread.currentThread().interrupt();
         } catch (IOException e) {
             // ignore, but don't wait for the thread
-            log.debug("Ignoring exception while closing watcher", e);
+            LOGGER.debug("Ignoring exception while closing watcher", e);
         }
     }
 
@@ -312,11 +311,11 @@ public class FileSystemWatcher implements FileSystemObserver, Runnable {
                 listener.directoryDeleted(changedAbsPath);
             } else if (kind == StandardWatchEventKinds.OVERFLOW) {
                 if (changedAbsPath.toFile().exists()) {
-                    log.info("Having an event overflow for '{}'. Entire directory '{}' will be recreated",
+                    LOGGER.info("Having an event overflow for '{}'. Entire directory '{}' will be recreated",
                         changedAbsPath, changedAbsPath);
                     listener.directoryCreated(changedAbsPath);
                 } else {
-                    log.info("Having an event overflow for non existing directory '{}'. Directory '{}' will be removed",
+                    LOGGER.info("Having an event overflow for non existing directory '{}'. Directory '{}' will be removed",
                         changedAbsPath, changedAbsPath);
                     listener.directoryDeleted(changedAbsPath);
                 }

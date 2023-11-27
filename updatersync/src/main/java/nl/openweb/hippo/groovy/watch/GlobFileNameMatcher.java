@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class GlobFileNameMatcher implements FileFilter {
 
     private static final String GLOB_SYNTAX = "glob:";
-    static Logger log = LoggerFactory.getLogger(GlobFileNameMatcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobFileNameMatcher.class);
 
     private final List<PathMatcher> includedFiles;
     private final List<PathMatcher> excludedDirs;
@@ -61,7 +61,7 @@ public class GlobFileNameMatcher implements FileFilter {
             try {
                 includeFiles(pattern);
             } catch (IllegalArgumentException e) {
-                log.warn("Ignoring file name glob pattern '{}': {}", pattern, e.getMessage());
+                LOGGER.warn("Ignoring file name glob pattern '{}': {}", pattern, e.getMessage());
             }
         }
     }
@@ -75,7 +75,7 @@ public class GlobFileNameMatcher implements FileFilter {
             try {
                 excludeDirectories(pattern);
             } catch (IllegalArgumentException e) {
-                log.warn("Ignoring file name glob pattern '{}': {}", pattern, e.getMessage());
+                LOGGER.warn("Ignoring file name glob pattern '{}': {}", pattern, e.getMessage());
             }
         }
     }

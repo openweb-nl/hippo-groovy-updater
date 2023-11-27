@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.MojoExecutionException;
 
 import nl.openweb.hippo.groovy.annotations.Bootstrap;
 import nl.openweb.hippo.groovy.model.ScriptClass;
@@ -35,13 +34,13 @@ public class ScriptProcessorYAML extends ScriptProcessor {
     protected String yamlConfigurationPath;
 
     /**
-     * Generate updater xml files from groovy scripts
+     * Generate updater yaml files from groovy scripts
      *
      * @param groovyFiles groovy scripts to parse
      * @return list of valid parsed groovy files
      */
     @Override
-    public List<ScriptClass> processUpdateScripts(final List<ScriptClass> groovyFiles) throws MojoExecutionException {
+    public List<ScriptClass> processUpdateScripts(final List<ScriptClass> groovyFiles) {
         return processGroovyScripts(groovyFiles);
     }
 

@@ -1,0 +1,8 @@
+{
+  "cnd": [
+    {
+      "namespaceURI": "http://www.example.com/example/nt/1.0",
+      "cndcontent": "<'example'='http://www.example.com/example/nt/1.0'>\n<'hippo'='http://www.onehippo.org/jcr/hippo/nt/2.0.4'>\n<'hippostd'='http://www.onehippo.org/jcr/hippostd/nt/2.0'>\n<'hippostdpubwf'='http://www.onehippo.org/jcr/hippostdpubwf/nt/1.0'>\n<'hippotranslation'='http://www.onehippo.org/jcr/hippotranslation/nt/1.0'>\n\n[example:basedocument] > hippo:document, hippostd:publishableSummary, hippostdpubwf:document\n  orderable\n\n[example:article] > example:basedocument, hippostd:relaxed, hippotranslation:translated\n  orderable\n\n[example:compoundOne] > hippo:compound, hippostd:relaxed\n  orderable\n\n[example:compoundTwo] > hippo:compound, hippostd:relaxed\n  orderable\n\n[example:wrapper] > hippo:compound, hippostd:relaxed\n  orderable\n"
+    }
+  ]
+}
