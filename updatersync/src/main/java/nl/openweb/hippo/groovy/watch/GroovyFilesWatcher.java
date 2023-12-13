@@ -164,7 +164,7 @@ public class GroovyFilesWatcher implements SubDirectoriesWatcher.PathChangesList
     }
 
     private static Path getRelevantScriptPath(final Path path) throws IOException {
-        if(path.endsWith(".groovy")){
+        if(path.toString().endsWith(".groovy")){
             return path;
         } else {
             try(final Stream<Path> files = Files.walk(path.getParent())) {
