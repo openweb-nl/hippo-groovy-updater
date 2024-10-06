@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    registries:
+      - hippo-maven2-enterprise
+    schedule:
+      interval: "daily"
+registries:
+  hippo-maven2-enterprise:
+    type: maven-repository
+    url: https://maven.bloomreach.com/repository/maven2-enterprise/
+    username: ${{ secrets.BLOOMREACH_USER }}
+    password: ${{ secrets.BLOOMREACH_PASSWORD }}
