@@ -14,7 +14,9 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
 
@@ -24,14 +26,16 @@
   <packaging>pom</packaging>
 
   <name>Groovy updater</name>
-  <description>This project is designed for Hippo developers to have an easy way to create updaters in groovy, without
+  <description>This project is designed for Hippo developers to have an easy way to create updaters
+    in groovy, without
     being bothered with the repository data yaml
   </description>
   <url>https://github.com/openweb-nl/hippo-groovy-updater</url>
 
   <scm>
     <connection>scm:git:git@github.com:openweb-nl/hippo-groovy-updater.git</connection>
-    <developerConnection>scm:git:git@github.com:openweb-nl/hippo-groovy-updater.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:openweb-nl/hippo-groovy-updater.git
+    </developerConnection>
     <url>https://github.com/openweb-nl/hippo-groovy-updater</url>
     <tag>HEAD</tag>
   </scm>
@@ -230,7 +234,7 @@
             <execution>
               <id>attach-sources</id>
               <goals>
-                <goal>jar</goal>
+                <goal>jar-no-fork</goal>
               </goals>
             </execution>
           </executions>
@@ -353,14 +357,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
